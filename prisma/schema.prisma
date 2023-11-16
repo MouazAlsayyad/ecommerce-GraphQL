@@ -1,0 +1,182 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+enum UserType {
+  USER
+  SELLER
+  ADMIN
+}
+
+enum FileType{
+  Image
+  Video
+}
+
+model User {
+  id                Int        @id @default(autoincrement())
+  username          String     @unique
+  email             String     @unique
+  password          String
+  phone_number      String     @unique
+  isBlock           Boolean
+  user_type         UserType
+  created_at        DateTime   @default(now())
+  updated_at        DateTime   @updatedAt
+  cart              Cart?
+  favoritesList     FavoritesList[]
+  addresses         Address[]
+  // userReview        UserReview[]
+}
+
+// model UserReview{
+//   id                Int          @id @default(autoincrement())
+//   userId            Int
+//   user              User         @relation(fields: [userId],references: [id])  
+//   productId         Int
+//   product           Product      @relation(fields: [productId],references: [id])  
+// }
+
+model FavoritesList{
+  userId            Int          
+  user              User         @relation(fields: [userId],references: [id])  
+  itemId            Int
+  item              ProductItem  @relation(fields: [itemId],references: [id])
+  @@id([userId,itemId])
+}
+
+model Cart{
+  id                Int        @id @default(autoincrement())
+  user              User @relation(fields: [userId], references: [id])
+  userId            Int  @unique
+  cartItems         CartItems[]
+}
+
+model CartItems{
+  productId         Int
+  itemId            Int
+  cartId            Int
+  qty               Int
+  cart              Cart         @relation(fields: [cartId],references: [id])  
+  item              ProductItem  @relation(fields: [itemId],references: [id])
+  product           Product  @relation(fields: [productId],references: [id])
+  @@id([cartId,itemId])
+}
+
+
+
+model Country{
+  id                Int        @id @default(autoincrement())
+  country_name      String
+  addresses         Address[]
+}
+
+
+model Address{
+  id                Int        @id @default(autoincrement())
+  userId            Int
+  countryId         Int
+  street_number     String
+  address           String
+  city              String
+  region            String
+  postal_code       String
+  user              User        @relation(fields: [userId], references: [id])
+  country           Country     @relation(fields: [countryId], references: [id])
+}
+
+
+
+model Variation{
+  id                Int        @id @default(autoincrement())
+  name               String
+  productId             Int
+  product               Product           @relation(fields: [productId], references: [id])
+  variationOptions  VariationOption[]
+  productConfiguration ProductConfiguration[]
+}
+
+model VariationOption{
+  id                Int        @id @default(autoincrement())
+  value             String
+  variationId       Int
+  variation         Variation   @relation(fields: [variationId],references: [id])
+  productConfiguration ProductConfiguration[]
+}
+
+model Product{
+  id                Int         @id @default(autoincrement())
+  name              String      
+  description       String
+  coverImage        String
+  available         Boolean
+  image             String[]
+  attributes        ProductAttribute[]
+  variation         Variation[]
+  productItem       ProductItem[]
+  // userReview        UserReview[]
+  cartItems         CartItems[]
+}
+
+model ProductItem{
+  id                       Int                       @id @default(autoincrement())
+  SKU                      String
+  qtyInStock               Int
+  price                    Float
+  productId                Int
+  product                  Product                  @relation(fields: [productId],references: [id])
+  productConfiguration     ProductConfiguration[]
+  favouritesList           FavoritesList[]
+  cartItems                CartItems[]
+}
+
+model ProductConfiguration{
+  productItemId             Int
+  variationId               Int
+  variationOptionId         Int
+  variationOption           VariationOption @relation(fields: [variationOptionId],references: [id])
+  productItem               ProductItem @relation(fields: [productItemId],references: [id])
+  variation                 Variation   @relation(fields: [variationId],references: [id])
+
+  @@id([productItemId,variationId])
+}
+
+
+model ProductAttribute {
+  id                      Int                     @id @default(autoincrement())
+  productId               Int
+  name                    String
+  value                   String
+  product                 Product                 @relation(fields: [productId], references: [id])
+}
+
+model Media {
+  id                      Int      @id @default(autoincrement())
+  filename                String
+  fileType                FileType
+  path                    String
+  createdAt               DateTime @default(now())
+}
+
+
+
+
+// model Category {
+//   id                Int       @id @default(autoincrement())
+//   name              String
+//   description       String?
+//   image             String?
+//   parentId          Int?
+//   parent            Category? @relation("Subcategories", fields: [parentId], references: [id])
+//   subcategories     Category[] @relation("Subcategories")
+//   products          Product[]
+//   variations        Variation[]
+// }
+
