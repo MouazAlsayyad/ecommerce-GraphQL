@@ -53,19 +53,6 @@ type AuthUser {
   username: String!
 }
 
-type Cart {
-  item: Item!
-  product: ProductType!
-  qty: Int!
-}
-
-type CartItem {
-  cartId: Int!
-  itemId: Int!
-  productId: Int!
-  qty: Int!
-}
-
 type Country {
   country_name: String!
   id: Int!
@@ -98,6 +85,11 @@ input CreateProductItemDTO {
   variationsItem: [CreateVariationItemDTO!]
 }
 
+input CreateReviewInput {
+  rating: Float!
+  review: String!
+}
+
 input CreateUserInput {
   email: String!
   password: String!
@@ -125,15 +117,6 @@ type FavoritesList {
   userId: Int!
 }
 
-type Item {
-  price: Float!
-}
-
-input ItemInput {
-  id: Int!
-  qty: Int!
-}
-
 input LoginInput {
   email: String!
   password: String!
@@ -143,27 +126,26 @@ type Mutation {
   addAddress(addressDTO: AddressDTO!): Address!
   addCountry(countryDTO: CountryDTO!): Country!
   addItemToFavoritesList(itemId: Int!): FavoritesList!
-  addItemsToCart(itemsWithQty: [ItemInput!]!): [CartItem!]!
   addProductItem(addProductItemInput: AddProductItemDTO!): ProductItem!
   addVariationOption(addVariationOptionDTO: AddVariationOptionDTO!): VariationOption!
   blockUser(id: Int!): User!
   createProduct(createProductInput: CreateProductInput!): Product!
+  createReview(createReviewInput: CreateReviewInput!, productId: Float!): Review!
   createUser(createUserInput: CreateUserInput!): User!
   deleteProductItem(productItemId: Float!): ProductItem!
   login(loginInput: LoginInput!): AuthResponse!
   removeAddress(addressId: Int!): Address!
-  removeAllItemFromCart: [CartItem!]!
   removeAttribute(attributeId: Int!): Attribute!
-  removeItemFromCart(itemId: Float!): CartItem!
   removeItemFromFavoritesList(itemId: Int!): FavoritesList!
   removeProduct(id: Int!): Product!
+  removeReview(id: Int!): Review!
   removeUser(id: Int!): User!
   singIn(singInInput: SignInInput!): AuthResponse!
   updateAddress(addressDTO: UpdateAddressDTO!): Address!
   updateAttribute(updateProductAttributeInput: UpdateProductAttributeDTO!): Attribute!
-  updateCartItem(itemsWithQty: ItemInput!): CartItem!
   updateProduct(updateProductInput: UpdateProductInput!): Product!
   updateProductItem(updateProductItemDTO: UpdateProductItemDTO!): ProductItem!
+  updateReview(updateReviewInput: UpdateReviewInput!): Review!
   updateVariation(updateVariationDTO: UpdateVariationDTO!): Variation!
   updateVariationOption(updateVariationOptionDTO: UpdateVariationOptionDTO!): VariationOption!
 }
@@ -193,18 +175,17 @@ type ProductItem {
   variationsItem: [VariationItem!]
 }
 
-type ProductType {
-  coverImage: String!
-  id: Int!
-  name: String!
-}
-
 type Query {
-  getCart: [Cart!]!
   getFavoritesList: [FavoritesList!]!
   product(id: Int!): Product!
   products(filters: ProductFilterDTO): [Product!]!
+  review(productId: Float!): [Review!]!
   users: [User!]!
+}
+
+type Review {
+  rating: Float!
+  review: String!
 }
 
 input SignInInput {
@@ -247,6 +228,12 @@ input UpdateProductItemDTO {
   productItemId: Int!
   qtyInStock: Int
   variationsItem: [UpdateVariationItemDTO!]
+}
+
+input UpdateReviewInput {
+  id: Int!
+  rating: Float
+  review: String
 }
 
 input UpdateVariationDTO {

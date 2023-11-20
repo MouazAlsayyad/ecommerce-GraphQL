@@ -9,6 +9,7 @@ import {
 } from './entities/product.entity';
 
 import {
+  AddProductAttributeDTO,
   AddProductItemDTO,
   AddVariationOptionDTO,
   CreateProductInput,

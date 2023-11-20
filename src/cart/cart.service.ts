@@ -4,6 +4,7 @@ import { ItemInput } from './dto/create-cart.input';
 import { ContextType } from 'src/unit/context-type';
 import { CustomNotFoundException } from 'src/unit/not-found.exception';
 import { Prisma } from '@prisma/client';
+import { Cart } from './entities/cart.entity';
 
 @Injectable()
 export class CartService {
@@ -48,13 +49,11 @@ export class CartService {
 
       if (!cart) cart = await tx.cart.create({ data: { userId } });
 
-      const items = await Promise.all(
+      return await Promise.all(
         itemsWithQty.map(async (item) => {
-          await this.addItemToCart(tx, cart.id, item.id, item.qty);
+          return await this.addItemToCart(tx, cart.id, item.id, item.qty);
         }),
       );
-      this.logger.log(items);
-      return items;
     });
   }
 
@@ -93,13 +92,18 @@ export class CartService {
       const cart = await tx.cart.findUnique({ where: { userId } });
       if (!cart)
         throw new CustomNotFoundException(`you don't Items in your cart`);
-      const deletedItems = await this.prisma.cartItems.deleteMany({
+      const deletedItems = await tx.cartItems.findMany({
+        where: {
+          cartId: cart.id,
+        },
+      });
+      await tx.cartItems.deleteMany({
         where: {
           cartId: cart.id,
         },
       });
 
-      if (deletedItems.count === 0) {
+      if (deletedItems.length === 0) {
         throw new CustomNotFoundException(
           `No items found in your cart to remove`,
         );
@@ -109,45 +113,83 @@ export class CartService {
     });
   }
 
-  getCart(context: ContextType) {
+  // async getCart(context: ContextType) {
+  //   const userId = context.req.user.id;
+
+  //   const cart = await this.prisma.$transaction(async (tx) => {
+  //     let existingCart = await tx.cart.findUnique({ where: { userId } });
+
+  //     if (!existingCart) {
+  //       existingCart = await tx.cart.create({ data: { userId } });
+  //     }
+
+  //     const result = await tx.cart.findUnique({
+  //       where: { id: existingCart.id },
+  //       select: {
+  //         cartItems: {
+  //           select: {
+  //             product: {
+  //               select: {
+  //                 id: true,
+  //                 name: true,
+  //                 coverImage: true,
+  //               },
+  //             },
+  //             item: {
+  //               select: {
+  //                 price: true,
+  //               },
+  //             },
+  //             // qty: true,
+  //           },
+  //         },
+  //       },
+  //     });
+
+  //     // Handle the case where the result or qty might be null
+  //     return result ? [result] : null;
+  //   });
+
+  //   return cart;
+  // }
+
+  async getCart(context: ContextType): Promise<Cart[]> {
     const userId = context.req.user.id;
-    return this.prisma.$transaction(async (tx) => {
-      let cart = await tx.cart.findUnique({ where: { userId } });
-
-      if (!cart) cart = await tx.cart.create({ data: { userId } });
-
-      return tx.cart.findUnique({
-        where: { id: cart.id },
-        select: {
-          cartItems: {
-            select: {
-              product: {
-                select: {
-                  id: true,
-                  name: true,
-                  coverImage: true,
+    const cart = await this.prisma.cart.findUnique({
+      where: { userId },
+      include: {
+        cartItems: {
+          include: {
+            product: {
+              select: {
+                id: true,
+                name: true,
+                coverImage: true,
+              },
+            },
+            item: {
+              select: {
+                id: true,
+                price: true,
+                productConfiguration: {
+                  select: {
+                    variationOption: {
+                      select: {
+                        value: true,
+                      },
+                    },
+                  },
                 },
               },
-              item: {
-                select: {
-                  price: true,
-                  // productConfiguration: {
-                  //   select: {
-                  //     variationOption: {
-                  //       select: {
-                  //         value: true,
-                  //       },
-                  //     },
-                  //   },
-                  // },
-                },
-              },
-              qty: true,
             },
           },
         },
-      });
+      },
     });
+    if (!cart) {
+      return [];
+    }
+    return this.groupCartItems(cart);
   }
 
   updateCartItem(itemWithQty: ItemInput, context: ContextType) {
@@ -178,5 +220,49 @@ export class CartService {
         },
       });
     });
+  }
+
+  private groupCartItems(cart): Cart[] {
+    const groupedProducts = new Map();
+
+    cart.cartItems.forEach((item) => {
+      const productId = item.productId;
+
+      if (groupedProducts.has(productId)) {
+        groupedProducts.get(productId).item.push({
+          id: item.item.id,
+          qty: item.qty,
+          price: item.item.price,
+          variationsItem: item.item.productConfiguration.map((config) => ({
+            value: config.variationOption.value,
+          })),
+        });
+      } else {
+        groupedProducts.set(productId, {
+          productId: item.productId,
+          itemId: item.itemId,
+          product: item.product,
+          item: [
+            {
+              id: item.item.id,
+              qty: item.qty,
+              price: item.item.price,
+              variationsItem: item.item.productConfiguration.map((config) => ({
+                value: config.variationOption.value,
+              })),
+            },
+          ],
+        });
+      }
+    });
+
+    const result: Cart[] = [];
+
+    groupedProducts.forEach((groupedProduct) => {
+      result.push(groupedProduct);
+    });
+    this.logger.log(result);
+
+    return [];
   }
 }

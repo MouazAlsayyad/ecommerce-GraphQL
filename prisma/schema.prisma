@@ -33,16 +33,19 @@ model User {
   cart              Cart?
   favoritesList     FavoritesList[]
   addresses         Address[]
-  // userReview        UserReview[]
+  userReview        UserReview[]
 }
 
-// model UserReview{
-//   id                Int          @id @default(autoincrement())
-//   userId            Int
-//   user              User         @relation(fields: [userId],references: [id])  
-//   productId         Int
-//   product           Product      @relation(fields: [productId],references: [id])  
-// }
+model UserReview{
+  id                Int          @id @default(autoincrement())
+  review            String
+  rating            Float
+  userId            Int
+  productId         Int
+  user              User            @relation(fields: [userId], references: [id])
+  product           Product         @relation(fields: [productId], references: [id])
+  created_at        DateTime       @default(now())
+}
 
 model FavoritesList{
   userId            Int          
@@ -121,8 +124,10 @@ model Product{
   attributes        ProductAttribute[]
   variation         Variation[]
   productItem       ProductItem[]
-  // userReview        UserReview[]
+  userReview        UserReview[]
   cartItems         CartItems[]
+  averageRating     Float?         @default(0)
+  reviewCount       Int?           @default(0)
 }
 
 model ProductItem{
