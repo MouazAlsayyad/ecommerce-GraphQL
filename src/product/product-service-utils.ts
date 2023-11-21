@@ -33,6 +33,10 @@ export async function deleteProductAndRelatedData(
     },
   });
 
+  await prisma.userReview.deleteMany({
+    where: { product: { id } },
+  });
+
   await prisma.productConfiguration.deleteMany({
     where: {
       variation: {

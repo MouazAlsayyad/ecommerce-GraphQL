@@ -17,7 +17,7 @@ export class CartItem {
 }
 
 @ObjectType()
-class VariationItem {
+class VariationsItem {
   @Field()
   value: string;
 }
@@ -33,8 +33,8 @@ class ItemWithQty {
   @Field()
   price: number;
 
-  @Field(() => [VariationItem])
-  variationsItem: VariationItem[];
+  @Field(() => [VariationsItem])
+  variationsItem: VariationsItem[];
 }
 
 @ObjectType()

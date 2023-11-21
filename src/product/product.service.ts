@@ -159,6 +159,8 @@ export class ProductService {
           name: true,
           coverImage: true,
           image: true,
+          reviewCount: true,
+          averageRating: true,
           attributes: {
             select: {
               name: true,
@@ -220,7 +222,7 @@ export class ProductService {
           };
         }),
       };
-
+      this.logger.log(productWithVariations.averageRating);
       return productWithVariations;
     });
   }
@@ -454,12 +456,6 @@ export class ProductService {
     return this.prisma.$transaction(async (prisma) => {
       const product = await getProductById(prisma, productId);
 
-      if (
-        addProductItemInput.variationsItem.length !== product.variation.length
-      ) {
-        throw new BadRequestException(`The item is missing some variation`);
-      }
-
       const item = await createItem(
         productId,
         addProductItemInput.price,
@@ -469,6 +465,11 @@ export class ProductService {
       );
 
       if (addProductItemInput?.variationsItem) {
+        if (
+          addProductItemInput.variationsItem.length !== product.variation.length
+        )
+          throw new BadRequestException(`The item is missing some variation`);
+
         const variationsOption = addProductItemInput.variationsItem.map(
           (variationOption) => {
             return { value: variationOption.valueVariation };

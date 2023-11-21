@@ -42,9 +42,12 @@ export class ReviewResolver {
       context,
     );
   }
-
+  @Roles(UserType.USER)
   @Mutation(() => Review)
-  removeReview(@Args('id', { type: () => Int }) id: number) {
-    return this.reviewService.remove(id);
+  removeReview(
+    @Args('id', { type: () => Int }) id: number,
+    @Context() context,
+  ) {
+    return this.reviewService.remove(id, context);
   }
 }

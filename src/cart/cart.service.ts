@@ -113,46 +113,6 @@ export class CartService {
     });
   }
 
-  // async getCart(context: ContextType) {
-  //   const userId = context.req.user.id;
-
-  //   const cart = await this.prisma.$transaction(async (tx) => {
-  //     let existingCart = await tx.cart.findUnique({ where: { userId } });
-
-  //     if (!existingCart) {
-  //       existingCart = await tx.cart.create({ data: { userId } });
-  //     }
-
-  //     const result = await tx.cart.findUnique({
-  //       where: { id: existingCart.id },
-  //       select: {
-  //         cartItems: {
-  //           select: {
-  //             product: {
-  //               select: {
-  //                 id: true,
-  //                 name: true,
-  //                 coverImage: true,
-  //               },
-  //             },
-  //             item: {
-  //               select: {
-  //                 price: true,
-  //               },
-  //             },
-  //             // qty: true,
-  //           },
-  //         },
-  //       },
-  //     });
-
-  //     // Handle the case where the result or qty might be null
-  //     return result ? [result] : null;
-  //   });
-
-  //   return cart;
-  // }
-
   async getCart(context: ContextType): Promise<Cart[]> {
     const userId = context.req.user.id;
     const cart = await this.prisma.cart.findUnique({
@@ -261,8 +221,7 @@ export class CartService {
     groupedProducts.forEach((groupedProduct) => {
       result.push(groupedProduct);
     });
-    this.logger.log(result);
 
-    return [];
+    return result;
   }
 }

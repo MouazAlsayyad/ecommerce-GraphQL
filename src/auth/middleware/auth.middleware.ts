@@ -35,7 +35,7 @@ export class AuthMiddleware implements NestMiddleware {
           graphqlReq['user'] = user;
         }
       } catch (error) {
-        this.logger.error(error);
+        // this.logger.error(error);
       }
     }
 

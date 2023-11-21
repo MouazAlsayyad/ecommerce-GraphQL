@@ -7,6 +7,8 @@ import {
   IsInt,
   IsNotEmpty,
   ValidateNested,
+  IsNumber,
+  IsOptional,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -28,27 +30,31 @@ export class CreateProductInput {
   coverImage: string | null;
 
   @Field(() => [String], { nullable: true })
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  image: string[] | null;
+  image?: string[] | null;
 
   @Field({ defaultValue: true })
   @IsBoolean()
   available: boolean;
 
   @Field(() => [CreateProductAttributeDTO], { nullable: true })
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateProductAttributeDTO)
   attributes?: CreateProductAttributeDTO[] | null;
 
   @Field(() => [CreateVariationDTO], { nullable: true })
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateVariationDTO)
   variation?: CreateVariationDTO[] | null;
 
   @Field(() => [CreateProductItemDTO], { nullable: true })
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateProductItemDTO)
@@ -79,12 +85,13 @@ export class CreateProductItemDTO {
   qtyInStock: number;
 
   @Field()
-  @IsInt()
+  @IsNumber()
   price: number;
 
   @Field(() => [CreateVariationItemDTO], { nullable: true })
+  @IsOptional()
   @IsArray()
-  @ValidateNested({ each: true })
+  // @ValidateNested({ each: true })
   @Type(() => CreateVariationOptionDTO)
   variationsItem?: CreateVariationItemDTO[] | null;
 }
@@ -174,11 +181,6 @@ export class AddProductItemDTO {
   @IsNotEmpty()
   productId: number;
 
-  // @Field(() => Int)
-  // @IsInt()
-  // @IsNotEmpty()
-  // productItemId: number;
-
   @Field()
   @IsString()
   @IsNotEmpty()
@@ -189,12 +191,13 @@ export class AddProductItemDTO {
   qtyInStock: number;
 
   @Field()
-  @IsInt()
+  @IsNumber()
   price: number;
 
   @Field(() => [CreateVariationItemDTO], { nullable: true })
+  @IsOptional()
   @IsArray()
-  @ValidateNested({ each: true })
+  // @ValidateNested({ each: true })
   @Type(() => CreateVariationOptionDTO)
   variationsItem?: CreateVariationItemDTO[] | null;
 }

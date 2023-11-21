@@ -29,6 +29,14 @@ export class Product {
   @IsNotEmpty()
   coverImage: string;
 
+  @Field(() => Int)
+  @IsNotEmpty()
+  reviewCount: number;
+
+  @Field()
+  @IsNotEmpty()
+  averageRating: number;
+
   @Field(() => [String], { nullable: true })
   @IsArray()
   @IsString({ each: true })

@@ -6,7 +6,10 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 
 @Module({
-  providers: [CartResolver, CartService,JwtService,
+  providers: [
+    CartResolver,
+    CartService,
+    JwtService,
     {
       provide: APP_INTERCEPTOR,
       useClass: ClassSerializerInterceptor,
@@ -14,6 +17,7 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
-    },],
+    },
+  ],
 })
 export class CartModule {}

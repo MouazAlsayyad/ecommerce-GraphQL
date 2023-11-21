@@ -53,6 +53,18 @@ type AuthUser {
   username: String!
 }
 
+type Cart {
+  item: [ItemWithQty!]!
+  product: ProductType!
+}
+
+type CartItem {
+  cartId: Int!
+  itemId: Int!
+  productId: Int!
+  qty: Int!
+}
+
 type Country {
   country_name: String!
   id: Int!
@@ -117,6 +129,18 @@ type FavoritesList {
   userId: Int!
 }
 
+input ItemInput {
+  id: Int!
+  qty: Int!
+}
+
+type ItemWithQty {
+  id: Float!
+  price: Float!
+  qty: Float!
+  variationsItem: [VariationsItem!]!
+}
+
 input LoginInput {
   email: String!
   password: String!
@@ -126,6 +150,7 @@ type Mutation {
   addAddress(addressDTO: AddressDTO!): Address!
   addCountry(countryDTO: CountryDTO!): Country!
   addItemToFavoritesList(itemId: Int!): FavoritesList!
+  addItemsToCart(itemsWithQty: [ItemInput!]!): [CartItem!]!
   addProductItem(addProductItemInput: AddProductItemDTO!): ProductItem!
   addVariationOption(addVariationOptionDTO: AddVariationOptionDTO!): VariationOption!
   blockUser(id: Int!): User!
@@ -135,7 +160,9 @@ type Mutation {
   deleteProductItem(productItemId: Float!): ProductItem!
   login(loginInput: LoginInput!): AuthResponse!
   removeAddress(addressId: Int!): Address!
+  removeAllItemFromCart: [CartItem!]!
   removeAttribute(attributeId: Int!): Attribute!
+  removeItemFromCart(itemId: Float!): CartItem!
   removeItemFromFavoritesList(itemId: Int!): FavoritesList!
   removeProduct(id: Int!): Product!
   removeReview(id: Int!): Review!
@@ -143,6 +170,7 @@ type Mutation {
   singIn(singInInput: SignInInput!): AuthResponse!
   updateAddress(addressDTO: UpdateAddressDTO!): Address!
   updateAttribute(updateProductAttributeInput: UpdateProductAttributeDTO!): Attribute!
+  updateCartItem(itemsWithQty: ItemInput!): CartItem!
   updateProduct(updateProductInput: UpdateProductInput!): Product!
   updateProductItem(updateProductItemDTO: UpdateProductItemDTO!): ProductItem!
   updateReview(updateReviewInput: UpdateReviewInput!): Review!
@@ -153,12 +181,14 @@ type Mutation {
 type Product {
   attributes: [Attribute!]
   available: Boolean!
+  averageRating: Float!
   coverImage: String!
   description: String!
   id: Int!
   image: [String!]
   name: String!
   productItem: [ProductItem!]
+  reviewCount: Int!
   variation: [Variation!]
 }
 
@@ -175,7 +205,14 @@ type ProductItem {
   variationsItem: [VariationItem!]
 }
 
+type ProductType {
+  coverImage: String!
+  id: Int!
+  name: String!
+}
+
 type Query {
+  getCart: [Cart!]!
   getFavoritesList: [FavoritesList!]!
   product(id: Int!): Product!
   products(filters: ProductFilterDTO): [Product!]!
@@ -272,5 +309,9 @@ type VariationItem {
 }
 
 type VariationOption {
+  value: String!
+}
+
+type VariationsItem {
   value: String!
 }

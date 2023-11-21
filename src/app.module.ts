@@ -9,8 +9,8 @@ import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { UserModule } from './user/user.module';
 import { AuthMiddleware } from './auth/middleware/auth.middleware';
-import { CartModule } from './cart/cart.module';
 import { ReviewModule } from './review/review.module';
+import { CartModule } from './cart/cart.module';
 
 @Module({
   imports: [
@@ -29,6 +29,7 @@ import { ReviewModule } from './review/review.module';
     UserModule,
     CartModule,
     ReviewModule,
+    CartModule,
   ],
 })
 export class AppModule implements NestModule {

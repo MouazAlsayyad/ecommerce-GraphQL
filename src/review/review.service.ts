@@ -8,7 +8,7 @@ import { CreateReviewInput } from './dto/create-review.input';
 import { UpdateReviewInput } from './dto/update-review.input';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ContextType } from 'src/unit/context-type';
-import { Prisma } from '@prisma/client';
+import { Prisma, UserType } from '@prisma/client';
 import { ForbiddenError } from '@nestjs/apollo';
 
 @Injectable()
@@ -131,15 +131,19 @@ export class ReviewService {
     });
   }
 
-  remove(id: number) {
+  remove(id: number, context) {
     return this.prisma.$transaction(async (tx) => {
+      const userId = context.req.user.id;
+      const userType = context.req.user.userType;
       const userRating = await tx.userReview.findUnique({
         where: { id },
       });
 
-      if (!userRating) {
+      if (!userRating)
         throw new NotFoundException(`Rating with ID ${id} not found`);
-      }
+      this.logger.log(userType, userRating.userId, userId);
+      if (userRating.userId !== userId)
+        throw new ForbiddenError('Forbidden resource');
 
       const rating = tx.userReview.delete({
         where: { id },
