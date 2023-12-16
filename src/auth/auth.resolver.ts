@@ -1,19 +1,28 @@
-import { Resolver, Mutation, Args } from '@nestjs/graphql';
-import { AuthService } from './auth.service';
+import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { LogInInput, SignInInput } from './dto/create-auth.input';
 import { AuthResponse } from './entities/auth.entity';
-import { LoginInput, SignInInput } from './dto/create-auth.input';
+import { AuthService } from './auth.service';
+import { Logger } from '@nestjs/common';
 
 @Resolver()
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
-
+  private readonly logger = new Logger(AuthResolver.name);
   @Mutation(() => AuthResponse)
   singIn(@Args('singInInput') singInInput: SignInInput) {
-    return this.authService.singIn(singInInput);
+    try {
+      return this.authService.singIn(singInInput);
+    } catch (e) {
+      this.logger.error(e);
+    }
   }
 
   @Mutation(() => AuthResponse)
-  login(@Args('loginInput') loginInput: LoginInput) {
-    return this.authService.login(loginInput);
+  login(@Args('loginInput') loginInput: LogInInput) {
+    try {
+      return this.authService.logIn(loginInput);
+    } catch (e) {
+      this.logger.error(e);
+    }
   }
 }

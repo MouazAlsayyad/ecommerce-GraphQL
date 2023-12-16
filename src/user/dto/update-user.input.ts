@@ -2,7 +2,7 @@ import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { InputType, Field, Int } from '@nestjs/graphql';
 
 @InputType()
-export class UpdateAddressDTO {
+export class UpdateAddressInput {
   @Field(() => Int)
   @IsNotEmpty()
   id: number;
@@ -36,4 +36,11 @@ export class UpdateAddressDTO {
   @IsOptional()
   @IsString()
   postal_code?: string;
+}
+
+@InputType()
+export class RemoveAddressInput {
+  @Field(() => Int)
+  @IsNotEmpty()
+  addressId: number;
 }

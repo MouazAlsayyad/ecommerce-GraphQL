@@ -33,6 +33,11 @@ export class UpdateProductInput {
   @IsString()
   coverImage?: string;
 
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString({ each: true })
+  brand?: string;
+
   @Field(() => [String], { nullable: true })
   @IsOptional()
   @IsArray()
@@ -43,31 +48,10 @@ export class UpdateProductInput {
   @IsOptional()
   @IsBoolean()
   available?: boolean;
-
-  // @Field(() => [UpdateProductAttributeDTO], { nullable: true })
-  // @IsOptional()
-  // @IsArray()
-  // @ValidateNested({ each: true })
-  // @Type(() => UpdateProductAttributeDTO)
-  // attribute?: UpdateProductAttributeDTO[];
-
-  // @Field(() => [UpdateVariationDTO], { nullable: true })
-  // @IsOptional()
-  // @IsArray()
-  // @ValidateNested({ each: true })
-  // @Type(() => UpdateVariationDTO)
-  // variation?: UpdateVariationDTO[];
-
-  // @Field(() => [UpdateProductItemDTO], { nullable: true })
-  // @IsOptional()
-  // @IsArray()
-  // @ValidateNested({ each: true })
-  // @Type(() => UpdateProductItemDTO)
-  // productItem?: UpdateProductItemDTO[];
 }
 
 @InputType()
-export class UpdateProductItemDTO {
+export class UpdateProductItemInput {
   @Field(() => Int)
   @IsInt()
   @IsNotEmpty()
@@ -93,15 +77,15 @@ export class UpdateProductItemDTO {
   @IsInt()
   price?: number;
 
-  @Field(() => [UpdateVariationItemDTO], { nullable: true })
+  @Field(() => [UpdateVariationItemInput], { nullable: true })
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => UpdateVariationItemDTO)
-  variationsItem?: UpdateVariationItemDTO[] | null;
+  @Type(() => UpdateVariationItemInput)
+  variationsItem?: UpdateVariationItemInput[] | null;
 }
 
 @InputType()
-export class UpdateVariationItemDTO {
+export class UpdateVariationItemInput {
   @Field()
   @IsString()
   @IsNotEmpty()
@@ -114,7 +98,7 @@ export class UpdateVariationItemDTO {
 }
 
 @InputType()
-export class UpdateVariationDTO {
+export class UpdateVariationInput {
   @Field(() => Int)
   @IsInt()
   @IsNotEmpty()
@@ -126,24 +110,16 @@ export class UpdateVariationDTO {
   variationId: number;
 
   @Field({ nullable: true })
-  @IsOptional()
   @IsString()
-  name?: string;
-
-  // @Field(() => [UpdateVariationOptionDTO], { nullable: true })
-  // @IsOptional()
-  // @IsArray()
-  // @ValidateNested({ each: true })
-  // @Type(() => UpdateVariationOptionDTO)
-  // variationOption?: UpdateVariationOptionDTO[];
+  name: string;
 }
 
 @InputType()
-export class UpdateVariationOptionDTO {
+export class UpdateVariationOptionInput {
   @Field(() => Int)
   @IsInt()
   @IsNotEmpty()
-  variationOptionId: number;
+  id: number;
 
   @Field(() => Int)
   @IsInt()
@@ -151,64 +127,17 @@ export class UpdateVariationOptionDTO {
   variationId: number;
 
   @Field({ nullable: true })
-  @IsOptional()
   @IsString()
-  value?: string;
+  value: string;
 
-  // @Field(() => [UpdateProductConfigurationDTO], { nullable: true })
-  // @IsOptional()
-  // @IsArray()
-  // @ValidateNested({ each: true })
-  // @Type(() => UpdateProductConfigurationDTO)
-  // productConfiguration?: UpdateProductConfigurationDTO[];
+  @Field(() => Int)
+  @IsInt()
+  @IsNotEmpty()
+  productId: number;
 }
 
 @InputType()
-export class UpdateProductConfigurationDTO {
-  @Field(() => UpdateVariationDTO, { nullable: true })
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => UpdateVariationDTO)
-  variation?: UpdateVariationDTO;
-
-  @Field(() => UpdateVariationOptionDTO, { nullable: true })
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => UpdateVariationOptionDTO)
-  variationOption?: UpdateVariationOptionDTO;
-
-  @Field(() => UpdateProductItemDTO, { nullable: true })
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => UpdateProductItemDTO)
-  productItem?: UpdateProductItemDTO;
-}
-
-// @InputType()
-// export class UpdateProductAttributeInput {
-//   @Field(() => Int)
-//   @IsInt()
-//   @IsNotEmpty()
-//   productId: number;
-
-//   @Field(() => Int)
-//   @IsInt()
-//   @IsNotEmpty()
-//   attributeId: number;
-
-//   @Field({ nullable: true })
-//   @IsOptional()
-//   @IsString()
-//   name?: string;
-
-//   @Field({ nullable: true })
-//   @IsOptional()
-//   @IsString()
-//   value?: string;
-// }
-
-@InputType()
-export class UpdateProductAttributeDTO {
+export class UpdateProductAttributeInput {
   @Field(() => Int)
   @IsInt()
   @IsNotEmpty()

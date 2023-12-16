@@ -2,15 +2,26 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-input AddProductItemDTO {
+input AddCategoriesToBrandInput {
+  brandId: Int!
+  categories: [String!]!
+}
+
+input AddItemCartInput {
+  itemId: Int!
+  qty: Int!
+}
+
+input AddProductItemInput {
   SKU: String!
   price: Float!
   productId: Int!
   qtyInStock: Int!
-  variationsItem: [CreateVariationItemDTO!]
+  variationsItem: [CreateVariationItemInput!]
 }
 
-input AddVariationOptionDTO {
+input AddVariationOptionInput {
+  productId: Int!
   value: String!
   variationId: Int!
 }
@@ -25,7 +36,7 @@ type Address {
   street_number: String!
 }
 
-input AddressDTO {
+input AddressInput {
   address: String!
   city: String!
   countryId: Int!
@@ -42,21 +53,18 @@ type Attribute {
 
 type AuthResponse {
   token: String!
-  user: AuthUser!
-}
-
-type AuthUser {
-  email: String!
-  id: Int!
-  phone_number: String!
-  user_type: String!
-  username: String!
 }
 
 type Brand {
-  description: String
+  category: [Category!]!
+  description: String!
   id: Int!
-  image: String
+  image: String!
+  name: String!
+}
+
+type BrandProduct {
+  id: Float!
   name: String!
 }
 
@@ -65,26 +73,20 @@ type Cart {
   product: ProductType!
 }
 
-type CartItem {
-  cartId: Int!
-  itemId: Int!
-  productId: Int!
-  qty: Int!
+type Category {
+  description: String!
+  id: Int!
+  image: String!
+  name: String!
+  product: [Product!]!
 }
 
-type Category {
-  description: String
-  id: Int!
-  image: String
+type CategoryProduct {
+  id: Float!
   name: String!
 }
 
-type Country {
-  country_name: String!
-  id: Int!
-}
-
-input CountryDTO {
+input CountryInput {
   country_name: String!
 }
 
@@ -100,32 +102,33 @@ input CreateCategoryInput {
   name: String!
 }
 
-input CreateProductAttributeDTO {
+input CreateProductAttributeInput {
   name: String!
   value: String!
 }
 
 input CreateProductInput {
-  attributes: [CreateProductAttributeDTO!]
+  attributes: [CreateProductAttributeInput!]
   available: Boolean! = true
-  brandId: Float!
-  category: String!
+  brand: String
+  categories: [String!]
   coverImage: String
   description: String!
   image: [String!]
   name: String!
-  productItem: [CreateProductItemDTO!]
-  variation: [CreateVariationDTO!]
+  productItem: [CreateProductItemInput!]
+  variation: [CreateVariationInput!]
 }
 
-input CreateProductItemDTO {
+input CreateProductItemInput {
   SKU: String!
   price: Float!
   qtyInStock: Int!
-  variationsItem: [CreateVariationItemDTO!]
+  variationsItem: [CreateVariationItemInput!]
 }
 
 input CreateReviewInput {
+  productId: Float!
   rating: Float!
   review: String!
 }
@@ -138,28 +141,34 @@ input CreateUserInput {
   username: String!
 }
 
-input CreateVariationDTO {
+input CreateVariationInput {
   name: String!
-  variationOption: [CreateVariationOptionDTO!]!
+  variationOption: [CreateVariationOptionInput!]!
 }
 
-input CreateVariationItemDTO {
+input CreateVariationItemInput {
   nameVariation: String!
   valueVariation: String!
 }
 
-input CreateVariationOptionDTO {
+input CreateVariationOptionInput {
   value: String!
 }
 
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
 type FavoritesList {
-  itemId: Int!
-  userId: Int!
+  available: Boolean!
+  coverImage: String!
+  id: Int!
+  name: String!
 }
 
-input ItemInput {
-  id: Int!
-  qty: Int!
+input FavoritesListInput {
+  productId: Int!
 }
 
 type ItemWithQty {
@@ -169,53 +178,56 @@ type ItemWithQty {
   variationsItem: [VariationsItem!]!
 }
 
-input LoginInput {
+input LogInInput {
   email: String!
   password: String!
 }
 
 type Mutation {
-  addAddress(addressDTO: AddressDTO!): Address!
-  addCountry(countryDTO: CountryDTO!): Country!
-  addItemToFavoritesList(itemId: Int!): FavoritesList!
-  addItemsToCart(itemsWithQty: [ItemInput!]!): [CartItem!]!
-  addProductItem(addProductItemInput: AddProductItemDTO!): ProductItem!
-  addVariationOption(addVariationOptionDTO: AddVariationOptionDTO!): VariationOption!
-  blockUser(id: Int!): User!
+  addAddress(addressInput: AddressInput!): User!
+  addCategoriesToBrand(addCategoriesToBrandInput: AddCategoriesToBrandInput!): Brand!
+  addCountry(countryInput: CountryInput!): User!
+  addItemToCart(addItemCartInput: AddItemCartInput!): [Cart!]!
+  addProductItem(addProductItemInput: AddProductItemInput!): Product!
+  addProductToFavoritesList(favoritesListInput: FavoritesListInput!): [FavoritesList!]!
+  addVariationOption(addVariationOptionInput: AddVariationOptionInput!): Product!
   createBrand(createBrandInput: CreateBrandInput!): Brand!
   createCategory(createCategoryInput: CreateCategoryInput!): Category!
   createProduct(createProductInput: CreateProductInput!): Product!
-  createReview(createReviewInput: CreateReviewInput!, productId: Float!): Review!
+  createReview(createReviewInput: CreateReviewInput!): Review!
   createUser(createUserInput: CreateUserInput!): User!
-  deleteProductItem(productItemId: Float!): ProductItem!
-  login(loginInput: LoginInput!): AuthResponse!
-  removeAddress(addressId: Int!): Address!
-  removeAllItemFromCart: [CartItem!]!
-  removeAttribute(attributeId: Int!): Attribute!
+  deleteAddress(removeAddressInput: RemoveAddressInput!): User!
+  deleteProductItem(itemId: Int!): Product!
+  emptyTheShoppingCart: [Cart!]!
+  login(loginInput: LogInInput!): AuthResponse!
+  removeAttribute(attributeId: Int!): Product!
   removeBrand(id: Int!): Brand!
   removeCategory(id: Int!): Category!
-  removeItemFromCart(itemId: Float!): CartItem!
-  removeItemFromFavoritesList(itemId: Int!): FavoritesList!
+  removeCategoryFromBrand(removeCategoryFromBrandInput: RemoveCategoryFromBrandInput!): Brand!
+  removeItemFromCart(addItemCartInput: AddItemCartInput!): [Cart!]!
   removeProduct(id: Int!): Product!
-  removeReview(id: Int!): Review!
+  removeProductFromFavoritesList(favoritesListInput: FavoritesListInput!): [FavoritesList!]!
+  removeReview(productId: Int!): Review!
   removeUser(id: Int!): User!
   singIn(singInInput: SignInInput!): AuthResponse!
-  updateAddress(addressDTO: UpdateAddressDTO!): Address!
-  updateAttribute(updateProductAttributeInput: UpdateProductAttributeDTO!): Attribute!
+  updateAddress(updateAddressInput: UpdateAddressInput!): User!
+  updateAttribute(updateProductAttributeInput: UpdateProductAttributeInput!): Product!
   updateBrand(updateBrandInput: UpdateBrandInput!): Brand!
-  updateCartItem(itemsWithQty: ItemInput!): CartItem!
+  updateCart(updateItemCartInput: UpdateItemCartInput!): [Cart!]!
   updateCategory(updateCategoryInput: UpdateCategoryInput!): Category!
   updateProduct(updateProductInput: UpdateProductInput!): Product!
-  updateProductItem(updateProductItemDTO: UpdateProductItemDTO!): ProductItem!
+  updateProductItem(updateProductItemInput: UpdateProductItemInput!): Product!
   updateReview(updateReviewInput: UpdateReviewInput!): Review!
-  updateVariation(updateVariationDTO: UpdateVariationDTO!): Variation!
-  updateVariationOption(updateVariationOptionDTO: UpdateVariationOptionDTO!): VariationOption!
+  updateVariation(updateVariationInput: UpdateVariationInput!): Product!
+  updateVariationOption(updateVariationOptionInput: UpdateVariationOptionInput!): Product!
 }
 
 type Product {
   attributes: [Attribute!]
   available: Boolean!
   averageRating: Float!
+  brand: BrandProduct!
+  category: [CategoryProduct!]
   coverImage: String!
   description: String!
   id: Int!
@@ -223,10 +235,13 @@ type Product {
   name: String!
   productItem: [ProductItem!]
   reviewCount: Int!
+  userReview: [Review!]
   variation: [Variation!]
 }
 
 input ProductFilterDTO {
+  brand: String
+  category: String
   maxPrice: Float
   minPrice: Float
   name: String
@@ -241,24 +256,37 @@ type ProductItem {
 
 type ProductType {
   coverImage: String!
-  id: Int!
+  id: Float!
   name: String!
 }
 
 type Query {
+  FavoritesList: [FavoritesList!]!
   brand(id: Int!): Brand!
+  brands: [Brand!]!
+  cart: [Cart!]!
   category(id: Int!): Category!
-  getCart: [Cart!]!
-  getFavoritesList: [FavoritesList!]!
   product(id: Int!): Product!
-  products(filters: ProductFilterDTO): [Product!]!
-  review(productId: Float!): [Review!]!
+  products(productFilterDTO: ProductFilterDTO): [Product!]!
+  user(id: Int!): User!
   users: [User!]!
 }
 
+input RemoveAddressInput {
+  addressId: Int!
+}
+
+input RemoveCategoryFromBrandInput {
+  brandId: Int!
+  categoryId: Int!
+}
+
 type Review {
+  created_at: DateTime!
+  id: Int!
   rating: Float!
   review: String!
+  userId: Int!
 }
 
 input SignInInput {
@@ -268,7 +296,7 @@ input SignInInput {
   username: String!
 }
 
-input UpdateAddressDTO {
+input UpdateAddressInput {
   address: String
   city: String
   countryId: Float
@@ -292,7 +320,12 @@ input UpdateCategoryInput {
   name: String
 }
 
-input UpdateProductAttributeDTO {
+input UpdateItemCartInput {
+  itemId: Int!
+  qty: Int!
+}
+
+input UpdateProductAttributeInput {
   attributeId: Int!
   name: String
   productId: Int!
@@ -301,6 +334,7 @@ input UpdateProductAttributeDTO {
 
 input UpdateProductInput {
   available: Boolean
+  brand: String
   coverImage: String
   description: String
   id: Int!
@@ -308,39 +342,41 @@ input UpdateProductInput {
   name: String
 }
 
-input UpdateProductItemDTO {
+input UpdateProductItemInput {
   SKU: String
   price: Float
   productId: Int!
   productItemId: Int!
   qtyInStock: Int
-  variationsItem: [UpdateVariationItemDTO!]
+  variationsItem: [UpdateVariationItemInput!]
 }
 
 input UpdateReviewInput {
-  id: Int!
+  productId: Int!
   rating: Float
   review: String
 }
 
-input UpdateVariationDTO {
+input UpdateVariationInput {
   name: String
   productId: Int!
   variationId: Int!
 }
 
-input UpdateVariationItemDTO {
+input UpdateVariationItemInput {
   nameVariation: String!
   valueVariation: String!
 }
 
-input UpdateVariationOptionDTO {
+input UpdateVariationOptionInput {
+  id: Int!
+  productId: Int!
   value: String
   variationId: Int!
-  variationOptionId: Int!
 }
 
 type User {
+  addresses: [Address!]
   email: String!
   id: Int!
   phone_number: String!
@@ -350,7 +386,7 @@ type User {
 
 type Variation {
   name: String!
-  variationOption: [VariationOption!]!
+  variationOptions: [VariationOption!]!
 }
 
 type VariationItem {

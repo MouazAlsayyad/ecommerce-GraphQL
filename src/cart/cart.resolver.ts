@@ -1,52 +1,83 @@
-import { Resolver, Mutation, Args, Context, Query } from '@nestjs/graphql';
+import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CartService } from './cart.service';
+import { Cart } from './entities/cart.entity';
+import { AddItemCartInput } from './dto/create-cart.input';
+import { ContextType } from 'src/unit/context-type';
+import { UpdateItemCartInput } from './dto/update-cart.input';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { UserType } from '@prisma/client';
-import { ItemInput } from './dto/create-cart.input';
-import { ContextType } from 'src/unit/context-type';
-import { Cart, CartItem } from './entities/cart.entity';
+import { Logger } from '@nestjs/common';
 
-@Resolver()
+@Resolver(() => Cart)
 export class CartResolver {
   constructor(private readonly cartService: CartService) {}
-  @Roles(UserType.USER)
-  @Mutation(() => [CartItem])
-  addItemsToCart(
-    @Args('itemsWithQty', { type: () => [ItemInput] })
-    itemsWithQty: ItemInput[],
+  private readonly logger = new Logger(CartResolver.name);
+
+  @Roles(UserType.USER, UserType.ADMIN)
+  @Mutation(() => [Cart])
+  addItemToCart(
+    @Args('addItemCartInput') addItemCartInput: AddItemCartInput,
     @Context() context: ContextType,
   ) {
-    return this.cartService.addItemsToCart(itemsWithQty, context);
+    try {
+      return this.cartService.addItemToCart(
+        addItemCartInput,
+        context.req.user.id,
+      );
+    } catch (e) {
+      this.logger.error(e);
+    }
   }
 
-  @Roles(UserType.USER)
-  @Mutation(() => CartItem)
-  removeItemFromCart(
-    @Args('itemId') itemId: number,
-    @Context() context: ContextType,
-  ) {
-    return this.cartService.removeItem(itemId, context);
-  }
-
-  @Roles(UserType.USER)
-  @Mutation(() => [CartItem])
-  removeAllItemFromCart(@Context() context: ContextType) {
-    return this.cartService.removeAllItem(context);
-  }
-
-  @Roles(UserType.USER)
-  @Query(() => [Cart])
+  @Roles(UserType.USER, UserType.ADMIN)
+  @Query(() => [Cart], { name: 'cart' })
   getCart(@Context() context: ContextType) {
-    return this.cartService.getCart(context);
+    try {
+      return this.cartService.getCart(context.req.user.id);
+    } catch (e) {
+      this.logger.error(e);
+    }
   }
 
-  @Roles(UserType.USER)
-  @Mutation(() => CartItem)
-  updateCartItem(
-    @Args('itemsWithQty', { type: () => ItemInput })
-    itemsWithQty: ItemInput,
+  @Roles(UserType.USER, UserType.ADMIN)
+  @Mutation(() => [Cart])
+  removeItemFromCart(
+    @Args('addItemCartInput') addItemCartInput: AddItemCartInput,
     @Context() context: ContextType,
   ) {
-    return this.cartService.updateCartItem(itemsWithQty, context);
+    try {
+      return this.cartService.removeItemFromCart(
+        addItemCartInput,
+        context.req.user.id,
+      );
+    } catch (e) {
+      this.logger.error(e);
+    }
+  }
+
+  @Roles(UserType.USER, UserType.ADMIN)
+  @Mutation(() => [Cart])
+  updateCart(
+    @Args('updateItemCartInput') updateItemCartInput: UpdateItemCartInput,
+    @Context() context: ContextType,
+  ) {
+    try {
+      return this.cartService.updateQtyOfItemCart(
+        updateItemCartInput,
+        context.req.user.id,
+      );
+    } catch (e) {
+      this.logger.error(e);
+    }
+  }
+
+  @Roles(UserType.USER, UserType.ADMIN)
+  @Mutation(() => [Cart])
+  emptyTheShoppingCart(@Context() context: ContextType) {
+    try {
+      return this.cartService.emptyTheShoppingCart(context.req.user.id);
+    } catch (e) {
+      this.logger.error(e);
+    }
   }
 }

@@ -2,98 +2,115 @@ import { Resolver, Query, Mutation, Args, Int, Context } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
 import {
-  AddressDTO,
-  CountryDTO,
+  AddressInput,
+  CountryInput,
   CreateUserInput,
 } from './dto/create-user.input';
-import { UserType } from '@prisma/client';
+import {
+  RemoveAddressInput,
+  UpdateAddressInput,
+} from './dto/update-user.input';
 import { Roles } from 'src/auth/decorators/roles.decorator';
+import { UserType } from '@prisma/client';
 import { ContextType } from 'src/unit/context-type';
-import { UpdateAddressDTO } from './dto/update-user.input';
-import { FavoritesList } from './entities/favorites-list.entity';
-import { Address, Country } from './entities/address.entity';
+import { Logger } from '@nestjs/common';
 
 @Resolver(() => User)
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
+  private readonly logger = new Logger(UserResolver.name);
   @Roles(UserType.ADMIN)
   @Mutation(() => User)
   createUser(@Args('createUserInput') createUserInput: CreateUserInput) {
-    return this.userService.create(createUserInput);
+    try {
+      return this.userService.create(createUserInput);
+    } catch (e) {
+      this.logger.error(e);
+    }
   }
 
   @Roles(UserType.ADMIN)
   @Query(() => [User], { name: 'users' })
   findAll() {
-    return this.userService.findAll();
+    try {
+      return this.userService.findAll();
+    } catch (e) {
+      this.logger.error(e);
+    }
   }
 
   @Roles(UserType.ADMIN)
-  @Mutation(() => User)
-  blockUser(@Args('id', { type: () => Int }) id: number) {
-    return this.userService.blockUser(id);
+  @Query(() => User, { name: 'user' })
+  findOne(@Args('id', { type: () => Int }) id: number) {
+    try {
+      return this.userService.findOne(id);
+    } catch (e) {
+      this.logger.error(e);
+    }
   }
 
   @Roles(UserType.ADMIN)
   @Mutation(() => User)
   removeUser(@Args('id', { type: () => Int }) id: number) {
-    return this.userService.remove(id);
-  }
-
-  @Roles(UserType.USER)
-  @Mutation(() => FavoritesList)
-  addItemToFavoritesList(
-    @Args('itemId', { type: () => Int }) itemId: number,
-    @Context() context: ContextType,
-  ) {
-    return this.userService.addItemToFavoritesList(itemId, context);
-  }
-
-  @Roles(UserType.USER)
-  @Mutation(() => FavoritesList)
-  removeItemFromFavoritesList(
-    @Args('itemId', { type: () => Int }) itemId: number,
-    @Context() context: ContextType,
-  ) {
-    return this.userService.removeItemFromFavoritesList(itemId, context);
-  }
-
-  @Roles(UserType.USER)
-  @Query(() => [FavoritesList])
-  getFavoritesList(@Context() context: ContextType) {
-    return this.userService.getFavoritesList(context);
-  }
-
-  @Roles(UserType.USER)
-  @Mutation(() => Address)
-  addAddress(
-    @Args('addressDTO') addressDTO: AddressDTO,
-    @Context() context: ContextType,
-  ) {
-    return this.userService.addAddress(context, addressDTO);
-  }
-
-  @Roles(UserType.USER)
-  @Mutation(() => Address)
-  updateAddress(
-    @Args('addressDTO') addressDTO: UpdateAddressDTO,
-    @Context() context: ContextType,
-  ) {
-    return this.userService.updateAddress(context, addressDTO);
-  }
-
-  @Roles(UserType.USER)
-  @Mutation(() => Address)
-  removeAddress(
-    @Args('addressId', { type: () => Int }) addressId: number,
-    @Context() context: ContextType,
-  ) {
-    return this.userService.removeAddress(context, addressId);
+    try {
+      return this.userService.remove(id);
+    } catch (e) {
+      this.logger.error(e);
+    }
   }
 
   @Roles(UserType.ADMIN)
-  @Mutation(() => Country)
-  addCountry(@Args('countryDTO') countryDTO: CountryDTO) {
-    return this.userService.addCountry(countryDTO);
+  @Mutation(() => User)
+  addCountry(@Args('countryInput') countryInput: CountryInput) {
+    try {
+      return this.userService.addCountry(countryInput);
+    } catch (e) {
+      this.logger.error(e);
+    }
+  }
+
+  @Roles(UserType.USER)
+  @Mutation(() => User)
+  addAddress(
+    @Args('addressInput') addressInput: AddressInput,
+    @Context() context: ContextType,
+  ) {
+    try {
+      return this.userService.addAddress(addressInput, context.req.user.id);
+    } catch (e) {
+      this.logger.error(e);
+    }
+  }
+
+  @Roles(UserType.USER)
+  @Mutation(() => User)
+  updateAddress(
+    @Args('updateAddressInput') updateAddressInput: UpdateAddressInput,
+    @Context() context: ContextType,
+  ) {
+    try {
+      return this.userService.updateAddress(
+        updateAddressInput,
+        context.req.user.id,
+      );
+    } catch (e) {
+      this.logger.error(e);
+    }
+  }
+
+  @Roles(UserType.USER)
+  @Mutation(() => User)
+  deleteAddress(
+    @Args('removeAddressInput') removeAddressInput: RemoveAddressInput,
+    @Context() context: ContextType,
+  ) {
+    try {
+      return this.userService.deleteAddress(
+        removeAddressInput,
+        context.req.user.id,
+      );
+    } catch (e) {
+      this.logger.error(e);
+    }
   }
 }

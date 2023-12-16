@@ -5,9 +5,26 @@ import {
   IsBoolean,
   IsInt,
   IsNotEmpty,
+  IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
+import { Review } from 'src/review/entities/review.entity';
+
+@ObjectType()
+export class BrandProduct {
+  @Field()
+  id: number;
+  @Field()
+  name: string;
+}
+@ObjectType()
+export class CategoryProduct {
+  @Field()
+  id: number;
+  @Field()
+  name: string;
+}
 
 @ObjectType()
 export class Product {
@@ -38,31 +55,46 @@ export class Product {
   averageRating: number;
 
   @Field(() => [String], { nullable: true })
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  image: string[] | null;
+  image?: string[] | null;
+
+  @Field(() => [CategoryProduct], { nullable: true })
+  @IsOptional()
+  @IsArray()
+  category?: CategoryProduct[] | null;
+
+  @Field(() => BrandProduct)
+  @IsOptional()
+  brand?: BrandProduct;
 
   @Field({ defaultValue: true })
   @IsBoolean()
   available: boolean;
 
   @Field(() => [Attribute], { nullable: true })
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => Attribute)
-  attributes: Attribute[] | null;
+  attributes?: Omit<Attribute, 'id'>[] | null;
 
   @Field(() => [Variation], { nullable: true })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => Variation)
-  variation: Variation[] | null;
+  variation?: Variation[] | null;
 
   @Field(() => [ProductItem], { nullable: true })
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => ProductItem)
-  productItem: ProductItem[] | null;
+  productItem?: ProductItem[] | null;
+
+  @Field(() => [Review], { nullable: true })
+  userReview?: Omit<Review, 'id'>[];
 }
 
 @ObjectType()
@@ -84,7 +116,7 @@ export class ProductItem {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => VariationOption)
-  variationsItem: VariationItem[] | null;
+  variationsItem?: VariationItem[] | null;
 }
 
 @ObjectType()
@@ -129,7 +161,7 @@ export class Variation {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => VariationOption)
-  variationOption: VariationOption[];
+  variationOptions: VariationOption[];
 }
 
 @ObjectType()

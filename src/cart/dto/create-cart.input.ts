@@ -1,10 +1,16 @@
 import { InputType, Int, Field } from '@nestjs/graphql';
+import { IsNotEmpty, IsNumber, Min } from 'class-validator';
 
 @InputType()
-export class ItemInput {
+export class AddItemCartInput {
   @Field(() => Int)
-  id: number;
+  @IsNumber()
+  @IsNotEmpty()
+  itemId: number;
 
   @Field(() => Int)
+  @IsNumber()
+  @IsNotEmpty()
+  @Min(1)
   qty: number;
 }

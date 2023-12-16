@@ -1,9 +1,19 @@
-import { ObjectType, Field } from '@nestjs/graphql';
+import { ObjectType, Field, Int, Float } from '@nestjs/graphql';
 
 @ObjectType()
 export class Review {
-  @Field()
-  rating: number;
-  @Field()
+  @Field(() => Int)
+  id: number;
+
+  @Field(() => Int)
+  userId: number;
+
+  @Field(() => String)
   review: string;
+
+  @Field(() => Float)
+  rating: number;
+
+  @Field(() => Date)
+  created_at: Date;
 }

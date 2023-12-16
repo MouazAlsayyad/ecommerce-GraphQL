@@ -24,16 +24,6 @@ export class CreateProductInput {
   @IsNotEmpty()
   description: string;
 
-  @Field()
-  @IsNotEmpty()
-  @IsString()
-  category: string;
-
-  @Field()
-  @IsNotEmpty()
-  @IsInt()
-  brandId: number;
-
   @Field({ nullable: true })
   @IsString()
   @IsNotEmpty()
@@ -49,30 +39,41 @@ export class CreateProductInput {
   @IsBoolean()
   available: boolean;
 
-  @Field(() => [CreateProductAttributeDTO], { nullable: true })
+  @Field(() => [String], { nullable: true })
   @IsOptional()
   @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => CreateProductAttributeDTO)
-  attributes?: CreateProductAttributeDTO[] | null;
+  @IsString({ each: true })
+  categories?: string[] | null;
 
-  @Field(() => [CreateVariationDTO], { nullable: true })
+  @Field({ nullable: true })
   @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => CreateVariationDTO)
-  variation?: CreateVariationDTO[] | null;
+  @IsString({ each: true })
+  brand: string;
 
-  @Field(() => [CreateProductItemDTO], { nullable: true })
+  @Field(() => [CreateProductAttributeInput], { nullable: true })
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => CreateProductItemDTO)
-  productItem?: CreateProductItemDTO[] | null;
+  @Type(() => CreateProductAttributeInput)
+  attributes?: CreateProductAttributeInput[] | null;
+
+  @Field(() => [CreateVariationInput], { nullable: true })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateVariationInput)
+  variation?: CreateVariationInput[] | null;
+
+  @Field(() => [CreateProductItemInput], { nullable: true })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateProductItemInput)
+  productItem?: CreateProductItemInput[] | null;
 }
 
 @InputType()
-export class ProductFilterDTO {
+export class ProductFilterInput {
   @Field({ nullable: true })
   name?: string;
 
@@ -84,7 +85,7 @@ export class ProductFilterDTO {
 }
 
 @InputType()
-export class CreateProductItemDTO {
+export class CreateProductItemInput {
   @Field()
   @IsString()
   @IsNotEmpty()
@@ -98,16 +99,16 @@ export class CreateProductItemDTO {
   @IsNumber()
   price: number;
 
-  @Field(() => [CreateVariationItemDTO], { nullable: true })
+  @Field(() => [CreateVariationItemInput], { nullable: true })
   @IsOptional()
   @IsArray()
   // @ValidateNested({ each: true })
-  @Type(() => CreateVariationOptionDTO)
-  variationsItem?: CreateVariationItemDTO[] | null;
+  @Type(() => CreateVariationOptionInput)
+  variationsItem?: CreateVariationItemInput[] | null;
 }
 
 @InputType()
-export class CreateVariationItemDTO {
+export class CreateVariationItemInput {
   @Field()
   @IsString()
   @IsNotEmpty()
@@ -120,7 +121,7 @@ export class CreateVariationItemDTO {
 }
 
 @InputType()
-export class CreateProductAttributeDTO {
+export class CreateProductAttributeInput {
   @Field()
   @IsString()
   @IsNotEmpty()
@@ -133,28 +134,28 @@ export class CreateProductAttributeDTO {
 }
 
 @InputType()
-export class CreateVariationDTO {
+export class CreateVariationInput {
   @Field()
   @IsString()
   @IsNotEmpty()
   name: string;
 
-  @Field(() => [CreateVariationOptionDTO])
+  @Field(() => [CreateVariationOptionInput])
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => CreateVariationOptionDTO)
-  variationOption: CreateVariationOptionDTO[];
+  @Type(() => CreateVariationOptionInput)
+  variationOption: CreateVariationOptionInput[];
 }
 
 @InputType()
-export class CreateVariationOptionDTO {
+export class CreateVariationOptionInput {
   @Field()
   @IsString()
   @IsNotEmpty()
   value: string;
 }
 
-export class AddProductAttributeDTO {
+export class AddProductAttributeInput {
   @Field(() => Int)
   @IsInt()
   @IsNotEmpty()
@@ -172,7 +173,12 @@ export class AddProductAttributeDTO {
 }
 
 @InputType()
-export class AddVariationOptionDTO {
+export class AddVariationOptionInput {
+  @Field(() => Int)
+  @IsInt()
+  @IsNotEmpty()
+  productId: number;
+
   @Field(() => Int)
   @IsInt()
   @IsNotEmpty()
@@ -185,7 +191,7 @@ export class AddVariationOptionDTO {
 }
 
 @InputType()
-export class AddProductItemDTO {
+export class AddProductItemInput {
   @Field(() => Int)
   @IsInt()
   @IsNotEmpty()
@@ -204,10 +210,37 @@ export class AddProductItemDTO {
   @IsNumber()
   price: number;
 
-  @Field(() => [CreateVariationItemDTO], { nullable: true })
+  @Field(() => [CreateVariationItemInput], { nullable: true })
   @IsOptional()
   @IsArray()
-  // @ValidateNested({ each: true })
-  @Type(() => CreateVariationOptionDTO)
-  variationsItem?: CreateVariationItemDTO[] | null;
+  @Type(() => CreateVariationOptionInput)
+  variationsItem?: CreateVariationItemInput[] | null;
+}
+export class ProductCategoryInput {
+  @Field()
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @Field(() => Int)
+  @IsInt()
+  @IsNotEmpty()
+  productId: number;
+}
+@InputType()
+export class ProductFilterDTO {
+  @Field({ nullable: true })
+  name?: string;
+
+  @Field({ nullable: true })
+  maxPrice?: number;
+
+  @Field({ nullable: true })
+  minPrice?: number;
+
+  @Field({ nullable: true })
+  category?: string;
+
+  @Field({ nullable: true })
+  brand?: string;
 }

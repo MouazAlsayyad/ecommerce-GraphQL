@@ -27,7 +27,7 @@ model User {
   email         String          @unique
   password      String
   phone_number  String          @unique
-  isBlock       Boolean
+  isBlock       Boolean         @default(false)
   user_type     UserType
   created_at    DateTime        @default(now())
   updated_at    DateTime        @updatedAt
@@ -51,10 +51,10 @@ model UserReview {
 model FavoritesList {
   userId Int
   user   User        @relation(fields: [userId], references: [id])
-  itemId Int
-  item   ProductItem @relation(fields: [itemId], references: [id])
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
 
-  @@id([userId, itemId])
+  @@id([userId, productId])
 }
 
 model Cart {
@@ -120,6 +120,7 @@ model Product {
   available        Boolean
   brandId          Int?
   brand            Brand?              @relation(fields: [brandId], references: [id])
+  favouritesList       FavoritesList[]
   image            String[]
   attributes       ProductAttribute[]
   variation        Variation[]
@@ -139,7 +140,6 @@ model ProductItem {
   productId            Int
   product              Product                @relation(fields: [productId], references: [id])
   productConfiguration ProductConfiguration[]
-  favouritesList       FavoritesList[]
   cartItems            CartItems[]
 }
 

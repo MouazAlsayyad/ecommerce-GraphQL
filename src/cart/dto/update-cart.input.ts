@@ -1,8 +1,16 @@
-// import { CreateCartInput } from './create-cart.input';
-// import { InputType, Field, Int, PartialType } from '@nestjs/graphql';
+import { Field, InputType, Int } from '@nestjs/graphql';
+import { IsNotEmpty, IsNumber, Min } from 'class-validator';
 
-// @InputType()
-// export class UpdateCartInput extends PartialType(CreateCartInput) {
-//   @Field(() => Int)
-//   id: number;
-// }
+@InputType()
+export class UpdateItemCartInput {
+  @Field(() => Int)
+  @IsNumber()
+  @IsNotEmpty()
+  itemId: number;
+
+  @Field(() => Int)
+  @IsNumber()
+  @IsNotEmpty()
+  @Min(0)
+  qty: number;
+}

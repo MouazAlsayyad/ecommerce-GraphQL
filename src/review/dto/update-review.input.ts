@@ -1,12 +1,39 @@
-import { IsNotEmpty, IsNumber, Min } from 'class-validator';
-import { CreateReviewInput } from './create-review.input';
-import { InputType, Field, Int, PartialType } from '@nestjs/graphql';
+import {
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { InputType, Field, Int } from '@nestjs/graphql';
 
 @InputType()
-export class UpdateReviewInput extends PartialType(CreateReviewInput) {
+export class UpdateReviewInput {
   @Field(() => Int)
-  @IsNumber()
+  @IsInt()
   @IsNotEmpty()
-  @Min(1)
-  id: number;
+  productId: number;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsNumber()
+  rating?: number;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  review?: string;
+}
+
+@InputType()
+export class DeleteReviewInput {
+  @Field(() => Int)
+  @IsInt()
+  @IsNotEmpty()
+  productId: number;
+
+  @Field(() => Int)
+  @IsInt()
+  @IsNotEmpty()
+  userId: number;
 }

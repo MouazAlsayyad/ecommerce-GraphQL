@@ -1,21 +1,20 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { Category } from 'src/category/entities/category.entity';
 
 @ObjectType()
 export class Brand {
   @Field(() => Int)
   id: number;
 
-  @Field()
-  @IsString()
-  @IsNotEmpty()
+  @Field(() => String)
   name: string;
 
-  @Field({ nullable: true })
-  @IsString()
+  @Field(() => String)
   description: string;
 
-  @Field({ nullable: true })
-  @IsString()
+  @Field(() => String)
   image: string;
+
+  @Field(() => [Category])
+  category?: Category[];
 }

@@ -5,6 +5,9 @@ import { IsNumber, IsString, Max, Min } from 'class-validator';
 export class CreateReviewInput {
   @Field()
   @IsNumber()
+  productId: number;
+  @Field()
+  @IsNumber()
   @Min(1)
   @Max(5)
   rating: number;

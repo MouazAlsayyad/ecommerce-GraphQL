@@ -40,7 +40,4 @@ export class AuthUser {
 export class AuthResponse {
   @Field(() => String)
   token: string;
-
-  @Field(() => AuthUser)
-  user: AuthUser;
 }

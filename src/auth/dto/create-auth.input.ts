@@ -25,7 +25,7 @@ export class SignInInput {
 }
 
 @InputType()
-export class LoginInput {
+export class LogInInput {
   @Field()
   @IsEmail()
   @IsNotEmpty()

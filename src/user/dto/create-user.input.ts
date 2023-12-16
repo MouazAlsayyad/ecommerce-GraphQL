@@ -37,7 +37,7 @@ export class CreateUserInput {
 }
 
 @InputType()
-export class AddressDTO {
+export class AddressInput {
   @Field(() => Int)
   @IsNumber()
   @IsNotEmpty()
@@ -70,7 +70,7 @@ export class AddressDTO {
 }
 
 @InputType()
-export class CountryDTO {
+export class CountryInput {
   @Field()
   @IsString()
   @IsNotEmpty()
