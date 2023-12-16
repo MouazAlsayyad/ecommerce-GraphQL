@@ -24,6 +24,16 @@ export class CreateProductInput {
   @IsNotEmpty()
   description: string;
 
+  @Field()
+  @IsNotEmpty()
+  @IsString()
+  category: string;
+
+  @Field()
+  @IsNotEmpty()
+  @IsInt()
+  brandId: number;
+
   @Field({ nullable: true })
   @IsString()
   @IsNotEmpty()

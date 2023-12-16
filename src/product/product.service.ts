@@ -3,6 +3,7 @@ import {
   ConflictException,
   Injectable,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import {
   AddProductAttributeDTO,
@@ -37,6 +38,7 @@ import {
   variationsExist,
 } from './product-service-utils';
 import { CustomNotFoundException } from 'src/unit/not-found.exception';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class ProductService {
@@ -46,14 +48,23 @@ export class ProductService {
 
   create(createProductInput: CreateProductInput) {
     return this.prisma.$transaction(async (tx) => {
-      // if(createProductInput?.coverImage)
-      //   await checkImage(createProductInput.coverImage,tx)
+      await this.checkBrand(createProductInput.brandId, tx);
+      const category = await this.checkCategory(
+        createProductInput.category,
+        tx,
+      );
       const product = await tx.product.create({
         data: {
           name: createProductInput.name,
           coverImage: createProductInput.coverImage,
           description: createProductInput.description,
           available: createProductInput.available,
+        },
+      });
+      await tx.product_Category.create({
+        data: {
+          categoryId: category.id,
+          productId: product.id,
         },
       });
       if (createProductInput.attributes)
@@ -104,6 +115,23 @@ export class ProductService {
         },
       });
     });
+  }
+
+  checkCategory(categoryName: string, tx: Prisma.TransactionClient) {
+    const categoryExist = tx.category.findFirst({
+      where: { name: categoryName },
+    });
+    if (!categoryExist)
+      throw new NotFoundException(
+        `category with name ${categoryName} not found`,
+      );
+    return categoryExist;
+  }
+
+  async checkBrand(id: number, tx: Prisma.TransactionClient) {
+    const brand = await tx.brand.findUnique({ where: { id } });
+    if (!brand) throw new NotFoundException(`brand with Id ${id} not found`);
+    return brand;
   }
 
   findAll(filters: ProductFilterDTO) {

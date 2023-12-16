@@ -12,7 +12,7 @@ export class CartService {
 
   private readonly logger = new Logger(CartService.name);
 
-  async addItemToCart(
+  private async addItemToCart(
     tx: Prisma.TransactionClient,
     cartId: number,
     itemId: number,

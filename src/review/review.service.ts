@@ -8,7 +8,7 @@ import { CreateReviewInput } from './dto/create-review.input';
 import { UpdateReviewInput } from './dto/update-review.input';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ContextType } from 'src/unit/context-type';
-import { Prisma, UserType } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { ForbiddenError } from '@nestjs/apollo';
 
 @Injectable()

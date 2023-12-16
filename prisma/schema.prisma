@@ -9,179 +9,202 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 enum UserType {
   USER
   SELLER
   ADMIN
 }
 
-enum FileType{
+enum FileType {
   Image
   Video
 }
 
 model User {
-  id                Int        @id @default(autoincrement())
-  username          String     @unique
-  email             String     @unique
-  password          String
-  phone_number      String     @unique
-  isBlock           Boolean
-  user_type         UserType
-  created_at        DateTime   @default(now())
-  updated_at        DateTime   @updatedAt
-  cart              Cart?
-  favoritesList     FavoritesList[]
-  addresses         Address[]
-  userReview        UserReview[]
+  id            Int             @id @default(autoincrement())
+  username      String          @unique
+  email         String          @unique
+  password      String
+  phone_number  String          @unique
+  isBlock       Boolean
+  user_type     UserType
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @updatedAt
+  cart          Cart?
+  favoritesList FavoritesList[]
+  addresses     Address[]
+  userReview    UserReview[]
 }
 
-model UserReview{
-  id                Int          @id @default(autoincrement())
-  review            String
-  rating            Float
-  userId            Int
-  productId         Int
-  user              User            @relation(fields: [userId], references: [id])
-  product           Product         @relation(fields: [productId], references: [id])
-  created_at        DateTime       @default(now())
+model UserReview {
+  id         Int      @id @default(autoincrement())
+  review     String
+  rating     Float
+  userId     Int
+  productId  Int
+  user       User     @relation(fields: [userId], references: [id])
+  product    Product  @relation(fields: [productId], references: [id])
+  created_at DateTime @default(now())
 }
 
-model FavoritesList{
-  userId            Int          
-  user              User         @relation(fields: [userId],references: [id])  
-  itemId            Int
-  item              ProductItem  @relation(fields: [itemId],references: [id])
-  @@id([userId,itemId])
+model FavoritesList {
+  userId Int
+  user   User        @relation(fields: [userId], references: [id])
+  itemId Int
+  item   ProductItem @relation(fields: [itemId], references: [id])
+
+  @@id([userId, itemId])
 }
 
-model Cart{
-  id                Int        @id @default(autoincrement())
-  user              User @relation(fields: [userId], references: [id])
-  userId            Int  @unique
-  cartItems         CartItems[]
+model Cart {
+  id        Int         @id @default(autoincrement())
+  user      User        @relation(fields: [userId], references: [id])
+  userId    Int         @unique
+  cartItems CartItems[]
 }
 
-model CartItems{
-  productId         Int
-  itemId            Int
-  cartId            Int
-  qty               Int
-  cart              Cart         @relation(fields: [cartId],references: [id])  
-  item              ProductItem  @relation(fields: [itemId],references: [id])
-  product           Product  @relation(fields: [productId],references: [id])
-  @@id([cartId,itemId])
+model CartItems {
+  productId Int
+  itemId    Int
+  cartId    Int
+  qty       Int
+  cart      Cart        @relation(fields: [cartId], references: [id])
+  item      ProductItem @relation(fields: [itemId], references: [id])
+  product   Product     @relation(fields: [productId], references: [id])
+
+  @@id([cartId, itemId])
 }
 
-
-
-model Country{
-  id                Int        @id @default(autoincrement())
-  country_name      String
-  addresses         Address[]
+model Country {
+  id           Int       @id @default(autoincrement())
+  country_name String
+  addresses    Address[]
 }
 
-
-model Address{
-  id                Int        @id @default(autoincrement())
-  userId            Int
-  countryId         Int
-  street_number     String
-  address           String
-  city              String
-  region            String
-  postal_code       String
-  user              User        @relation(fields: [userId], references: [id])
-  country           Country     @relation(fields: [countryId], references: [id])
+model Address {
+  id            Int     @id @default(autoincrement())
+  userId        Int
+  countryId     Int
+  street_number String
+  address       String
+  city          String
+  region        String
+  postal_code   String
+  user          User    @relation(fields: [userId], references: [id])
+  country       Country @relation(fields: [countryId], references: [id])
 }
 
-
-
-model Variation{
-  id                Int        @id @default(autoincrement())
-  name               String
-  productId             Int
-  product               Product           @relation(fields: [productId], references: [id])
-  variationOptions  VariationOption[]
+model Variation {
+  id                   Int                    @id @default(autoincrement())
+  name                 String
+  productId            Int
+  product              Product                @relation(fields: [productId], references: [id])
+  variationOptions     VariationOption[]
   productConfiguration ProductConfiguration[]
 }
 
-model VariationOption{
-  id                Int        @id @default(autoincrement())
-  value             String
+model VariationOption {
+  id                   Int                    @id @default(autoincrement())
+  value                String
+  variationId          Int
+  variation            Variation              @relation(fields: [variationId], references: [id])
+  productConfiguration ProductConfiguration[]
+}
+
+model Product {
+  id               Int                @id @default(autoincrement())
+  name             String
+  description      String
+  coverImage       String
+  available        Boolean
+  brandId          Int?
+  brand            Brand?              @relation(fields: [brandId], references: [id])
+  image            String[]
+  attributes       ProductAttribute[]
+  variation        Variation[]
+  productItem      ProductItem[]
+  userReview       UserReview[]
+  cartItems        CartItems[]
+  product_category Product_Category[]
+  averageRating    Float?             @default(0)
+  reviewCount      Int?               @default(0)
+}
+
+model ProductItem {
+  id                   Int                    @id @default(autoincrement())
+  SKU                  String
+  qtyInStock           Int
+  price                Float
+  productId            Int
+  product              Product                @relation(fields: [productId], references: [id])
+  productConfiguration ProductConfiguration[]
+  favouritesList       FavoritesList[]
+  cartItems            CartItems[]
+}
+
+model ProductConfiguration {
+  productItemId     Int
   variationId       Int
-  variation         Variation   @relation(fields: [variationId],references: [id])
-  productConfiguration ProductConfiguration[]
+  variationOptionId Int
+  variationOption   VariationOption @relation(fields: [variationOptionId], references: [id])
+  productItem       ProductItem     @relation(fields: [productItemId], references: [id])
+  variation         Variation       @relation(fields: [variationId], references: [id])
+
+  @@id([productItemId, variationId])
 }
-
-model Product{
-  id                Int         @id @default(autoincrement())
-  name              String      
-  description       String
-  coverImage        String
-  available         Boolean
-  image             String[]
-  attributes        ProductAttribute[]
-  variation         Variation[]
-  productItem       ProductItem[]
-  userReview        UserReview[]
-  cartItems         CartItems[]
-  averageRating     Float?         @default(0)
-  reviewCount       Int?           @default(0)
-}
-
-model ProductItem{
-  id                       Int                       @id @default(autoincrement())
-  SKU                      String
-  qtyInStock               Int
-  price                    Float
-  productId                Int
-  product                  Product                  @relation(fields: [productId],references: [id])
-  productConfiguration     ProductConfiguration[]
-  favouritesList           FavoritesList[]
-  cartItems                CartItems[]
-}
-
-model ProductConfiguration{
-  productItemId             Int
-  variationId               Int
-  variationOptionId         Int
-  variationOption           VariationOption @relation(fields: [variationOptionId],references: [id])
-  productItem               ProductItem @relation(fields: [productItemId],references: [id])
-  variation                 Variation   @relation(fields: [variationId],references: [id])
-
-  @@id([productItemId,variationId])
-}
-
 
 model ProductAttribute {
-  id                      Int                     @id @default(autoincrement())
-  productId               Int
-  name                    String
-  value                   String
-  product                 Product                 @relation(fields: [productId], references: [id])
+  id        Int     @id @default(autoincrement())
+  productId Int
+  name      String
+  value     String
+  product   Product @relation(fields: [productId], references: [id])
 }
 
 model Media {
-  id                      Int      @id @default(autoincrement())
-  filename                String
-  fileType                FileType
-  path                    String
-  createdAt               DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  filename  String
+  fileType  FileType
+  path      String
+  createdAt DateTime @default(now())
 }
 
+model Category {
+  id               Int                @id @default(autoincrement())
+  name             String
+  description      String?
+  image            String?
+  parentId         Int?
+  parent           Category?          @relation("Subcategories", fields: [parentId], references: [id])
+  subcategories    Category[]         @relation("Subcategories")
+  brand_category   Brand_Category[]
+  product_category Product_Category[]
+}
 
+model Brand {
+  id             Int              @id @default(autoincrement())
+  name           String
+  description    String?
+  image          String?
+  brand_category Brand_Category[]
+  product        Product[]
+}
 
+model Brand_Category {
+  brandId    Int
+  categoryId Int
+  brand      Brand    @relation(fields: [brandId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id])
 
-// model Category {
-//   id                Int       @id @default(autoincrement())
-//   name              String
-//   description       String?
-//   image             String?
-//   parentId          Int?
-//   parent            Category? @relation("Subcategories", fields: [parentId], references: [id])
-//   subcategories     Category[] @relation("Subcategories")
-//   products          Product[]
-//   variations        Variation[]
-// }
+  @@id([brandId, categoryId])
+}
 
+model Product_Category {
+  categoryId   Int
+  productId Int
+  category  Category @relation(fields: [categoryId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+
+  @@id([categoryId, productId])
+}
