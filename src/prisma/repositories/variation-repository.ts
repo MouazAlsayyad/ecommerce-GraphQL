@@ -13,11 +13,10 @@ import {
   UpdateVariationOptionDTO,
   VariationEntity,
   VariationOptionEntity,
-  VariationRepository,
 } from 'lib/types/src';
 
 @Injectable()
-export class PrismaVariationRepository implements VariationRepository {
+export class PrismaVariationRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async insertVariation(data: CreateVariationDTO): Promise<VariationEntity> {

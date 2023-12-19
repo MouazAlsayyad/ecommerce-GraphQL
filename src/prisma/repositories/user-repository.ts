@@ -15,12 +15,11 @@ import {
   CreateUserDTO,
   UpdateAddressDTO,
   UserEntity,
-  UserRepository,
 } from 'lib/types/src';
 import { PrismaService } from '../prisma.service';
 
 @Injectable()
-export class PrismaUserRepository implements UserRepository {
+export class PrismaUserRepository {
   constructor(private readonly prisma: PrismaService) {}
   create(data: CreateUserDTO): Promise<UserEntity> {
     return this.prisma.$transaction(async (tx) => {

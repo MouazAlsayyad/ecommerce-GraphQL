@@ -1,47 +1,35 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaCartRepository } from 'src/prisma/repositories';
 import { AddItemCartInput } from './dto/create-cart.input';
-import {
-  AddItemToCartUseCase,
-  EmptyTheShoppingCartUseCase,
-  GetCartUseCase,
-  RemoveItemFromCartUseCase,
-  UpdateQtyOfItemCartUseCase,
-} from './usecase';
+
 import { UpdateItemCartInput } from './dto/update-cart.input';
+import { Cart } from './entities/cart.entity';
 
 @Injectable()
 export class CartService {
   constructor(private cartRepository: PrismaCartRepository) {}
 
-  addItemToCart(data: AddItemCartInput, userId: number) {
-    const addItemToCartUseCase = new AddItemToCartUseCase(this.cartRepository);
-    return addItemToCartUseCase.execute({ ...data, userId });
+  async addItemToCart(data: AddItemCartInput, userId: number): Promise<Cart[]> {
+    await this.cartRepository.addItemToCart({ ...data, userId });
+    return this.cartRepository.getCart(userId);
   }
 
-  getCart(userId: number) {
-    const getCartUseCase = new GetCartUseCase(this.cartRepository);
-    return getCartUseCase.execute(userId);
+  getCart(userId: number): Promise<Cart[]> {
+    return this.cartRepository.getCart(userId);
   }
 
-  emptyTheShoppingCart(userId: number) {
-    const emptyTheShoppingCartUseCase = new EmptyTheShoppingCartUseCase(
-      this.cartRepository,
-    );
-    return emptyTheShoppingCartUseCase.execute(userId);
+  async emptyTheShoppingCart(userId: number) {
+    await this.cartRepository.removeAllItemFromCart(userId);
+    return this.cartRepository.getCart(userId);
   }
 
-  removeItemFromCart(data: AddItemCartInput, userId: number) {
-    const removeItemFromCartUseCase = new RemoveItemFromCartUseCase(
-      this.cartRepository,
-    );
-    return removeItemFromCartUseCase.execute({ ...data, userId });
+  async removeItemFromCart(data: AddItemCartInput, userId: number) {
+    await this.cartRepository.removeItem({ ...data, userId });
+    return this.cartRepository.getCart(userId);
   }
 
-  updateQtyOfItemCart(data: UpdateItemCartInput, userId: number) {
-    const updateQtyOfItemCartUseCase = new UpdateQtyOfItemCartUseCase(
-      this.cartRepository,
-    );
-    return updateQtyOfItemCartUseCase.execute({ ...data, userId });
+  async updateQtyOfItemCart(data: UpdateItemCartInput, userId: number) {
+    await this.cartRepository.updateCartItem({ ...data, userId });
+    return this.cartRepository.getCart(userId);
   }
 }

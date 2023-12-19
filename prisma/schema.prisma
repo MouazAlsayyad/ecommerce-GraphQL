@@ -120,7 +120,7 @@ model Product {
   available        Boolean
   brandId          Int?
   brand            Brand?              @relation(fields: [brandId], references: [id])
-  favouritesList       FavoritesList[]
+  favouritesList   FavoritesList[]
   image            String[]
   attributes       ProductAttribute[]
   variation        Variation[]
@@ -172,7 +172,7 @@ model Media {
 
 model Category {
   id               Int                @id @default(autoincrement())
-  name             String
+  name             String             @unique
   description      String?
   image            String?
   parentId         Int?
@@ -184,7 +184,7 @@ model Category {
 
 model Brand {
   id             Int              @id @default(autoincrement())
-  name           String
+  name           String           @unique
   description    String?
   image          String?
   brand_category Brand_Category[]

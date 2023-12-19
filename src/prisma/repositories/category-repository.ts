@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   CategoryEntity,
-  CategoryRepository,
   CreateCategoryDTO,
   UpdateCategoryDTO,
 } from 'lib/types/src';
@@ -12,7 +11,7 @@ import {
   mapCategory,
 } from '../utils/category-service-utils';
 @Injectable()
-export class PrismaCategoryRepository implements CategoryRepository {
+export class PrismaCategoryRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(data: CreateCategoryDTO): Promise<CategoryEntity> {

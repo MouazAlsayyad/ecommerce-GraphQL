@@ -2,11 +2,11 @@ import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
 import { ProductService } from './product.service';
 import { Product } from './entities/product.entity';
 import {
+  AddProductAttributeInput,
   AddProductItemInput,
-  // AddProductAttributeInput,
   AddVariationOptionInput,
   CreateProductInput,
-  // ProductCategoryInput,
+  ProductCategoryInput,
   ProductFilterDTO,
 } from './dto/create-product.input';
 import {
@@ -116,13 +116,13 @@ export class ProductResolver {
     }
   }
 
-  // @Mutation(() => Product)
-  // addAttribute(
-  //   @Args('addProductAttributeInput')
-  //   addProductAttributeInput: AddProductAttributeInput,
-  // ) {
-  //   return this.productService.addAttribute(addProductAttributeInput);
-  // }
+  @Mutation(() => Product)
+  addAttribute(
+    @Args('addProductAttributeInput')
+    addProductAttributeInput: AddProductAttributeInput,
+  ) {
+    return this.productService.addAttribute(addProductAttributeInput);
+  }
 
   @Roles(UserType.ADMIN)
   @Mutation(() => Product)
@@ -190,21 +190,21 @@ export class ProductResolver {
     }
   }
 
-  // @Roles(UserType.ADMIN)
-  // @Mutation(() => Product)
-  // addCategoryToProduct(
-  //   @Args('productCategoryInput')
-  //   productCategoryInput: ProductCategoryInput,
-  // ) {
-  //   return this.productService.addCategoryToProduct(productCategoryInput);
-  // }
+  @Roles(UserType.ADMIN)
+  @Mutation(() => Product)
+  addCategoryToProduct(
+    @Args('productCategoryInput')
+    productCategoryInput: ProductCategoryInput,
+  ) {
+    return this.productService.addCategoryToProduct(productCategoryInput);
+  }
 
-  // @Roles(UserType.ADMIN)
-  // @Mutation(() => Product)
-  // removeCategoryFromProduct(
-  //   @Args('productCategoryInput')
-  //   productCategoryInput: ProductCategoryInput,
-  // ) {
-  //   return this.productService.removeCategoryFromProduct(productCategoryInput);
-  // }
+  @Roles(UserType.ADMIN)
+  @Mutation(() => Product)
+  removeCategoryFromProduct(
+    @Args('productCategoryInput')
+    productCategoryInput: ProductCategoryInput,
+  ) {
+    return this.productService.removeCategoryFromProduct(productCategoryInput);
+  }
 }

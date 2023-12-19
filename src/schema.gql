@@ -12,6 +12,12 @@ input AddItemCartInput {
   qty: Int!
 }
 
+input AddProductAttributeInput {
+  name: String!
+  productId: Int!
+  value: String!
+}
+
 input AddProductItemInput {
   SKU: String!
   price: Float!
@@ -185,7 +191,9 @@ input LogInInput {
 
 type Mutation {
   addAddress(addressInput: AddressInput!): User!
+  addAttribute(addProductAttributeInput: AddProductAttributeInput!): Product!
   addCategoriesToBrand(addCategoriesToBrandInput: AddCategoriesToBrandInput!): Brand!
+  addCategoryToProduct(productCategoryInput: ProductCategoryInput!): Product!
   addCountry(countryInput: CountryInput!): User!
   addItemToCart(addItemCartInput: AddItemCartInput!): [Cart!]!
   addProductItem(addProductItemInput: AddProductItemInput!): Product!
@@ -204,6 +212,7 @@ type Mutation {
   removeBrand(id: Int!): Brand!
   removeCategory(id: Int!): Category!
   removeCategoryFromBrand(removeCategoryFromBrandInput: RemoveCategoryFromBrandInput!): Brand!
+  removeCategoryFromProduct(productCategoryInput: ProductCategoryInput!): Product!
   removeItemFromCart(addItemCartInput: AddItemCartInput!): [Cart!]!
   removeProduct(id: Int!): Product!
   removeProductFromFavoritesList(favoritesListInput: FavoritesListInput!): [FavoritesList!]!
@@ -237,6 +246,11 @@ type Product {
   reviewCount: Int!
   userReview: [Review!]
   variation: [Variation!]
+}
+
+input ProductCategoryInput {
+  name: String!
+  productId: Int!
 }
 
 input ProductFilterDTO {

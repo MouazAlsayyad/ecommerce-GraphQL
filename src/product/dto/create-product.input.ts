@@ -154,7 +154,7 @@ export class CreateVariationOptionInput {
   @IsNotEmpty()
   value: string;
 }
-
+@InputType()
 export class AddProductAttributeInput {
   @Field(() => Int)
   @IsInt()
@@ -216,6 +216,8 @@ export class AddProductItemInput {
   @Type(() => CreateVariationOptionInput)
   variationsItem?: CreateVariationItemInput[] | null;
 }
+
+@InputType()
 export class ProductCategoryInput {
   @Field()
   @IsString()

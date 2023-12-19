@@ -4,26 +4,23 @@ import { PrismaService } from '../prisma.service';
 import {
   AddCategoriesToBrandDTO,
   BrandEntity,
-  BrandRepository,
   CreateBrandDTO,
   RemoveCategoryFromBrandDTO,
   UpdateBrandDTO,
 } from 'lib/types/src';
 import {
   addCategory,
-  checkBrand,
   checkCategory,
   mapBrand,
 } from '../utils/brand-service-utils';
 
 @Injectable()
-export class PrismaBrandRepository implements BrandRepository {
+export class PrismaBrandRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async createBrand(data: CreateBrandDTO): Promise<BrandEntity> {
     const id = await this.prisma.$transaction(async (tx) => {
       const { name, description = null, image = null } = data;
-      await checkBrand(name, tx);
 
       const { id } = await tx.brand.create({
         data: { name, description, image },
@@ -32,6 +29,7 @@ export class PrismaBrandRepository implements BrandRepository {
     });
     return this.getBrandById(id);
   }
+
   async findAll(): Promise<BrandEntity[]> {
     const brands = await this.prisma.brand.findMany({ select: { id: true } });
     return Promise.all(
@@ -63,7 +61,6 @@ export class PrismaBrandRepository implements BrandRepository {
   async update(data: UpdateBrandDTO): Promise<BrandEntity> {
     const id = await this.prisma.$transaction(async (tx) => {
       const { id, name = null, description = null, image = null } = data;
-      await checkBrand(name, tx);
       const brand = await tx.brand.update({
         where: { id },
         data: { name, description, image },
@@ -80,12 +77,10 @@ export class PrismaBrandRepository implements BrandRepository {
 
   remove(id: number): Promise<void> {
     return this.prisma.$transaction(async (tx) => {
-      const brand = await tx.brand.findUnique({ where: { id } });
-      if (!brand)
-        throw new NotFoundException(`brand with this ${id} not found`);
       await tx.brand.delete({ where: { id } });
     });
   }
+
   async removeCategory(
     removeCategoryToBrandDTO: RemoveCategoryFromBrandDTO,
   ): Promise<void> {

@@ -3,16 +3,12 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import {
-  FavoritesListEntity,
-  FavoritesListRepository,
-  FavoritesListDTO,
-} from 'lib/types/src';
+import { FavoritesListEntity, FavoritesListDTO } from 'lib/types/src';
 import { PrismaService } from '../prisma.service';
 import { getProductFromFavoritesList } from '../utils/favorites-list-service-utils';
 
 @Injectable()
-export class PrismaFavoritesListRepository implements FavoritesListRepository {
+export class PrismaFavoritesListRepository {
   constructor(private readonly prisma: PrismaService) {}
   addItemToFavoritesList(data: FavoritesListDTO): Promise<void> {
     return this.prisma.$transaction(async (tx) => {

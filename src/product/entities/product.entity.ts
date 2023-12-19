@@ -25,7 +25,8 @@ export class CategoryProduct {
   @Field()
   name: string;
 }
-
+@ObjectType()
+export class VoidType {}
 @ObjectType()
 export class Product {
   @Field(() => Int)

@@ -9,18 +9,17 @@ import {
   RemoveReviewDTO,
   ReviewDTO,
   ReviewEntity,
-  ReviewRepository,
   UpdateReviewDTO,
 } from 'lib/types/src';
 
 import {
-  checkProductExixt,
+  checkProductExit,
   updateProductReviewInfo,
 } from '../utils/review-service-utils';
 import { ForbiddenError } from '@nestjs/apollo';
 
 @Injectable()
-export class PrismaReviewRepository implements ReviewRepository {
+export class PrismaReviewRepository {
   constructor(private readonly prisma: PrismaService) {}
   getReview(data: ReviewDTO): Promise<ReviewEntity> {
     const { productId, userId } = data;
@@ -41,7 +40,7 @@ export class PrismaReviewRepository implements ReviewRepository {
   addReview(data: CreateReviewDTO): Promise<ReviewEntity> {
     return this.prisma.$transaction(async (tx) => {
       const { rating, review, productId, userId } = data;
-      await checkProductExixt(productId, tx);
+      await checkProductExit(productId, tx);
       const userReview = await tx.userReview.findFirst({
         where: { AND: [{ userId }, { productId }] },
       });

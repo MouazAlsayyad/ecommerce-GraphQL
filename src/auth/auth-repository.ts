@@ -1,22 +1,20 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-
-import { PrismaService } from '../prisma.service';
 import { JwtService } from '@nestjs/jwt';
-import { LoginDTO, SignInDTO } from 'lib/types/src';
-import { checkExistingUserFields } from '../utils/user-service-utils';
 import * as bcryptjs from 'bcryptjs';
-import { AuthEntity } from 'lib/types/src/entities/auth-entity.interface';
-
+import { PrismaService } from 'src/prisma/prisma.service';
+import { LogInInput, SignInInput } from './dto/create-auth.input';
+import { AuthResponse } from './entities/auth.entity';
+import { getJwtToken } from './utils/create-jwt-token';
 @Injectable()
 export class PrismaAuthRepository {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
   ) {}
-  singIn(data: SignInDTO): Promise<AuthEntity> {
+
+  singIn(data: SignInInput): Promise<AuthResponse> {
     const { email, username, phone_number, password } = data;
     return this.prisma.$transaction(async (tx) => {
-      await checkExistingUserFields(email, username, phone_number, tx);
       const user = await tx.user.create({
         data: {
           email,
@@ -27,11 +25,12 @@ export class PrismaAuthRepository {
         },
       });
 
-      const token = await this.getJwtToken(user.id);
+      const token = await getJwtToken(this.jwtService, user.id);
       return { token };
     });
   }
-  async login(data: LoginDTO): Promise<AuthEntity> {
+
+  async login(data: LogInInput): Promise<AuthResponse> {
     const { email, password } = data;
     const user = await this.prisma.user.findUnique({ where: { email } });
 
@@ -39,16 +38,7 @@ export class PrismaAuthRepository {
       throw new BadRequestException('Invalid credentials');
 
     if (user.isBlock) throw new BadRequestException('this email is "Block"');
-    const token = await this.getJwtToken(user.id);
+    const token = await getJwtToken(this.jwtService, user.id);
     return { token };
-  }
-
-  private getJwtToken(id: number): Promise<string> {
-    return this.jwtService.signAsync(
-      { id },
-      {
-        secret: process.env.JSON_TOKEN_KEY,
-      },
-    );
   }
 }

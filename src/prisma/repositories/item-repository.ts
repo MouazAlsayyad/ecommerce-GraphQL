@@ -2,7 +2,6 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   CreateProductItemDTO,
   ProductItemEntity,
-  ProductItemRepository,
   UpdateProductItemDTO,
 } from 'lib/types/src';
 import { PrismaService } from '../prisma.service';
@@ -15,7 +14,7 @@ import {
 } from '../utils/Item-service-uils';
 import { checkVariationsItemLength } from '../utils/product-service-uils';
 @Injectable()
-export class PrismaProductItemRepository implements ProductItemRepository {
+export class PrismaProductItemRepository {
   constructor(private readonly prisma: PrismaService) {}
   addProductItem(data: CreateProductItemDTO): Promise<ProductItemEntity> {
     return this.prisma.$transaction(async (prisma) => {

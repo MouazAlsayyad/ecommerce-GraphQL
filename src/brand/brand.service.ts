@@ -5,15 +5,6 @@ import {
   RemoveCategoryFromBrandInput,
 } from './dto/create-brand.input';
 import { UpdateBrandInput } from './dto/update-brand.input';
-import {
-  AddCategoriesToBrandUseCase,
-  CreateBrandUseCase,
-  DeleteBrandUseCase,
-  GetBrandUseCase,
-  GetBrandsUseCase,
-  RemoveCategoryFromBrandUseCase,
-  UpdateBrandUseCase,
-} from './usecase';
 import { PrismaBrandRepository } from 'src/prisma/repositories';
 
 @Injectable()
@@ -21,41 +12,32 @@ export class BrandService {
   constructor(private brandRepository: PrismaBrandRepository) {}
 
   create(data: CreateBrandInput) {
-    const createBrandUseCase = new CreateBrandUseCase(this.brandRepository);
-    return createBrandUseCase.execute(data);
+    return this.brandRepository.createBrand(data);
   }
 
   findAll() {
-    const getBrandsUseCase = new GetBrandsUseCase(this.brandRepository);
-    return getBrandsUseCase.execute();
+    return this.brandRepository.findAll();
   }
 
   findOne(id: number) {
-    const getBrandUseCase = new GetBrandUseCase(this.brandRepository);
-    return getBrandUseCase.execute(id);
+    return this.brandRepository.getBrandById(id);
   }
 
   update(data: UpdateBrandInput) {
-    const updateBrandUseCase = new UpdateBrandUseCase(this.brandRepository);
-    return updateBrandUseCase.execute(data);
+    return this.brandRepository.update(data);
   }
 
-  remove(id: number) {
-    const deleteBrandUseCase = new DeleteBrandUseCase(this.brandRepository);
-    return deleteBrandUseCase.execute(id);
+  async remove(id: number) {
+    const brand = await this.brandRepository.getBrandById(id);
+    await this.brandRepository.remove(id);
+    return brand;
   }
 
   addCategoriesToBrand(data: AddCategoriesToBrandInput) {
-    const addCategoriesToBrandUseCase = new AddCategoriesToBrandUseCase(
-      this.brandRepository,
-    );
-    return addCategoriesToBrandUseCase.execute(data);
+    return this.brandRepository.addCategories(data);
   }
 
   removeCategoryFromBrand(data: RemoveCategoryFromBrandInput) {
-    const removeCategoryFromBrandUseCase = new RemoveCategoryFromBrandUseCase(
-      this.brandRepository,
-    );
-    return removeCategoryFromBrandUseCase.execute(data);
+    return this.brandRepository.removeCategory(data);
   }
 }

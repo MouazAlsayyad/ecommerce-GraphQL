@@ -8,14 +8,13 @@ import {
   getAttributeById,
 } from '../utils/attribute-service-utils';
 import {
-  AttributeRepository,
   CreateAttributeDTO,
   ProductAttributeEntity,
   UpdateAttributeDTO,
 } from 'lib/types/src';
 
 @Injectable()
-export class PrismaAttributeRepository implements AttributeRepository {
+export class PrismaAttributeRepository {
   constructor(private readonly prisma: PrismaService) {}
   addAttribute(data: CreateAttributeDTO): Promise<ProductAttributeEntity> {
     return this.prisma.$transaction(async (tx) => {

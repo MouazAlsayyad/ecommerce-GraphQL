@@ -23,7 +23,7 @@ export async function updateProductReviewInfo(
   });
 }
 
-export async function checkProductExixt(
+export async function checkProductExit(
   id: number,
   tx: Prisma.TransactionClient,
 ) {

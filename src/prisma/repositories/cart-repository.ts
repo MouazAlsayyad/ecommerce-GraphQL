@@ -6,16 +6,11 @@ import {
 
 import { PrismaService } from '../prisma.service';
 
-import {
-  CartEntity,
-  CartItemDTO,
-  CartRepository,
-  RemoveCartItemDTO,
-} from 'lib/types/src';
+import { CartEntity, CartItemDTO, RemoveCartItemDTO } from 'lib/types/src';
 import { addItemToCart, groupCartItems } from '../utils/cart-service-utils';
 
 @Injectable()
-export class PrismaCartRepository implements CartRepository {
+export class PrismaCartRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   addItemToCart(data: CartItemDTO): Promise<void> {

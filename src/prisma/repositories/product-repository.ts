@@ -10,7 +10,6 @@ import {
   FilterDTO,
   ProductCategoryDTO,
   ProductEntity,
-  ProductRepository,
   UpdateProductDTO,
 } from 'lib/types/src';
 import {
@@ -27,7 +26,7 @@ import {
 } from '../utils/category-service-utils';
 
 @Injectable()
-export class PrismaProductRepository implements ProductRepository {
+export class PrismaProductRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async getProducts(data: FilterDTO): Promise<ProductEntity[]> {
