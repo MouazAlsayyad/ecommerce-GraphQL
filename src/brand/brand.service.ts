@@ -5,7 +5,7 @@ import {
   RemoveCategoryFromBrandInput,
 } from './dto/create-brand.input';
 import { UpdateBrandInput } from './dto/update-brand.input';
-import { PrismaBrandRepository } from 'src/prisma/repositories';
+import { PrismaBrandRepository } from './brand-repository';
 
 @Injectable()
 export class BrandService {

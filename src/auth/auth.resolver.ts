@@ -7,6 +7,7 @@ import { Logger } from '@nestjs/common';
 @Resolver()
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
+
   private readonly logger = new Logger(AuthResolver.name);
   @Mutation(() => AuthResponse)
   singIn(@Args('singInInput') singInInput: SignInInput) {

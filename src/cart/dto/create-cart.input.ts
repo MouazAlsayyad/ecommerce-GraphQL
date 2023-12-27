@@ -14,3 +14,11 @@ export class AddItemCartInput {
   @Min(1)
   qty: number;
 }
+
+@InputType()
+export class RemoveCartItemInput {
+  @Field(() => Int)
+  @IsNumber()
+  @IsNotEmpty()
+  itemId: number;
+}

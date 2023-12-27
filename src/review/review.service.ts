@@ -1,28 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import {
-  AddReviewUseCase,
-  DeleteReviewUseCase,
-  UpdateReviewUseCase,
-} from './usecase';
-import { PrismaReviewRepository } from 'src/prisma/repositories';
+
 import { CreateReviewInput } from './dto/create-review.input';
 import { UpdateReviewInput } from './dto/update-review.input';
+import { PrismaReviewRepository } from './review-repository';
 
 @Injectable()
 export class ReviewService {
   constructor(private reviewRepository: PrismaReviewRepository) {}
 
-  create(data: CreateReviewInput, userId: number) {
-    const addReviewUseCase = new AddReviewUseCase(this.reviewRepository);
-    return addReviewUseCase.execute({ ...data, userId });
+  addReview(data: CreateReviewInput, userId: number) {
+    return this.reviewRepository.addReview(userId, data);
   }
-  update(data: UpdateReviewInput, userId: number) {
-    const updateReviewUseCase = new UpdateReviewUseCase(this.reviewRepository);
-    return updateReviewUseCase.execute({ ...data, userId });
+  updateReview(data: UpdateReviewInput, userId: number) {
+    return this.reviewRepository.updateReview(userId, data);
+  }
+  getAllReviewsByProductId(id: number) {
+    return this.reviewRepository.getAllReviewsByProductId(id);
   }
 
-  remove(productId: number, userId: number) {
-    const deleteReviewUseCase = new DeleteReviewUseCase(this.reviewRepository);
-    return deleteReviewUseCase.execute({ productId, userId });
+  removeReview(productId: number, userId: number) {
+    return this.reviewRepository.remove(userId, productId);
   }
 }

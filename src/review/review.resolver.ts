@@ -19,7 +19,10 @@ export class ReviewResolver {
     @Context() context: ContextType,
   ) {
     try {
-      return this.reviewService.create(createReviewInput, context.req.user.id);
+      return this.reviewService.addReview(
+        createReviewInput,
+        context.req.user.id,
+      );
     } catch (e) {
       this.logger.error(e);
     }
@@ -32,7 +35,10 @@ export class ReviewResolver {
     @Context() context: ContextType,
   ) {
     try {
-      return this.reviewService.update(updateReviewInput, context.req.user.id);
+      return this.reviewService.updateReview(
+        updateReviewInput,
+        context.req.user.id,
+      );
     } catch (e) {
       this.logger.error(e);
     }
@@ -45,7 +51,7 @@ export class ReviewResolver {
     @Args('productId', { type: () => Int }) productId: number,
   ) {
     try {
-      return this.reviewService.remove(productId, context.req.user.id);
+      return this.reviewService.removeReview(productId, context.req.user.id);
     } catch (e) {
       this.logger.error(e);
     }

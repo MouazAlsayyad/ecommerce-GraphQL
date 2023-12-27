@@ -9,22 +9,10 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
+import { Brand } from 'src/brand/entities/brand.entity';
+import { Category } from 'src/category/entities/category.entity';
 import { Review } from 'src/review/entities/review.entity';
 
-@ObjectType()
-export class BrandProduct {
-  @Field()
-  id: number;
-  @Field()
-  name: string;
-}
-@ObjectType()
-export class CategoryProduct {
-  @Field()
-  id: number;
-  @Field()
-  name: string;
-}
 @ObjectType()
 export class VoidType {}
 @ObjectType()
@@ -61,14 +49,14 @@ export class Product {
   @IsString({ each: true })
   image?: string[] | null;
 
-  @Field(() => [CategoryProduct], { nullable: true })
+  @Field(() => [Category], { nullable: true })
   @IsOptional()
   @IsArray()
-  category?: CategoryProduct[] | null;
+  category?: Category[] | null;
 
-  @Field(() => BrandProduct)
+  @Field(() => Brand, { nullable: true })
   @IsOptional()
-  brand?: BrandProduct;
+  brand?: Brand;
 
   @Field({ defaultValue: true })
   @IsBoolean()
@@ -79,7 +67,7 @@ export class Product {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => Attribute)
-  attributes?: Omit<Attribute, 'id'>[] | null;
+  attributes?: Attribute[] | null;
 
   @Field(() => [Variation], { nullable: true })
   @IsArray()
@@ -100,6 +88,9 @@ export class Product {
 
 @ObjectType()
 export class ProductItem {
+  @Field(() => Int)
+  id: number;
+
   @Field()
   @IsString()
   @IsNotEmpty()
@@ -153,12 +144,17 @@ export class Attribute {
 
 @ObjectType()
 export class Variation {
+  @Field(() => Int)
+  @IsInt()
+  @IsNotEmpty()
+  id: number;
+
   @Field()
   @IsString()
   @IsNotEmpty()
   name: string;
 
-  @Field(() => [VariationOption])
+  @Field(() => [VariationOption], { nullable: true })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => VariationOption)
@@ -167,6 +163,11 @@ export class Variation {
 
 @ObjectType()
 export class VariationOption {
+  @Field(() => Int)
+  @IsInt()
+  @IsNotEmpty()
+  id: number;
+
   @Field()
   @IsString()
   @IsNotEmpty()

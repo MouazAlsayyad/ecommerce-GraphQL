@@ -1,4 +1,3 @@
-// create-product.input.ts
 import { InputType, Field, Int } from '@nestjs/graphql';
 import {
   IsString,
@@ -39,16 +38,14 @@ export class CreateProductInput {
   @IsBoolean()
   available: boolean;
 
-  @Field(() => [String], { nullable: true })
+  @Field(() => [Int], { nullable: true })
   @IsOptional()
   @IsArray()
-  @IsString({ each: true })
-  categories?: string[] | null;
+  categoriesIds?: number[] | null;
 
   @Field({ nullable: true })
   @IsOptional()
-  @IsString({ each: true })
-  brand: string;
+  brandId: number;
 
   @Field(() => [CreateProductAttributeInput], { nullable: true })
   @IsOptional()
@@ -102,7 +99,6 @@ export class CreateProductItemInput {
   @Field(() => [CreateVariationItemInput], { nullable: true })
   @IsOptional()
   @IsArray()
-  // @ValidateNested({ each: true })
   @Type(() => CreateVariationOptionInput)
   variationsItem?: CreateVariationItemInput[] | null;
 }
@@ -222,7 +218,7 @@ export class ProductCategoryInput {
   @Field()
   @IsString()
   @IsNotEmpty()
-  name: string;
+  categoryId: number;
 
   @Field(() => Int)
   @IsInt()
@@ -241,8 +237,25 @@ export class ProductFilterDTO {
   minPrice?: number;
 
   @Field({ nullable: true })
-  category?: string;
+  categoryId?: number;
 
   @Field({ nullable: true })
   brand?: string;
+}
+
+@InputType()
+export class VariationInput {
+  @Field(() => Int)
+  @IsInt()
+  @IsNotEmpty()
+  productId: number;
+
+  @Field(() => String)
+  name: string;
+
+  @Field(() => [AddVariationOptionInput], { nullable: true })
+  @IsOptional()
+  @IsArray()
+  @Type(() => AddVariationOptionInput)
+  variationOption?: AddVariationOptionInput[] | null;
 }

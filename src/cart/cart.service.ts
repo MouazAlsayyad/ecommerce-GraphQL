@@ -1,16 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaCartRepository } from 'src/prisma/repositories';
+
 import { AddItemCartInput } from './dto/create-cart.input';
 
 import { UpdateItemCartInput } from './dto/update-cart.input';
 import { Cart } from './entities/cart.entity';
+import { PrismaCartRepository } from './cart-repository';
 
 @Injectable()
 export class CartService {
   constructor(private cartRepository: PrismaCartRepository) {}
 
   async addItemToCart(data: AddItemCartInput, userId: number): Promise<Cart[]> {
-    await this.cartRepository.addItemToCart({ ...data, userId });
+    await this.cartRepository.addItemToCart(userId, { ...data });
     return this.cartRepository.getCart(userId);
   }
 
@@ -24,12 +25,12 @@ export class CartService {
   }
 
   async removeItemFromCart(data: AddItemCartInput, userId: number) {
-    await this.cartRepository.removeItem({ ...data, userId });
+    await this.cartRepository.removeItem(userId, { ...data });
     return this.cartRepository.getCart(userId);
   }
 
   async updateQtyOfItemCart(data: UpdateItemCartInput, userId: number) {
-    await this.cartRepository.updateCartItem({ ...data, userId });
+    await this.cartRepository.updateCartItem(userId, { ...data });
     return this.cartRepository.getCart(userId);
   }
 }

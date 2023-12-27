@@ -4,7 +4,7 @@
 
 input AddCategoriesToBrandInput {
   brandId: Int!
-  categories: [String!]!
+  categories: [Int!]!
 }
 
 input AddItemCartInput {
@@ -69,11 +69,6 @@ type Brand {
   name: String!
 }
 
-type BrandProduct {
-  id: Float!
-  name: String!
-}
-
 type Cart {
   item: [ItemWithQty!]!
   product: ProductType!
@@ -85,11 +80,6 @@ type Category {
   image: String!
   name: String!
   product: [Product!]!
-}
-
-type CategoryProduct {
-  id: Float!
-  name: String!
 }
 
 input CountryInput {
@@ -116,8 +106,8 @@ input CreateProductAttributeInput {
 input CreateProductInput {
   attributes: [CreateProductAttributeInput!]
   available: Boolean! = true
-  brand: String
-  categories: [String!]
+  brandId: Float
+  categoriesIds: [Int!]
   coverImage: String
   description: String!
   image: [String!]
@@ -167,10 +157,8 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 scalar DateTime
 
 type FavoritesList {
-  available: Boolean!
-  coverImage: String!
-  id: Int!
-  name: String!
+  product: Product
+  productId: Int!
 }
 
 input FavoritesListInput {
@@ -235,8 +223,8 @@ type Product {
   attributes: [Attribute!]
   available: Boolean!
   averageRating: Float!
-  brand: BrandProduct!
-  category: [CategoryProduct!]
+  brand: Brand
+  category: [Category!]
   coverImage: String!
   description: String!
   id: Int!
@@ -249,13 +237,13 @@ type Product {
 }
 
 input ProductCategoryInput {
-  name: String!
+  categoryId: Float!
   productId: Int!
 }
 
 input ProductFilterDTO {
   brand: String
-  category: String
+  categoryId: Float
   maxPrice: Float
   minPrice: Float
   name: String
@@ -263,6 +251,7 @@ input ProductFilterDTO {
 
 type ProductItem {
   SKU: String!
+  id: Int!
   price: Float!
   qtyInStock: Int!
   variationsItem: [VariationItem!]
@@ -348,7 +337,7 @@ input UpdateProductAttributeInput {
 
 input UpdateProductInput {
   available: Boolean
-  brand: String
+  brandId: Float
   coverImage: String
   description: String
   id: Int!
@@ -393,14 +382,16 @@ type User {
   addresses: [Address!]
   email: String!
   id: Int!
+  isBlock: Boolean!
   phone_number: String!
   user_type: String!
   username: String!
 }
 
 type Variation {
+  id: Int!
   name: String!
-  variationOptions: [VariationOption!]!
+  variationOptions: [VariationOption!]
 }
 
 type VariationItem {
@@ -409,6 +400,7 @@ type VariationItem {
 }
 
 type VariationOption {
+  id: Int!
   value: String!
 }
 

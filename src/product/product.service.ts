@@ -15,31 +15,10 @@ import {
   UpdateVariationOptionInput,
 } from './dto/update-product.input';
 
-import {
-  PrismaAttributeRepository,
-  PrismaProductItemRepository,
-  PrismaProductRepository,
-  PrismaVariationRepository,
-} from 'src/prisma/repositories';
-
-import {
-  AddAttributeUseCase,
-  AddCategoryUseCase,
-  AddProductItemUseCase,
-  AddVariationOptionUseCase,
-  CreateProductUseCase,
-  DeleteAttributeUseCase,
-  DeleteCategoryUseCase,
-  DeleteProductItemUseCase,
-  DeleteProductUseCase,
-  GetProductUseCase,
-  GetProductsUseCase,
-  UpdateAttributeUseCase,
-  UpdateProductItemUseCase,
-  UpdateProductUseCase,
-  UpdateVariationOptionUseCase,
-  UpdateVariationUseCase,
-} from './usecases';
+import { PrismaProductRepository } from './repositories/product-repository';
+import { PrismaAttributeRepository } from './repositories/attribute-repository';
+import { PrismaVariationRepository } from './repositories/variation-repository';
+import { PrismaProductItemRepository } from './repositories/item-repository';
 
 @Injectable()
 export class ProductService {
@@ -51,10 +30,7 @@ export class ProductService {
   ) {}
 
   create(createProductInput: CreateProductInput) {
-    const createProductUseCase = new CreateProductUseCase(
-      this.productRepository,
-    );
-    return createProductUseCase.execute(createProductInput);
+    return this.productRepository.insertProduct(createProductInput);
   }
 
   findAll(filters: ProductFilterDTO) {
@@ -76,114 +52,82 @@ export class ProductService {
     const filter = {
       ...(filters?.name && { name: filters.name }),
       ...(filters?.brand && { brand: { name: filters.brand } }),
-      ...(filters?.category && {
-        product_category: { every: { category: { name: filters.category } } },
+      ...(filters?.categoryId && {
+        product_category: { some: { categoryId: filters.categoryId } },
       }),
       ...(price && { productItem: { some: { price } } }),
     };
-    const getProductsUseCase = new GetProductsUseCase(this.productRepository);
-    return getProductsUseCase.execute(filter);
+    return this.productRepository.getProducts(filter);
   }
 
   findOne(id: number) {
-    const getProductUseCase = new GetProductUseCase(this.productRepository);
-    return getProductUseCase.execute(id);
+    return this.productRepository.getProductById(id);
+  }
+
+  getProductCategories(id: number) {
+    return this.productRepository.getProductCategories(id);
   }
 
   update(updateProductInput: UpdateProductInput) {
-    const updateProductUseCase = new UpdateProductUseCase(
-      this.productRepository,
-    );
-    return updateProductUseCase.execute(updateProductInput);
+    return this.productRepository.updateProductById(updateProductInput);
   }
 
   remove(id: number) {
-    const deleteProductUseCase = new DeleteProductUseCase(
-      this.productRepository,
-    );
-    return deleteProductUseCase.execute(id);
+    return this.productRepository.deleteProductById(id);
+  }
+
+  getProductItemsByProductId(id: number) {
+    return this.itemRepository.getProductItemsByProductId(id);
   }
 
   addProductItem(data: AddProductItemInput) {
-    const addProductItemUseCase = new AddProductItemUseCase(
-      this.itemRepository,
-      this.productRepository,
-    );
-    return addProductItemUseCase.execute(data);
+    this.itemRepository.addProductItem(data);
   }
 
   updateProductItem(data: UpdateProductItemInput) {
-    const updateProductItemUseCase = new UpdateProductItemUseCase(
-      this.itemRepository,
-      this.productRepository,
-    );
-    return updateProductItemUseCase.execute(data);
+    this.itemRepository.updateProductItem(data);
   }
 
   deleteProductItem(itemId: number) {
-    const deleteProductItemUseCase = new DeleteProductItemUseCase(
-      this.itemRepository,
-      this.productRepository,
-    );
-    return deleteProductItemUseCase.execute(itemId);
+    this.itemRepository.deleteProductItem(itemId);
+  }
+
+  getAttributesByProductId(id: number) {
+    return this.attributeRepository.getAttributesByProductId(id);
   }
 
   addAttribute(data: AddProductAttributeInput) {
-    const addAttributeUseCase = new AddAttributeUseCase(
-      this.attributeRepository,
-      this.productRepository,
-    );
-    return addAttributeUseCase.execute(data);
+    this.attributeRepository.addAttribute(data);
   }
 
   updateAttribute(data: UpdateProductAttributeInput) {
-    const updateAttributeUseCase = new UpdateAttributeUseCase(
-      this.attributeRepository,
-      this.productRepository,
-    );
-    return updateAttributeUseCase.execute(data);
+    this.attributeRepository.updateAttribute(data);
   }
 
   removeAttribute(attributeId: number) {
-    const deleteAttributeUseCase = new DeleteAttributeUseCase(
-      this.attributeRepository,
-      this.productRepository,
-    );
-    return deleteAttributeUseCase.execute(attributeId);
+    this.attributeRepository.removeAttribute(attributeId);
+  }
+
+  getVariationByProductId(id: number) {
+    return this.variationRepository.getVariationByProductId(id);
   }
 
   addVariationOption(data: AddVariationOptionInput) {
-    const addVariationOptionUseCase = new AddVariationOptionUseCase(
-      this.variationRepository,
-      this.productRepository,
-    );
-    return addVariationOptionUseCase.execute(data);
+    this.variationRepository.insertVariationOption(data);
   }
 
   updateVariationOption(data: UpdateVariationOptionInput) {
-    const updateVariationOptionUseCase = new UpdateVariationOptionUseCase(
-      this.variationRepository,
-      this.productRepository,
-    );
-    return updateVariationOptionUseCase.execute(data);
+    this.variationRepository.updateVariationOptionById(data);
   }
 
   updateVariation(data: UpdateVariationInput) {
-    const updateVariationUseCase = new UpdateVariationUseCase(
-      this.variationRepository,
-      this.productRepository,
-    );
-    return updateVariationUseCase.execute(data);
+    this.variationRepository.updateVariationNameById(data);
   }
 
   addCategoryToProduct(data: ProductCategoryInput) {
-    const addCategoryUseCase = new AddCategoryUseCase(this.productRepository);
-    return addCategoryUseCase.execute(data);
+    this.productRepository.addCategoryToProduct(data);
   }
   removeCategoryFromProduct(data: ProductCategoryInput) {
-    const deleteCategoryUseCase = new DeleteCategoryUseCase(
-      this.productRepository,
-    );
-    return deleteCategoryUseCase.execute(data);
+    this.productRepository.removeCategoryFromProduct(data);
   }
 }

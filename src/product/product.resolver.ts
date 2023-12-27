@@ -1,6 +1,14 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  Int,
+  ResolveField,
+  Parent,
+} from '@nestjs/graphql';
 import { ProductService } from './product.service';
-import { Product } from './entities/product.entity';
+import { Product, ProductItem, Variation } from './entities/product.entity';
 import {
   AddProductAttributeInput,
   AddProductItemInput,
@@ -19,10 +27,14 @@ import {
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { UserType } from '@prisma/client';
 import { Logger } from '@nestjs/common';
+import { ReviewService } from 'src/review/review.service';
 
 @Resolver(() => Product)
 export class ProductResolver {
-  constructor(private readonly productService: ProductService) {}
+  constructor(
+    private readonly productService: ProductService,
+    private readonly reviewService: ReviewService,
+  ) {}
   private readonly logger = new Logger(ProductResolver.name);
 
   @Roles(UserType.ADMIN)
@@ -43,7 +55,6 @@ export class ProductResolver {
     productFilterDTO: ProductFilterDTO,
   ) {
     try {
-      console.log(productFilterDTO);
       return this.productService.findAll(productFilterDTO);
     } catch (e) {
       this.logger.error(e);
@@ -206,5 +217,35 @@ export class ProductResolver {
     productCategoryInput: ProductCategoryInput,
   ) {
     return this.productService.removeCategoryFromProduct(productCategoryInput);
+  }
+
+  @ResolveField()
+  category(@Parent() product: Product) {
+    const { id } = product;
+    return this.productService.getProductCategories(id);
+  }
+
+  @ResolveField()
+  userReview(@Parent() product: Product) {
+    const { id } = product;
+    return this.reviewService.getAllReviewsByProductId(id);
+  }
+
+  @ResolveField()
+  attributes(@Parent() product: Product) {
+    const { id } = product;
+    return this.productService.getAttributesByProductId(id);
+  }
+
+  @ResolveField(() => [ProductItem])
+  productItem(@Parent() product: Product) {
+    const { id } = product;
+    return this.productService.getProductItemsByProductId(id);
+  }
+
+  @ResolveField(() => [Variation])
+  variation(@Parent() product: Product) {
+    const { id } = product;
+    return this.productService.getVariationByProductId(id);
   }
 }

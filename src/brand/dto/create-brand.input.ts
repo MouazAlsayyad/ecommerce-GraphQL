@@ -1,5 +1,5 @@
 import { InputType, Field, Int } from '@nestjs/graphql';
-import { IsArray, IsNotEmpty, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 @InputType()
 export class CreateBrandInput {
@@ -9,10 +9,12 @@ export class CreateBrandInput {
   name: string;
 
   @Field({ nullable: true })
+  @IsOptional()
   @IsString()
   description: string;
 
   @Field({ nullable: true })
+  @IsOptional()
   @IsString()
   image: string | null;
 }
@@ -23,10 +25,9 @@ export class AddCategoriesToBrandInput {
   @IsNotEmpty()
   brandId: number;
 
-  @Field(() => [String])
+  @Field(() => [Int])
   @IsArray()
-  @IsString({ each: true })
-  categories: string[];
+  categories: number[];
 }
 
 @InputType()

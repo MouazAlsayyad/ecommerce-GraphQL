@@ -2,7 +2,6 @@ import { ObjectType, Field, Int } from '@nestjs/graphql';
 import { UserType } from '@prisma/client';
 import { Exclude, Expose } from 'class-transformer';
 import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
-// import { User } from 'src/user/entities/user.entity';
 
 @Exclude()
 @ObjectType()

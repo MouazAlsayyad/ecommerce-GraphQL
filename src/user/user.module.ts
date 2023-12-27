@@ -4,11 +4,13 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { UserResolver } from './user.resolver';
 import { UserService } from './user.service';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { PrismaUserRepository } from './user-repository';
 
 @Module({
   providers: [
     UserResolver,
     UserService,
+    PrismaUserRepository,
     JwtService,
     {
       provide: APP_INTERCEPTOR,

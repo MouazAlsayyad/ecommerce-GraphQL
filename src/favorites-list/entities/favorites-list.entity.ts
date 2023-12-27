@@ -1,16 +1,13 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
+import { IsOptional } from 'class-validator';
+import { Product } from 'src/product/entities/product.entity';
 
 @ObjectType()
 export class FavoritesList {
   @Field(() => Int)
-  id: number;
+  productId: number;
 
-  @Field(() => String)
-  name: string;
-
-  @Field(() => String)
-  coverImage: string;
-
-  @Field(() => Boolean)
-  available: boolean;
+  @Field(() => Product, { nullable: true })
+  @IsOptional()
+  product?: Product;
 }

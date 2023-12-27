@@ -1,4 +1,3 @@
-// update-product.input.ts
 import { InputType, Field, Int } from '@nestjs/graphql';
 import {
   IsOptional,
@@ -36,7 +35,7 @@ export class UpdateProductInput {
   @Field({ nullable: true })
   @IsOptional()
   @IsString({ each: true })
-  brand?: string;
+  brandId?: number;
 
   @Field(() => [String], { nullable: true })
   @IsOptional()
