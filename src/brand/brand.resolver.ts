@@ -39,7 +39,7 @@ export class BrandResolver {
   }
 
   @Query(() => [Brand], { name: 'brands' })
-  findAll() {
+  findAllBrand() {
     try {
       return this.brandService.findAll();
     } catch (e) {

@@ -9,7 +9,7 @@ import {
 import { checkVariationsItemLength } from '../utils/product-service-utils';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AddProductItemInput } from '../dto/create-product.input';
-import { ProductItem } from '../entities/product.entity';
+import { ProductItem } from '../entities/item.entity';
 import { UpdateProductItemInput } from '../dto/update-product.input';
 @Injectable()
 export class PrismaProductItemRepository {

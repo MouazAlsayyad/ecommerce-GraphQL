@@ -11,7 +11,7 @@ import {
   AddVariationOptionInput,
   VariationInput,
 } from '../dto/create-product.input';
-import { Variation, VariationOption } from '../entities/product.entity';
+import { Variation, VariationOption } from '../entities/variation.entity';
 import {
   UpdateVariationInput,
   UpdateVariationOptionInput,

@@ -1,6 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { Variation, VariationOption } from '../entities/product.entity';
+import { Variation, VariationOption } from '../entities/variation.entity';
 
 export async function createVariation(
   productId: number,

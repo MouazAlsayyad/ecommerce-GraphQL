@@ -11,6 +11,7 @@ import { Prisma } from '@prisma/client';
 @Injectable()
 export class PrismaFavoritesListRepository {
   constructor(private readonly prisma: PrismaService) {}
+
   addItemToFavoritesList(
     userId: number,
     data: FavoritesListInput,
@@ -18,6 +19,9 @@ export class PrismaFavoritesListRepository {
     return this.prisma.$transaction(async (tx) => {
       const { productId } = data;
 
+      const product = await tx.product.findUnique({ where: { id: productId } });
+      if (!product)
+        throw new NotFoundException(`product with id ${productId} not found`);
       const itemExist = await this.getProductFromFavoritesList(
         productId,
         userId,
@@ -33,6 +37,7 @@ export class PrismaFavoritesListRepository {
       return;
     });
   }
+
   removeItemFromFavoritesList(
     userId: number,
     data: FavoritesListInput,
@@ -55,6 +60,7 @@ export class PrismaFavoritesListRepository {
       return;
     });
   }
+
   getFavoritesList(userId: number): Promise<FavoritesList[]> {
     return this.prisma.$transaction(async (tx) => {
       return tx.favoritesList.findMany({ where: { userId } });

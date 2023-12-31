@@ -12,12 +12,16 @@ import {
 import { Brand } from 'src/brand/entities/brand.entity';
 import { Category } from 'src/category/entities/category.entity';
 import { Review } from 'src/review/entities/review.entity';
+import { ProductItem } from './item.entity';
+import { Attribute } from './attribute.entity';
+import { Variation } from './variation.entity';
 
 @ObjectType()
 export class VoidType {}
 @ObjectType()
 export class Product {
   @Field(() => Int)
+  @IsInt()
   id: number;
 
   @Field()
@@ -84,92 +88,4 @@ export class Product {
 
   @Field(() => [Review], { nullable: true })
   userReview?: Omit<Review, 'id'>[];
-}
-
-@ObjectType()
-export class ProductItem {
-  @Field(() => Int)
-  id: number;
-
-  @Field()
-  @IsString()
-  @IsNotEmpty()
-  SKU: string;
-
-  @Field(() => Int)
-  @IsInt()
-  qtyInStock: number;
-
-  @Field()
-  @IsInt()
-  price: number;
-
-  @Field(() => [VariationItem], { nullable: true })
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => VariationOption)
-  variationsItem?: VariationItem[] | null;
-}
-
-@ObjectType()
-export class VariationItem {
-  @Field()
-  @IsString()
-  @IsNotEmpty()
-  nameVariation: string;
-
-  @Field()
-  @IsString()
-  @IsNotEmpty()
-  valueVariation: string;
-}
-
-@ObjectType()
-export class Attribute {
-  @Field(() => Int)
-  @IsInt()
-  @IsNotEmpty()
-  id: number;
-
-  @Field()
-  @IsString()
-  @IsNotEmpty()
-  name: string;
-
-  @Field()
-  @IsString()
-  @IsNotEmpty()
-  value: string;
-}
-
-@ObjectType()
-export class Variation {
-  @Field(() => Int)
-  @IsInt()
-  @IsNotEmpty()
-  id: number;
-
-  @Field()
-  @IsString()
-  @IsNotEmpty()
-  name: string;
-
-  @Field(() => [VariationOption], { nullable: true })
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => VariationOption)
-  variationOptions: VariationOption[];
-}
-
-@ObjectType()
-export class VariationOption {
-  @Field(() => Int)
-  @IsInt()
-  @IsNotEmpty()
-  id: number;
-
-  @Field()
-  @IsString()
-  @IsNotEmpty()
-  value: string;
 }

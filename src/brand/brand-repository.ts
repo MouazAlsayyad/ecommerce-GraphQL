@@ -25,13 +25,11 @@ export class PrismaBrandRepository {
   }
 
   async findAll(): Promise<Brand[]> {
-    return this.prisma.brand.findMany({});
+    return this.prisma.brand.findMany();
   }
 
   async getBrandById(id: number): Promise<Brand> {
-    const brand = await this.prisma.brand.findUnique({
-      where: { id },
-    });
+    const brand = await this.prisma.brand.findUnique({ where: { id } });
 
     if (!brand) throw new NotFoundException(`brand with this ${id} not found`);
     return brand;

@@ -8,7 +8,7 @@ import {
   Parent,
 } from '@nestjs/graphql';
 import { ProductService } from './product.service';
-import { Product, ProductItem, Variation } from './entities/product.entity';
+import { Product } from './entities/product.entity';
 import {
   AddProductAttributeInput,
   AddProductItemInput,
@@ -28,6 +28,8 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { UserType } from '@prisma/client';
 import { Logger } from '@nestjs/common';
 import { ReviewService } from 'src/review/review.service';
+import { ProductItem } from './entities/item.entity';
+import { Variation } from './entities/variation.entity';
 
 @Resolver(() => Product)
 export class ProductResolver {

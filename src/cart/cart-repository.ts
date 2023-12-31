@@ -5,12 +5,13 @@ import {
 } from '@nestjs/common';
 
 import { PrismaService } from 'src/prisma/prisma.service';
-import { addItemToCart, groupCartItems } from './utils/cart-service-utils';
+import { groupCartItems } from './utils/map-cart-utils';
 import {
   AddItemCartInput as ItemCartInput,
   RemoveCartItemInput,
 } from './dto/create-cart.input';
 import { Cart } from './entities/cart.entity';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class PrismaCartRepository {
@@ -22,7 +23,11 @@ export class PrismaCartRepository {
       let cart = await tx.cart.findUnique({ where: { userId } });
 
       if (!cart) cart = await tx.cart.create({ data: { userId } });
-      await addItemToCart(tx, cart.id, itemId, qty);
+      const item = await tx.productItem.findUnique({ where: { id: itemId } });
+      if (!item)
+        throw new NotFoundException(`item with id ${itemId} not found`);
+
+      await this.addItemsToCart(tx, cart.id, itemId, qty);
     });
   }
 
@@ -116,5 +121,41 @@ export class PrismaCartRepository {
         data: { qty },
       });
     });
+  }
+
+  private async addItemsToCart(
+    tx: Prisma.TransactionClient,
+    cartId: number,
+    itemId: number,
+    qty: number,
+  ) {
+    const cartItem = await tx.cartItems.findFirst({
+      where: { itemId },
+    });
+    const { qtyInStock } = await tx.productItem.findUnique({
+      where: { id: itemId },
+    });
+
+    if (cartItem) {
+      if (qty + cartItem.qty > qtyInStock)
+        throw new BadRequestException(
+          `Sorry, the order quantity is larger than what is available`,
+        );
+      return await tx.cartItems.update({
+        where: { cartId_itemId: { cartId, itemId } },
+        data: { qty: qty + cartItem.qty },
+      });
+    } else {
+      if (qty > qtyInStock)
+        throw new BadRequestException(
+          `Sorry, the order quantity is larger than what is available`,
+        );
+      const item = await tx.productItem.findUnique({ where: { id: itemId } });
+      if (!item)
+        throw new NotFoundException(`item with this ${itemId} not found`);
+      return await tx.cartItems.create({
+        data: { cartId, itemId, qty, productId: item.productId },
+      });
+    }
   }
 }

@@ -5,12 +5,8 @@ import {
   CreateProductItemInput,
   CreateVariationInput,
 } from 'src/product/dto/create-product.input';
-import { createAttribute } from './attribute-service-utils';
 
-import {
-  checkVariationOptionExist,
-  createVariation,
-} from './variation-service-utils';
+import { createVariation } from './variation-service-utils';
 import { createItem, createProductConfiguration } from './Item-service-uils';
 import { Product } from '../entities/product.entity';
 
@@ -27,12 +23,27 @@ export async function createProductAttributes(
   productAttributes: CreateProductAttributeInput[],
   prisma: Prisma.TransactionClient,
 ) {
-  await Promise.all(
-    productAttributes.map(
-      async (attr) =>
-        await createAttribute(productId, attr.name, attr.value, prisma),
-    ),
+  const inputArray = await Promise.all(
+    productAttributes.map(async (attr) => {
+      return {
+        name: attr.name,
+        value: attr.value,
+        productId,
+      };
+    }),
   );
+
+  const uniqueValues = new Set<string>();
+  const data = inputArray.filter((item) => {
+    const key = item.name;
+    if (!uniqueValues.has(key)) {
+      uniqueValues.add(key);
+      return true;
+    }
+    return false;
+  });
+
+  await prisma.productAttribute.createMany({ data });
 }
 
 export async function mapProductWithVariations(product): Promise<Product> {
@@ -64,39 +75,28 @@ export async function createProductVariations(
   await Promise.all(
     variations.map(async (variationDto) => {
       const variation = await createVariation(productId, variationDto.name, tx);
-      const data = await Promise.all(
+      const inputArray = await Promise.all(
         variationDto.variationOption.map(async (optionDto) => {
-          await checkVariationOptionExist(variation.id, optionDto.value, tx);
           return {
             variationId: variation.id,
             value: optionDto.value,
           };
         }),
       );
+
+      const uniqueValues = new Set<string>();
+      const data = inputArray.filter((item) => {
+        const key = item.value;
+        if (!uniqueValues.has(key)) {
+          uniqueValues.add(key);
+          return true;
+        }
+        return false;
+      });
       await tx.variationOption.createMany({ data });
     }),
   );
 }
-
-// export async function variationsExist(
-//   items: CreateProductItemInput[],
-// ): Promise<boolean> {
-//   return items.some((item, index) => {
-//     const currentVariations = item.variationsItem;
-//     for (let i = index + 1; i < items.length; i++) {
-//       const nextVariations = items[i].variationsItem;
-//       if (currentVariations.length === nextVariations.length) {
-//         const match = currentVariations.every(
-//           (current, idx) =>
-//             current.nameVariation === nextVariations[idx].nameVariation &&
-//             current.valueVariation === nextVariations[idx].valueVariation,
-//         );
-//         if (match) return true;
-//       }
-//     }
-//     return false;
-//   });
-// }
 
 export async function createItems(
   productId: number,
