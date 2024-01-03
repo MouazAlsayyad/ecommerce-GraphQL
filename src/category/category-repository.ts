@@ -7,6 +7,7 @@ import {
 } from './dto/create-category.input';
 
 import { UpdateCategoryInput } from './dto/update-category.input';
+import { checkImage } from 'src/unit/check-image';
 
 @Injectable()
 export class PrismaCategoryRepository {
@@ -15,7 +16,7 @@ export class PrismaCategoryRepository {
   async create(data: CreateCategoryInput): Promise<Category> {
     const id = await this.prisma.$transaction(async (tx) => {
       const { name, description = null, image = null } = data;
-
+      if (image) await checkImage(image, tx);
       const { id } = await tx.category.create({
         data: { name, description, image },
       });
@@ -42,14 +43,18 @@ export class PrismaCategoryRepository {
 
   async update(data: UpdateCategoryInput): Promise<Category> {
     const id = await this.prisma.$transaction(async (tx) => {
-      const { id, name = null, description = null, image = null } = data;
+      if (data.image) await checkImage(data.image, tx);
       const category = await tx.category.findUnique({ where: { id } });
       if (!category)
         throw new NotFoundException(`category with this ${id} not found`);
 
       await tx.category.update({
-        where: { id },
-        data: { name, description, image },
+        where: { id: data.id },
+        data: {
+          name: data.name,
+          description: data.description,
+          image: data.image,
+        },
       });
 
       return id;

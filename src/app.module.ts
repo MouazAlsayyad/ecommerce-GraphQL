@@ -13,6 +13,7 @@ import { ReviewModule } from './review/review.module';
 import { CategoryModule } from './category/category.module';
 import { BrandModule } from './brand/brand.module';
 import { FavoritesListModule } from './favorites-list/favorites-list.module';
+import { UploadImageModule } from './upload-image/upload-image.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { FavoritesListModule } from './favorites-list/favorites-list.module';
     CategoryModule,
     BrandModule,
     FavoritesListModule,
+    UploadImageModule,
   ],
   controllers: [],
   providers: [],

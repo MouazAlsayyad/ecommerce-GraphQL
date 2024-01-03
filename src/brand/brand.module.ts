@@ -12,6 +12,8 @@ import { PrismaVariationRepository } from 'src/product/repositories/variation-re
 import { PrismaProductItemRepository } from 'src/product/repositories/item-repository';
 import { CategoryService } from 'src/category/category.service';
 import { PrismaCategoryRepository } from 'src/category/category-repository';
+import { PrismaItemImageRepository } from 'src/product/repositories/item-image-repository';
+import { PrismaProductImageRepository } from 'src/product/repositories/product-image-repository';
 
 @Module({
   providers: [
@@ -24,6 +26,8 @@ import { PrismaCategoryRepository } from 'src/category/category-repository';
     PrismaVariationRepository,
     PrismaProductItemRepository,
     PrismaCategoryRepository,
+    PrismaItemImageRepository,
+    PrismaProductImageRepository,
     JwtService,
     CategoryService,
     {

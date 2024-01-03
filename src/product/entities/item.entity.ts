@@ -4,9 +4,11 @@ import {
   IsArray,
   IsInt,
   IsNotEmpty,
+  IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
+import { Image } from './image.entity';
 
 @ObjectType()
 export class ProductItem {
@@ -25,6 +27,13 @@ export class ProductItem {
   @Field()
   @IsInt()
   price: number;
+
+  @Field(() => [Image], { nullable: true })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => Image)
+  ItemImages?: Image[] | null;
 
   @Field(() => [VariationItem], { nullable: true })
   @IsArray()

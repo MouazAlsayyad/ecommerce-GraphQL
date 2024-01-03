@@ -23,7 +23,7 @@ export class CreateProductInput {
   @IsNotEmpty()
   description: string;
 
-  @Field({ nullable: true })
+  @Field()
   @IsString()
   @IsNotEmpty()
   coverImage: string | null;
@@ -166,6 +166,32 @@ export class AddProductAttributeInput {
   @IsString()
   @IsNotEmpty()
   value: string;
+}
+
+@InputType()
+export class AddProductImagesInput {
+  @Field(() => Int)
+  @IsInt()
+  @IsNotEmpty()
+  productId: number;
+
+  @Field(() => [String])
+  @IsArray()
+  @IsString({ each: true })
+  image: string[];
+}
+
+@InputType()
+export class AddItemImagesInput {
+  @Field(() => Int)
+  @IsInt()
+  @IsNotEmpty()
+  itemId: number;
+
+  @Field(() => [String])
+  @IsArray()
+  @IsString({ each: true })
+  image: string[];
 }
 
 @InputType()

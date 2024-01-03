@@ -17,6 +17,7 @@ import {
   ProductCategoryInput,
 } from '../dto/create-product.input';
 import { UpdateProductInput } from '../dto/update-product.input';
+import { checkImage } from 'src/unit/check-image';
 
 @Injectable()
 export class PrismaProductRepository {
@@ -39,13 +40,30 @@ export class PrismaProductRepository {
   async insertProduct(data: CreateProductInput): Promise<Product> {
     const id = await this.prisma.$transaction(async (tx) => {
       const { name, description, available, coverImage, brandId } = data;
+      await checkImage(coverImage, tx);
 
       const { id } = await tx.product.create({
-        data: { name, description, available, coverImage, brandId },
+        data: {
+          name,
+          description,
+          available,
+          coverImage,
+          brandId,
+        },
       });
 
       if (data.attributes)
         await createProductAttributes(id, data.attributes, tx);
+
+      if (data.image) {
+        const productImage = await Promise.all(
+          data.image.map(async (imagePath) => {
+            await checkImage(imagePath, tx);
+            return { imagePath, productId: id };
+          }),
+        );
+        tx.productImage.createMany({ data: productImage });
+      }
       if (data.variation) await createProductVariations(id, data.variation, tx);
       if (data.variation && data.productItem) {
         data.productItem.map((item) => {
@@ -60,6 +78,7 @@ export class PrismaProductRepository {
         });
         tx.product_Category.createMany({ data: categories });
       }
+
       return id;
     });
 
@@ -68,6 +87,8 @@ export class PrismaProductRepository {
 
   async updateProductById(data: UpdateProductInput): Promise<Product> {
     await this.prisma.$transaction(async (tx) => {
+      if (data.coverImage) await checkImage(data.coverImage, tx);
+
       await tx.product.update({
         where: { id: data.id },
         data: {

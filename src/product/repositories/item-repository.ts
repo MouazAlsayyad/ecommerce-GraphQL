@@ -72,6 +72,7 @@ export class PrismaProductItemRepository {
         productConfiguration: {
           include: { variation: true, variationOption: true },
         },
+        ItemImages: true,
       },
     });
     const result = productItem.map((productItem) => {

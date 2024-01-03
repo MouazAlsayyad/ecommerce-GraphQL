@@ -7,6 +7,7 @@ import {
   RemoveCategoryFromBrandInput,
 } from './dto/create-brand.input';
 import { UpdateBrandInput } from './dto/update-brand.input';
+import { checkImage } from 'src/unit/check-image';
 
 @Injectable()
 export class PrismaBrandRepository {
@@ -15,6 +16,7 @@ export class PrismaBrandRepository {
   async createBrand(data: CreateBrandInput): Promise<Brand> {
     const id = await this.prisma.$transaction(async (tx) => {
       const { name, description = null, image = null } = data;
+      if (image) await checkImage(image, tx);
 
       const { id } = await tx.brand.create({
         data: { name, description, image },
@@ -37,10 +39,14 @@ export class PrismaBrandRepository {
 
   async update(data: UpdateBrandInput): Promise<Brand> {
     const id = await this.prisma.$transaction(async (tx) => {
-      const { id, name = null, description = null, image = null } = data;
+      if (data.image) await checkImage(data.image, tx);
       const brand = await tx.brand.update({
-        where: { id },
-        data: { name, description, image },
+        where: { id: data.id },
+        data: {
+          name: data.name,
+          description: data.description,
+          image: data.image,
+        },
       });
 
       if (!brand)

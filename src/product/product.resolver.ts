@@ -10,7 +10,9 @@ import {
 import { ProductService } from './product.service';
 import { Product } from './entities/product.entity';
 import {
+  AddItemImagesInput,
   AddProductAttributeInput,
+  AddProductImagesInput,
   AddProductItemInput,
   AddVariationOptionInput,
   CreateProductInput,
@@ -221,6 +223,42 @@ export class ProductResolver {
     return this.productService.removeCategoryFromProduct(productCategoryInput);
   }
 
+  @Roles(UserType.ADMIN)
+  @Mutation(() => Product)
+  addImagesToItem(
+    @Args('addItemImagesInput')
+    addItemImagesInput: AddItemImagesInput,
+  ) {
+    return this.productService.addImagesToItem(addItemImagesInput);
+  }
+
+  @Roles(UserType.ADMIN)
+  @Mutation(() => Product)
+  removeImageFromItem(
+    @Args('ItemImageId')
+    ItemImageId: number,
+  ) {
+    return this.productService.removeImageFromItem(ItemImageId);
+  }
+
+  @Roles(UserType.ADMIN)
+  @Mutation(() => Product)
+  addImagesToProduct(
+    @Args('addProductImagesInput')
+    addProductImagesInput: AddProductImagesInput,
+  ) {
+    return this.productService.addImagesToProduct(addProductImagesInput);
+  }
+
+  @Roles(UserType.ADMIN)
+  @Mutation(() => Product)
+  removeImageFromProduct(
+    @Args('productImageId')
+    productImageId: number,
+  ) {
+    return this.productService.removeImageFromProduct(productImageId);
+  }
+
   @ResolveField()
   category(@Parent() product: Product) {
     const { id } = product;
@@ -237,6 +275,12 @@ export class ProductResolver {
   attributes(@Parent() product: Product) {
     const { id } = product;
     return this.productService.getAttributesByProductId(id);
+  }
+
+  @ResolveField()
+  productImage(@Parent() product: Product) {
+    const { id } = product;
+    return this.productService.getImagesByProductId(id);
   }
 
   @ResolveField(() => [ProductItem])

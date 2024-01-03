@@ -12,10 +12,20 @@ input AddItemCartInput {
   qty: Int!
 }
 
+input AddItemImagesInput {
+  image: [String!]!
+  itemId: Int!
+}
+
 input AddProductAttributeInput {
   name: String!
   productId: Int!
   value: String!
+}
+
+input AddProductImagesInput {
+  image: [String!]!
+  productId: Int!
 }
 
 input AddProductItemInput {
@@ -108,7 +118,7 @@ input CreateProductInput {
   available: Boolean! = true
   brandId: Float
   categoriesIds: [Int!]
-  coverImage: String
+  coverImage: String!
   description: String!
   image: [String!]
   name: String!
@@ -165,6 +175,11 @@ input FavoritesListInput {
   productId: Int!
 }
 
+type Image {
+  id: Int!
+  imagePath: String!
+}
+
 type ItemWithQty {
   id: Float!
   price: Float!
@@ -183,6 +198,8 @@ type Mutation {
   addCategoriesToBrand(addCategoriesToBrandInput: AddCategoriesToBrandInput!): Brand!
   addCategoryToProduct(productCategoryInput: ProductCategoryInput!): Product!
   addCountry(countryInput: CountryInput!): User!
+  addImagesToItem(addItemImagesInput: AddItemImagesInput!): Product!
+  addImagesToProduct(addProductImagesInput: AddProductImagesInput!): Product!
   addItemToCart(addItemCartInput: AddItemCartInput!): [Cart!]!
   addProductItem(addProductItemInput: AddProductItemInput!): Product!
   addProductToFavoritesList(favoritesListInput: FavoritesListInput!): [FavoritesList!]!
@@ -201,6 +218,8 @@ type Mutation {
   removeCategory(id: Int!): Category!
   removeCategoryFromBrand(removeCategoryFromBrandInput: RemoveCategoryFromBrandInput!): Brand!
   removeCategoryFromProduct(productCategoryInput: ProductCategoryInput!): Product!
+  removeImageFromItem(ItemImageId: Float!): Product!
+  removeImageFromProduct(productImageId: Float!): Product!
   removeItemFromCart(addItemCartInput: AddItemCartInput!): [Cart!]!
   removeProduct(id: Int!): Product!
   removeProductFromFavoritesList(favoritesListInput: FavoritesListInput!): [FavoritesList!]!
@@ -217,6 +236,7 @@ type Mutation {
   updateReview(updateReviewInput: UpdateReviewInput!): Review!
   updateVariation(updateVariationInput: UpdateVariationInput!): Product!
   updateVariationOption(updateVariationOptionInput: UpdateVariationOptionInput!): Product!
+  uploadImage(image: Upload!): UploadImage!
 }
 
 type Product {
@@ -228,8 +248,8 @@ type Product {
   coverImage: String!
   description: String!
   id: Int!
-  image: [String!]
   name: String!
+  productImage: [Image!]
   productItem: [ProductItem!]
   reviewCount: Int!
   userReview: [Review!]
@@ -250,6 +270,7 @@ input ProductFilterDTO {
 }
 
 type ProductItem {
+  ItemImages: [Image!]
   SKU: String!
   id: Int!
   price: Float!
@@ -376,6 +397,16 @@ input UpdateVariationOptionInput {
   productId: Int!
   value: String
   variationId: Int!
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+type UploadImage {
+  createdAt: DateTime!
+  filename: String!
+  id: Int!
+  path: String!
 }
 
 type User {

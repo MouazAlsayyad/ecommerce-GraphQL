@@ -10,6 +10,8 @@ import { PrismaProductRepository } from './repositories/product-repository';
 import { PrismaVariationRepository } from './repositories/variation-repository';
 import { ReviewService } from 'src/review/review.service';
 import { PrismaReviewRepository } from 'src/review/review-repository';
+import { PrismaItemImageRepository } from './repositories/item-image-repository';
+import { PrismaProductImageRepository } from './repositories/product-image-repository';
 
 @Module({
   providers: [
@@ -22,6 +24,8 @@ import { PrismaReviewRepository } from 'src/review/review-repository';
     PrismaVariationRepository,
     PrismaReviewRepository,
     ReviewService,
+    PrismaItemImageRepository,
+    PrismaProductImageRepository,
     {
       provide: APP_INTERCEPTOR,
       useClass: ClassSerializerInterceptor,

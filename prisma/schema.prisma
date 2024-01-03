@@ -123,13 +123,37 @@ model Product {
   favouritesList   FavoritesList[]
   image            String[]
   attributes       ProductAttribute[]
+  productImage     ProductImage[]
   variation        Variation[]
   productItem      ProductItem[]
   userReview       UserReview[]
   cartItems        CartItems[]
   product_category Product_Category[]
+  product_tag      Product_Tag[]
   averageRating    Float?             @default(0)
   reviewCount      Int?               @default(0)
+}
+
+model Tag{
+  id        Int      @id @default(autoincrement())
+  value   String
+  product_tag   Product_Tag[]
+}
+
+model Product_Tag {
+  tagId         Int
+  productId     Int
+  tag           Tag      @relation(fields: [tagId], references: [id])
+  product       Product  @relation(fields: [productId], references: [id])
+  
+  @@id([tagId, productId])
+}
+
+model ProductImage{
+  id                   Int                    @id @default(autoincrement())
+  imagePath            String
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
 }
 
 model ProductItem {
@@ -141,6 +165,15 @@ model ProductItem {
   product              Product                @relation(fields: [productId], references: [id])
   productConfiguration ProductConfiguration[]
   cartItems            CartItems[]
+  ItemImages           ItemImage[]
+}
+
+
+model ItemImage{
+  id                   Int                    @id @default(autoincrement())
+  imagePath            String
+  productItemId        Int
+  productItem   ProductItem @relation(fields: [productItemId], references: [id])
 }
 
 model ProductConfiguration {
@@ -161,6 +194,8 @@ model ProductAttribute {
   value     String
   product   Product @relation(fields: [productId], references: [id])
 }
+
+
 
 model Media {
   id        Int      @id @default(autoincrement())
@@ -207,4 +242,11 @@ model Product_Category {
   product   Product  @relation(fields: [productId], references: [id])
 
   @@id([categoryId, productId])
+}
+
+model Image {
+  id       Int        @id @default(autoincrement())
+  filename String     
+  path     String     @unique
+  createdAt DateTime  @default(now())
 }

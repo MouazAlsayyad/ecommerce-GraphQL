@@ -15,6 +15,7 @@ import { Review } from 'src/review/entities/review.entity';
 import { ProductItem } from './item.entity';
 import { Attribute } from './attribute.entity';
 import { Variation } from './variation.entity';
+import { Image } from './image.entity';
 
 @ObjectType()
 export class VoidType {}
@@ -47,12 +48,6 @@ export class Product {
   @IsNotEmpty()
   averageRating: number;
 
-  @Field(() => [String], { nullable: true })
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  image?: string[] | null;
-
   @Field(() => [Category], { nullable: true })
   @IsOptional()
   @IsArray()
@@ -72,6 +67,13 @@ export class Product {
   @ValidateNested({ each: true })
   @Type(() => Attribute)
   attributes?: Attribute[] | null;
+
+  @Field(() => [Image], { nullable: true })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => Image)
+  productImage?: Image[] | null;
 
   @Field(() => [Variation], { nullable: true })
   @IsArray()

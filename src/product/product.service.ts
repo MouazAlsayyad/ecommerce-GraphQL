@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import {
+  AddItemImagesInput,
   AddProductAttributeInput,
+  AddProductImagesInput,
   AddProductItemInput,
   AddVariationOptionInput,
   CreateProductInput,
@@ -19,6 +21,8 @@ import { PrismaProductRepository } from './repositories/product-repository';
 import { PrismaAttributeRepository } from './repositories/attribute-repository';
 import { PrismaVariationRepository } from './repositories/variation-repository';
 import { PrismaProductItemRepository } from './repositories/item-repository';
+import { PrismaItemImageRepository } from './repositories/item-image-repository';
+import { PrismaProductImageRepository } from './repositories/product-image-repository';
 
 @Injectable()
 export class ProductService {
@@ -27,6 +31,8 @@ export class ProductService {
     private attributeRepository: PrismaAttributeRepository,
     private variationRepository: PrismaVariationRepository,
     private itemRepository: PrismaProductItemRepository,
+    private itemImageRepository: PrismaItemImageRepository,
+    private productImageRepository: PrismaProductImageRepository,
   ) {}
 
   create(createProductInput: CreateProductInput) {
@@ -129,5 +135,30 @@ export class ProductService {
   }
   removeCategoryFromProduct(data: ProductCategoryInput) {
     this.productRepository.removeCategoryFromProduct(data);
+  }
+
+  ////
+  addImagesToItem(data: AddItemImagesInput) {
+    return this.itemImageRepository.addImagesToItem(data);
+  }
+
+  getImagesByItemId(itemId: number) {
+    return this.itemImageRepository.getImagesByItemId(itemId);
+  }
+
+  removeImageFromItem(id: number) {
+    return this.itemImageRepository.removeImageFromItem(id);
+  }
+
+  addImagesToProduct(data: AddProductImagesInput) {
+    return this.productImageRepository.addImagesToProduct(data);
+  }
+
+  getImagesByProductId(productId: number) {
+    return this.productImageRepository.getImagesByProductId(productId);
+  }
+
+  removeImageFromProduct(id: number) {
+    return this.productImageRepository.removeImageFromProduct(id);
   }
 }
