@@ -12,6 +12,7 @@ import { ReviewService } from 'src/review/review.service';
 import { PrismaReviewRepository } from 'src/review/review-repository';
 import { PrismaItemImageRepository } from './repositories/item-image-repository';
 import { PrismaProductImageRepository } from './repositories/product-image-repository';
+import { TagService } from 'src/tag/tag.service';
 
 @Module({
   providers: [
@@ -24,6 +25,7 @@ import { PrismaProductImageRepository } from './repositories/product-image-repos
     PrismaVariationRepository,
     PrismaReviewRepository,
     ReviewService,
+    TagService,
     PrismaItemImageRepository,
     PrismaProductImageRepository,
     {

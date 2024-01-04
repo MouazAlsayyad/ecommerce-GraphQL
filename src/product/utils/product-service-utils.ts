@@ -178,6 +178,10 @@ export async function deleteProductAndRelatedData(
 
   await prisma.product_Category.deleteMany({ where: { productId } });
 
+  await prisma.productImage.deleteMany({ where: { productId } });
+
+  await prisma.product_Tag.deleteMany({ where: { productId } });
+
   const product = await prisma.product.delete({ where: { id: productId } });
 
   if (!product) {

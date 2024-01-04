@@ -82,6 +82,10 @@ export class ProductService {
     return this.productRepository.deleteProductById(id);
   }
 
+  findRelatedProducts(tagIds: number[], productId: number) {
+    return this.productRepository.findRelatedProducts(tagIds, productId);
+  }
+
   getProductItemsByProductId(id: number) {
     return this.itemRepository.getProductItemsByProductId(id);
   }

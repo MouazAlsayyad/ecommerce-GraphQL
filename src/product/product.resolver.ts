@@ -32,12 +32,15 @@ import { Logger } from '@nestjs/common';
 import { ReviewService } from 'src/review/review.service';
 import { ProductItem } from './entities/item.entity';
 import { Variation } from './entities/variation.entity';
+import { TagService } from 'src/tag/tag.service';
+import { Tag } from 'src/tag/entities/tag.entity';
 
 @Resolver(() => Product)
 export class ProductResolver {
   constructor(
     private readonly productService: ProductService,
     private readonly reviewService: ReviewService,
+    private readonly tagService: TagService,
   ) {}
   private readonly logger = new Logger(ProductResolver.name);
 
@@ -211,7 +214,11 @@ export class ProductResolver {
     @Args('productCategoryInput')
     productCategoryInput: ProductCategoryInput,
   ) {
-    return this.productService.addCategoryToProduct(productCategoryInput);
+    try {
+      return this.productService.addCategoryToProduct(productCategoryInput);
+    } catch (e) {
+      this.logger.error(e);
+    }
   }
 
   @Roles(UserType.ADMIN)
@@ -220,7 +227,13 @@ export class ProductResolver {
     @Args('productCategoryInput')
     productCategoryInput: ProductCategoryInput,
   ) {
-    return this.productService.removeCategoryFromProduct(productCategoryInput);
+    try {
+      return this.productService.removeCategoryFromProduct(
+        productCategoryInput,
+      );
+    } catch (e) {
+      this.logger.error(e);
+    }
   }
 
   @Roles(UserType.ADMIN)
@@ -229,7 +242,11 @@ export class ProductResolver {
     @Args('addItemImagesInput')
     addItemImagesInput: AddItemImagesInput,
   ) {
-    return this.productService.addImagesToItem(addItemImagesInput);
+    try {
+      return this.productService.addImagesToItem(addItemImagesInput);
+    } catch (e) {
+      this.logger.error(e);
+    }
   }
 
   @Roles(UserType.ADMIN)
@@ -238,7 +255,11 @@ export class ProductResolver {
     @Args('ItemImageId')
     ItemImageId: number,
   ) {
-    return this.productService.removeImageFromItem(ItemImageId);
+    try {
+      return this.productService.removeImageFromItem(ItemImageId);
+    } catch (e) {
+      this.logger.error(e);
+    }
   }
 
   @Roles(UserType.ADMIN)
@@ -247,7 +268,11 @@ export class ProductResolver {
     @Args('addProductImagesInput')
     addProductImagesInput: AddProductImagesInput,
   ) {
-    return this.productService.addImagesToProduct(addProductImagesInput);
+    try {
+      return this.productService.addImagesToProduct(addProductImagesInput);
+    } catch (e) {
+      this.logger.error(e);
+    }
   }
 
   @Roles(UserType.ADMIN)
@@ -256,7 +281,11 @@ export class ProductResolver {
     @Args('productImageId')
     productImageId: number,
   ) {
-    return this.productService.removeImageFromProduct(productImageId);
+    try {
+      return this.productService.removeImageFromProduct(productImageId);
+    } catch (e) {
+      this.logger.error(e);
+    }
   }
 
   @ResolveField()
@@ -269,6 +298,25 @@ export class ProductResolver {
   userReview(@Parent() product: Product) {
     const { id } = product;
     return this.reviewService.getAllReviewsByProductId(id);
+  }
+
+  @ResolveField()
+  productTag(@Parent() product: Product) {
+    const { id } = product;
+    return this.tagService.findAllTagsByProductId(id);
+  }
+
+  @ResolveField()
+  async relatedProducts(@Parent() product: Product) {
+    let tags: Tag[];
+    if (product?.productTag) tags = product.productTag;
+    else tags = await this.tagService.findAllTagsByProductId(product.id);
+    return this.productService.findRelatedProducts(
+      tags.map((tag) => {
+        return tag.id;
+      }),
+      product.id,
+    );
   }
 
   @ResolveField()

@@ -36,6 +36,11 @@ input AddProductItemInput {
   variationsItem: [CreateVariationItemInput!]
 }
 
+input AddTagsToProductInput {
+  productId: Int!
+  productTags: [String!]!
+}
+
 input AddVariationOptionInput {
   productId: Int!
   value: String!
@@ -123,6 +128,7 @@ input CreateProductInput {
   image: [String!]
   name: String!
   productItem: [CreateProductItemInput!]
+  productTag: [String!]
   variation: [CreateVariationInput!]
 }
 
@@ -137,6 +143,10 @@ input CreateReviewInput {
   productId: Float!
   rating: Float!
   review: String!
+}
+
+input CreateTagInput {
+  value: String!
 }
 
 input CreateUserInput {
@@ -203,11 +213,13 @@ type Mutation {
   addItemToCart(addItemCartInput: AddItemCartInput!): [Cart!]!
   addProductItem(addProductItemInput: AddProductItemInput!): Product!
   addProductToFavoritesList(favoritesListInput: FavoritesListInput!): [FavoritesList!]!
+  addTagsToProduct(addTagsToProductInput: AddTagsToProductInput!): Boolean!
   addVariationOption(addVariationOptionInput: AddVariationOptionInput!): Product!
   createBrand(createBrandInput: CreateBrandInput!): Brand!
   createCategory(createCategoryInput: CreateCategoryInput!): Category!
   createProduct(createProductInput: CreateProductInput!): Product!
   createReview(createReviewInput: CreateReviewInput!): Review!
+  createTag(createTagInput: CreateTagInput!): Tag!
   createUser(createUserInput: CreateUserInput!): User!
   deleteAddress(removeAddressInput: RemoveAddressInput!): User!
   deleteProductItem(itemId: Int!): Product!
@@ -224,6 +236,8 @@ type Mutation {
   removeProduct(id: Int!): Product!
   removeProductFromFavoritesList(favoritesListInput: FavoritesListInput!): [FavoritesList!]!
   removeReview(productId: Int!): Review!
+  removeTag(id: Int!): Boolean!
+  removeTagFromProduct(removeTagFromProductInput: RemoveTagFromProductInput!): Boolean!
   removeUser(id: Int!): User!
   singIn(singInInput: SignInInput!): AuthResponse!
   updateAddress(updateAddressInput: UpdateAddressInput!): User!
@@ -234,6 +248,7 @@ type Mutation {
   updateProduct(updateProductInput: UpdateProductInput!): Product!
   updateProductItem(updateProductItemInput: UpdateProductItemInput!): Product!
   updateReview(updateReviewInput: UpdateReviewInput!): Review!
+  updateTag(updateTagInput: UpdateTagInput!): Tag!
   updateVariation(updateVariationInput: UpdateVariationInput!): Product!
   updateVariationOption(updateVariationOptionInput: UpdateVariationOptionInput!): Product!
   uploadImage(image: Upload!): UploadImage!
@@ -251,6 +266,8 @@ type Product {
   name: String!
   productImage: [Image!]
   productItem: [ProductItem!]
+  productTag: [Tag!]
+  relatedProducts: [Product!]
   reviewCount: Int!
   userReview: [Review!]
   variation: [Variation!]
@@ -292,6 +309,7 @@ type Query {
   category(id: Int!): Category!
   product(id: Int!): Product!
   products(productFilterDTO: ProductFilterDTO): [Product!]!
+  tag(id: Int!): Tag!
   user(id: Int!): User!
   users: [User!]!
 }
@@ -303,6 +321,11 @@ input RemoveAddressInput {
 input RemoveCategoryFromBrandInput {
   brandId: Int!
   categoryId: Int!
+}
+
+input RemoveTagFromProductInput {
+  productId: Int!
+  tagId: Int!
 }
 
 type Review {
@@ -318,6 +341,11 @@ input SignInInput {
   password: String!
   phone_number: String!
   username: String!
+}
+
+type Tag {
+  id: Int!
+  value: String!
 }
 
 input UpdateAddressInput {
@@ -379,6 +407,11 @@ input UpdateReviewInput {
   productId: Int!
   rating: Float
   review: String
+}
+
+input UpdateTagInput {
+  id: Int!
+  value: String!
 }
 
 input UpdateVariationInput {

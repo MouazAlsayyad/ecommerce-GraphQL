@@ -18,6 +18,7 @@ import {
 } from '../dto/create-product.input';
 import { UpdateProductInput } from '../dto/update-product.input';
 import { checkImage } from 'src/unit/check-image';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class PrismaProductRepository {
@@ -79,10 +80,48 @@ export class PrismaProductRepository {
         tx.product_Category.createMany({ data: categories });
       }
 
+      if (data.productTag)
+        await this.addTagsToNewProduct([...new Set(data.productTag)], id, tx);
+
       return id;
     });
 
     return this.getProductById(id);
+  }
+
+  private async addTagsToNewProduct(
+    tags: string[],
+    productId: number,
+    tx: Prisma.TransactionClient,
+  ) {
+    const data = await Promise.all(
+      tags.map(async (value) => {
+        const tagId = await this.findOrCreateTag(value.toLowerCase(), tx);
+        return { productId, tagId };
+      }),
+    );
+    return tx.product_Tag.createMany({ data });
+  }
+
+  private async findOrCreateTag(
+    value: string,
+    tx: Prisma.TransactionClient,
+  ): Promise<number> {
+    const tag = await tx.tag.findFirst({ where: { value } });
+    if (tag) return tag.id;
+    const newTag = await tx.tag.create({ data: { value } });
+    return newTag.id;
+  }
+
+  findRelatedProducts(tagIds: number[], productId: number): Promise<Product[]> {
+    const where = {
+      product_tag: { some: { tagId: { in: tagIds } } },
+      id: { not: productId },
+    };
+
+    return this.prisma.product.findMany({
+      where,
+    });
   }
 
   async updateProductById(data: UpdateProductInput): Promise<Product> {

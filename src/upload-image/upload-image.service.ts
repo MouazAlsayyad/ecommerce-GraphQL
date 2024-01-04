@@ -9,7 +9,6 @@ export class UploadImageService {
   constructor(private prisma: PrismaService) {}
   async uploadImage(image: Upload) {
     const file = await image;
-
     const dirPath = join(
       __dirname.split('\\').slice(0, -2).join('\\'),
       '/uploads',

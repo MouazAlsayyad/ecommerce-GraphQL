@@ -14,6 +14,7 @@ import { CategoryModule } from './category/category.module';
 import { BrandModule } from './brand/brand.module';
 import { FavoritesListModule } from './favorites-list/favorites-list.module';
 import { UploadImageModule } from './upload-image/upload-image.module';
+import { TagModule } from './tag/tag.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { UploadImageModule } from './upload-image/upload-image.module';
     BrandModule,
     FavoritesListModule,
     UploadImageModule,
+    TagModule,
   ],
   controllers: [],
   providers: [],

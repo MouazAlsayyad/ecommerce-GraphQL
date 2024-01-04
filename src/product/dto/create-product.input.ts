@@ -34,6 +34,12 @@ export class CreateProductInput {
   @IsString({ each: true })
   image?: string[] | null;
 
+  @Field(() => [String], { nullable: true })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  productTag?: string[] | null;
+
   @Field({ defaultValue: true })
   @IsBoolean()
   available: boolean;

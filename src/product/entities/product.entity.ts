@@ -16,6 +16,7 @@ import { ProductItem } from './item.entity';
 import { Attribute } from './attribute.entity';
 import { Variation } from './variation.entity';
 import { Image } from './image.entity';
+import { Tag } from 'src/tag/entities/tag.entity';
 
 @ObjectType()
 export class VoidType {}
@@ -90,4 +91,11 @@ export class Product {
 
   @Field(() => [Review], { nullable: true })
   userReview?: Omit<Review, 'id'>[];
+
+  @Field(() => [Tag], { nullable: true })
+  productTag?: Tag[];
+
+  @Field(() => [Product], { nullable: true })
+  relatedProducts?: Product[];
+  //
 }
