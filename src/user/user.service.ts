@@ -39,12 +39,14 @@ export class UserService {
     return this.userRepository.addCountry(data);
   }
 
-  addAddress(data: AddressInput, userId: number) {
-    return this.userRepository.addAddress(userId, data);
+  async addAddress(data: AddressInput, userId: number) {
+    await this.userRepository.addAddress(userId, data);
+    return this.findOne(userId);
   }
 
-  updateAddress(data: UpdateAddressInput, userId: number) {
-    return this.userRepository.updateAddress(userId, data);
+  async updateAddress(data: UpdateAddressInput, userId: number) {
+    await this.userRepository.updateAddress(userId, data);
+    return this.findOne(userId);
   }
 
   deleteAddress(data: RemoveAddressInput, userId: number) {

@@ -62,7 +62,7 @@ export class CategoryResolver {
     }
   }
 
-  @Mutation(() => Category)
+  @Mutation(() => Boolean)
   removeCategory(@Args('id', { type: () => Int }) id: number) {
     try {
       return this.categoryService.remove(id);

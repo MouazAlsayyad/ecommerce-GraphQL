@@ -58,20 +58,21 @@ export class PrismaBrandRepository {
     return this.getBrandById(id);
   }
 
-  remove(id: number): Promise<void> {
+  remove(id: number): Promise<boolean> {
     return this.prisma.$transaction(async (tx) => {
       await tx.brand.delete({ where: { id } });
+      return true;
     });
   }
 
   async removeCategory(
     removeCategoryToBrandDTO: RemoveCategoryFromBrandInput,
-  ): Promise<void> {
+  ): Promise<boolean> {
     const { brandId, categoryId } = removeCategoryToBrandDTO;
     await this.prisma.brand_Category.delete({
       where: { brandId_categoryId: { brandId, categoryId } },
     });
-    return;
+    return true;
   }
 
   async addCategories(

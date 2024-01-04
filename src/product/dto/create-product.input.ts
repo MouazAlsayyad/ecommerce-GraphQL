@@ -192,6 +192,11 @@ export class AddItemImagesInput {
   @Field(() => Int)
   @IsInt()
   @IsNotEmpty()
+  productId: number;
+
+  @Field(() => Int)
+  @IsInt()
+  @IsNotEmpty()
   itemId: number;
 
   @Field(() => [String])

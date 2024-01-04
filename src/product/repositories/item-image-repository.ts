@@ -23,7 +23,8 @@ export class PrismaItemImageRepository {
     return this.prisma.itemImage.findMany({ where: { productItemId } });
   }
 
-  removeImageFromItem(id: number) {
-    this.prisma.itemImage.delete({ where: { id } });
+  async removeImageFromItem(id: number) {
+    await this.prisma.itemImage.delete({ where: { id } });
+    return true;
   }
 }

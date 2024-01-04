@@ -45,7 +45,7 @@ export class ReviewResolver {
   }
 
   @Roles(UserType.USER, UserType.ADMIN)
-  @Mutation(() => Review)
+  @Mutation(() => Boolean)
   removeReview(
     @Context() context: ContextType,
     @Args('productId', { type: () => Int }) productId: number,

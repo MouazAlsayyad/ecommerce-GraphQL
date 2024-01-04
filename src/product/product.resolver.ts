@@ -90,10 +90,10 @@ export class ProductResolver {
   }
 
   @Roles(UserType.ADMIN)
-  @Mutation(() => Product)
+  @Mutation(() => Boolean)
   removeProduct(@Args('id', { type: () => Int }) id: number) {
     try {
-      return this.productService.remove(id);
+      return this.productService.deleteProductById(id);
     } catch (e) {
       this.logger.error(e);
     }
@@ -125,7 +125,7 @@ export class ProductResolver {
   }
 
   @Roles(UserType.ADMIN)
-  @Mutation(() => Product)
+  @Mutation(() => Boolean)
   deleteProductItem(@Args('itemId', { type: () => Int }) itemId: number) {
     try {
       return this.productService.deleteProductItem(itemId);
@@ -156,7 +156,7 @@ export class ProductResolver {
   }
 
   @Roles(UserType.ADMIN)
-  @Mutation(() => Product)
+  @Mutation(() => Boolean)
   removeAttribute(
     @Args('attributeId', { type: () => Int }) attributeId: number,
   ) {
@@ -222,7 +222,7 @@ export class ProductResolver {
   }
 
   @Roles(UserType.ADMIN)
-  @Mutation(() => Product)
+  @Mutation(() => Boolean)
   removeCategoryFromProduct(
     @Args('productCategoryInput')
     productCategoryInput: ProductCategoryInput,
@@ -250,7 +250,7 @@ export class ProductResolver {
   }
 
   @Roles(UserType.ADMIN)
-  @Mutation(() => Product)
+  @Mutation(() => Boolean)
   removeImageFromItem(
     @Args('ItemImageId')
     ItemImageId: number,
@@ -276,7 +276,7 @@ export class ProductResolver {
   }
 
   @Roles(UserType.ADMIN)
-  @Mutation(() => Product)
+  @Mutation(() => Boolean)
   removeImageFromProduct(
     @Args('productImageId')
     productImageId: number,

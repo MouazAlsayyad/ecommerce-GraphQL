@@ -63,13 +63,13 @@ export class PrismaCategoryRepository {
     return this.findOne(id);
   }
 
-  remove(id: number): Promise<void> {
+  remove(id: number): Promise<boolean> {
     return this.prisma.$transaction(async (tx) => {
       await this.findOne(id);
       await tx.brand_Category.deleteMany({ where: { categoryId: id } });
       await tx.product_Category.deleteMany({ where: { categoryId: id } });
       await tx.category.delete({ where: { id } });
-      return;
+      return true;
     });
   }
 }

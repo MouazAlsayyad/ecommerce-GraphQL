@@ -10,9 +10,11 @@ import { PrismaCartRepository } from './cart-repository';
 export class CartService {
   constructor(private cartRepository: PrismaCartRepository) {}
 
-  async addItemToCart(data: AddItemCartInput, userId: number): Promise<Cart[]> {
-    await this.cartRepository.addItemToCart(userId, { ...data });
-    return this.cartRepository.getCart(userId);
+  async addItemToCart(
+    data: AddItemCartInput,
+    userId: number,
+  ): Promise<boolean> {
+    return await this.cartRepository.addItemToCart(userId, { ...data });
   }
 
   getCart(userId: number): Promise<Cart[]> {

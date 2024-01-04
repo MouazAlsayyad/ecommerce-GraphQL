@@ -56,12 +56,6 @@ export class BrandResolver {
     }
   }
 
-  @ResolveField()
-  async category(@Parent() brand: Brand) {
-    const { id } = brand;
-    return this.categoryService.getAllCategories({ brandId: id });
-  }
-
   @Roles(UserType.ADMIN)
   @Mutation(() => Brand)
   updateBrand(@Args('updateBrandInput') updateBrandInput: UpdateBrandInput) {
@@ -73,7 +67,7 @@ export class BrandResolver {
   }
 
   @Roles(UserType.ADMIN)
-  @Mutation(() => Brand)
+  @Mutation(() => Boolean)
   removeBrand(@Args('id', { type: () => Int }) id: number) {
     try {
       return this.brandService.remove(id);
@@ -96,7 +90,7 @@ export class BrandResolver {
   }
 
   @Roles(UserType.ADMIN)
-  @Mutation(() => Brand)
+  @Mutation(() => Boolean)
   removeCategoryFromBrand(
     @Args('removeCategoryFromBrandInput')
     removeCategoryFromBrandInput: RemoveCategoryFromBrandInput,
@@ -108,5 +102,11 @@ export class BrandResolver {
     } catch (e) {
       this.logger.error(e);
     }
+  }
+
+  @ResolveField()
+  async category(@Parent() brand: Brand) {
+    const { id } = brand;
+    return this.categoryService.getAllCategories({ brandId: id });
   }
 }

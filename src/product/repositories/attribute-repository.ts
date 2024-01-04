@@ -51,12 +51,12 @@ export class PrismaAttributeRepository {
     });
   }
 
-  removeAttribute(attributeId: number): Promise<number> {
+  removeAttribute(attributeId: number): Promise<boolean> {
     return this.prisma.$transaction(async (tx) => {
-      const { productId } = await tx.productAttribute.delete({
+      await tx.productAttribute.delete({
         where: { id: attributeId },
       });
-      return productId;
+      return true;
     });
   }
 

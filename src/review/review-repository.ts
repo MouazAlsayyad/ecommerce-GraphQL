@@ -85,7 +85,7 @@ export class PrismaReviewRepository {
     });
   }
 
-  remove(productId: number, userId: number): Promise<void> {
+  remove(productId: number, userId: number): Promise<boolean> {
     return this.prisma.$transaction(async (tx) => {
       const userRating = await tx.userReview.findFirst({
         where: { AND: [{ userId }, { productId }] },
@@ -101,7 +101,7 @@ export class PrismaReviewRepository {
       await tx.userReview.delete({ where: { id: userRating.id } });
 
       await updateProductReviewInfo(productId, tx);
-      return;
+      return true;
     });
   }
 }

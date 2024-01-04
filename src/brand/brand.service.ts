@@ -28,9 +28,7 @@ export class BrandService {
   }
 
   async remove(id: number) {
-    const brand = await this.brandRepository.getBrandById(id);
-    await this.brandRepository.remove(id);
-    return brand;
+    return await this.brandRepository.remove(id);
   }
 
   addCategoriesToBrand(data: AddCategoriesToBrandInput) {

@@ -17,7 +17,7 @@ import { Prisma } from '@prisma/client';
 export class PrismaCartRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  addItemToCart(userId: number, data: ItemCartInput): Promise<void> {
+  addItemToCart(userId: number, data: ItemCartInput): Promise<boolean> {
     const { itemId, qty } = data;
     return this.prisma.$transaction(async (tx) => {
       let cart = await tx.cart.findUnique({ where: { userId } });
@@ -28,6 +28,8 @@ export class PrismaCartRepository {
         throw new NotFoundException(`item with id ${itemId} not found`);
 
       await this.addItemsToCart(tx, cart.id, itemId, qty);
+
+      return true;
     });
   }
 

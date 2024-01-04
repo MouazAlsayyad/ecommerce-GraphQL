@@ -15,7 +15,7 @@ export class PrismaProductImageRepository {
           return { imagePath, productId: data.productId };
         }),
       );
-      tx.productImage.createMany({ data: productImage });
+      return tx.productImage.createMany({ data: productImage });
     });
   }
 
@@ -23,7 +23,8 @@ export class PrismaProductImageRepository {
     return this.prisma.productImage.findMany({ where: { productId } });
   }
 
-  removeImageFromProduct(id: number) {
-    this.prisma.productImage.delete({ where: { id } });
+  async removeImageFromProduct(id: number) {
+    await this.prisma.productImage.delete({ where: { id } });
+    return true;
   }
 }

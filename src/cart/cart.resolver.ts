@@ -14,7 +14,7 @@ export class CartResolver {
   private readonly logger = new Logger(CartResolver.name);
 
   @Roles(UserType.USER, UserType.ADMIN)
-  @Mutation(() => [Cart])
+  @Mutation(() => Boolean)
   addItemToCart(
     @Args('addItemCartInput') addItemCartInput: AddItemCartInput,
     @Context() context: ContextType,

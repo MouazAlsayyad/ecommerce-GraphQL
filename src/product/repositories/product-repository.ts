@@ -142,11 +142,11 @@ export class PrismaProductRepository {
     return this.getProductById(data.id);
   }
 
-  async deleteProductById(id: number): Promise<void> {
-    await this.prisma.$transaction(async (tx) => {
-      return await deleteProductAndRelatedData(tx, id);
+  async deleteProductById(id: number): Promise<boolean> {
+    return await this.prisma.$transaction(async (tx) => {
+      await deleteProductAndRelatedData(tx, id);
+      return true;
     });
-    return;
   }
 
   addCategoryToProduct(data: ProductCategoryInput): Promise<boolean> {

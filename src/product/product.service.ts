@@ -78,7 +78,7 @@ export class ProductService {
     return this.productRepository.updateProductById(updateProductInput);
   }
 
-  remove(id: number) {
+  deleteProductById(id: number) {
     return this.productRepository.deleteProductById(id);
   }
 
@@ -90,60 +90,68 @@ export class ProductService {
     return this.itemRepository.getProductItemsByProductId(id);
   }
 
-  addProductItem(data: AddProductItemInput) {
-    this.itemRepository.addProductItem(data);
+  async addProductItem(data: AddProductItemInput) {
+    await this.itemRepository.addProductItem(data);
+    return this.findOne(data.productId);
   }
 
-  updateProductItem(data: UpdateProductItemInput) {
-    this.itemRepository.updateProductItem(data);
+  async updateProductItem(data: UpdateProductItemInput) {
+    await this.itemRepository.updateProductItem(data);
+    return this.findOne(data.productId);
   }
 
   deleteProductItem(itemId: number) {
-    this.itemRepository.deleteProductItem(itemId);
+    return this.itemRepository.deleteProductItem(itemId);
   }
 
   getAttributesByProductId(id: number) {
     return this.attributeRepository.getAttributesByProductId(id);
   }
 
-  addAttribute(data: AddProductAttributeInput) {
-    this.attributeRepository.addAttribute(data);
+  async addAttribute(data: AddProductAttributeInput) {
+    await this.attributeRepository.addAttribute(data);
+    return this.findOne(data.productId);
   }
 
-  updateAttribute(data: UpdateProductAttributeInput) {
-    this.attributeRepository.updateAttribute(data);
+  async updateAttribute(data: UpdateProductAttributeInput) {
+    await this.attributeRepository.updateAttribute(data);
+    return this.findOne(data.productId);
   }
 
   removeAttribute(attributeId: number) {
-    this.attributeRepository.removeAttribute(attributeId);
+    return this.attributeRepository.removeAttribute(attributeId);
   }
 
   getVariationByProductId(id: number) {
     return this.variationRepository.getVariationByProductId(id);
   }
 
-  addVariationOption(data: AddVariationOptionInput) {
-    this.variationRepository.insertVariationOption(data);
+  async addVariationOption(data: AddVariationOptionInput) {
+    await this.variationRepository.insertVariationOption(data);
+    return this.findOne(data.productId);
   }
 
-  updateVariationOption(data: UpdateVariationOptionInput) {
-    this.variationRepository.updateVariationOptionById(data);
+  async updateVariationOption(data: UpdateVariationOptionInput) {
+    await this.variationRepository.updateVariationOptionById(data);
+    return this.findOne(data.productId);
   }
 
-  updateVariation(data: UpdateVariationInput) {
-    this.variationRepository.updateVariationNameById(data);
+  async updateVariation(data: UpdateVariationInput) {
+    await this.variationRepository.updateVariationNameById(data);
+    return this.findOne(data.productId);
   }
 
-  addCategoryToProduct(data: ProductCategoryInput) {
-    this.productRepository.addCategoryToProduct(data);
+  async addCategoryToProduct(data: ProductCategoryInput) {
+    await this.productRepository.addCategoryToProduct(data);
+    return this.findOne(data.productId);
   }
   removeCategoryFromProduct(data: ProductCategoryInput) {
-    this.productRepository.removeCategoryFromProduct(data);
+    return this.productRepository.removeCategoryFromProduct(data);
   }
 
-  ////
-  addImagesToItem(data: AddItemImagesInput) {
-    return this.itemImageRepository.addImagesToItem(data);
+  async addImagesToItem(data: AddItemImagesInput) {
+    await this.itemImageRepository.addImagesToItem(data);
+    return this.findOne(data.productId);
   }
 
   getImagesByItemId(itemId: number) {
@@ -154,8 +162,9 @@ export class ProductService {
     return this.itemImageRepository.removeImageFromItem(id);
   }
 
-  addImagesToProduct(data: AddProductImagesInput) {
-    return this.productImageRepository.addImagesToProduct(data);
+  async addImagesToProduct(data: AddProductImagesInput) {
+    await this.productImageRepository.addImagesToProduct(data);
+    return this.findOne(data.productId);
   }
 
   getImagesByProductId(productId: number) {

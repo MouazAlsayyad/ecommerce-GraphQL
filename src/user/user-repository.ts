@@ -14,7 +14,7 @@ import {
 } from './utils/user-service-utils';
 
 import * as bcryptjs from 'bcryptjs';
-import { Address, Country } from './entities/address.entity';
+import { Address } from './entities/address.entity';
 import { UpdateAddressInput } from './dto/update-user.input';
 
 @Injectable()
@@ -55,19 +55,20 @@ export class PrismaUserRepository {
     });
   }
 
-  addCountry(data: CountryInput): Promise<Country> {
+  addCountry(data: CountryInput): Promise<boolean> {
     return this.prisma.$transaction(async (tx) => {
       await checkCountryByName(data.country_name, tx);
-      return tx.country.create({ data: { country_name: data.country_name } });
+      await tx.country.create({ data: { country_name: data.country_name } });
+      return true;
     });
   }
 
-  addAddress(userId: number, data: AddressInput): Promise<Address> {
+  addAddress(userId: number, data: AddressInput): Promise<boolean> {
     return this.prisma.$transaction(async (tx) => {
       await checkCountryById(data.countryId, tx);
       const { address, city, postal_code, region, street_number, countryId } =
         data;
-      return tx.address.create({
+      await tx.address.create({
         data: {
           userId,
           address,
@@ -78,6 +79,7 @@ export class PrismaUserRepository {
           countryId,
         },
       });
+      return true;
     });
   }
 
@@ -99,13 +101,15 @@ export class PrismaUserRepository {
       });
     });
   }
-  async removeAddress(userId: number, addressId: number): Promise<void> {
-    await this.prisma.$transaction(async (tx) => {
+  async removeAddress(userId: number, addressId: number): Promise<boolean> {
+    return this.prisma.$transaction(async (tx) => {
       await checkAddress(addressId, userId, tx);
 
-      return tx.address.delete({
+      await tx.address.delete({
         where: { id: addressId },
       });
+
+      return true;
     });
   }
 
@@ -119,9 +123,10 @@ export class PrismaUserRepository {
       });
     });
   }
-  async remove(id: number): Promise<void> {
-    await this.prisma.$transaction(async (tx) => {
-      tx.user.delete({ where: { id } });
+  async remove(id: number): Promise<boolean> {
+    return this.prisma.$transaction(async (tx) => {
+      await tx.user.delete({ where: { id } });
+      return true;
     });
   }
 }

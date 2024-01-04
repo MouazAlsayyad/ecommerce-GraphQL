@@ -92,7 +92,7 @@ export class PrismaProductItemRepository {
     return result;
   }
 
-  deleteProductItem(id: number): Promise<number> {
+  deleteProductItem(id: number): Promise<boolean> {
     return this.prisma.$transaction(async (prisma) => {
       const productItem = await prisma.productItem.findUnique({
         where: { id },
@@ -109,7 +109,7 @@ export class PrismaProductItemRepository {
         where: { id },
       });
 
-      return productItem.productId;
+      return true;
     });
   }
 }

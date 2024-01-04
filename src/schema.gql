@@ -15,6 +15,7 @@ input AddItemCartInput {
 input AddItemImagesInput {
   image: [String!]!
   itemId: Int!
+  productId: Int!
 }
 
 input AddProductAttributeInput {
@@ -207,10 +208,10 @@ type Mutation {
   addAttribute(addProductAttributeInput: AddProductAttributeInput!): Product!
   addCategoriesToBrand(addCategoriesToBrandInput: AddCategoriesToBrandInput!): Brand!
   addCategoryToProduct(productCategoryInput: ProductCategoryInput!): Product!
-  addCountry(countryInput: CountryInput!): User!
+  addCountry(countryInput: CountryInput!): Boolean!
   addImagesToItem(addItemImagesInput: AddItemImagesInput!): Product!
   addImagesToProduct(addProductImagesInput: AddProductImagesInput!): Product!
-  addItemToCart(addItemCartInput: AddItemCartInput!): [Cart!]!
+  addItemToCart(addItemCartInput: AddItemCartInput!): Boolean!
   addProductItem(addProductItemInput: AddProductItemInput!): Product!
   addProductToFavoritesList(favoritesListInput: FavoritesListInput!): [FavoritesList!]!
   addTagsToProduct(addTagsToProductInput: AddTagsToProductInput!): Boolean!
@@ -221,24 +222,24 @@ type Mutation {
   createReview(createReviewInput: CreateReviewInput!): Review!
   createTag(createTagInput: CreateTagInput!): Tag!
   createUser(createUserInput: CreateUserInput!): User!
-  deleteAddress(removeAddressInput: RemoveAddressInput!): User!
-  deleteProductItem(itemId: Int!): Product!
+  deleteAddress(removeAddressInput: RemoveAddressInput!): Boolean!
+  deleteProductItem(itemId: Int!): Boolean!
   emptyTheShoppingCart: [Cart!]!
   login(loginInput: LogInInput!): AuthResponse!
-  removeAttribute(attributeId: Int!): Product!
-  removeBrand(id: Int!): Brand!
-  removeCategory(id: Int!): Category!
-  removeCategoryFromBrand(removeCategoryFromBrandInput: RemoveCategoryFromBrandInput!): Brand!
-  removeCategoryFromProduct(productCategoryInput: ProductCategoryInput!): Product!
-  removeImageFromItem(ItemImageId: Float!): Product!
-  removeImageFromProduct(productImageId: Float!): Product!
+  removeAttribute(attributeId: Int!): Boolean!
+  removeBrand(id: Int!): Boolean!
+  removeCategory(id: Int!): Boolean!
+  removeCategoryFromBrand(removeCategoryFromBrandInput: RemoveCategoryFromBrandInput!): Boolean!
+  removeCategoryFromProduct(productCategoryInput: ProductCategoryInput!): Boolean!
+  removeImageFromItem(ItemImageId: Float!): Boolean!
+  removeImageFromProduct(productImageId: Float!): Boolean!
   removeItemFromCart(addItemCartInput: AddItemCartInput!): [Cart!]!
-  removeProduct(id: Int!): Product!
+  removeProduct(id: Int!): Boolean!
   removeProductFromFavoritesList(favoritesListInput: FavoritesListInput!): [FavoritesList!]!
-  removeReview(productId: Int!): Review!
+  removeReview(productId: Int!): Boolean!
   removeTag(id: Int!): Boolean!
   removeTagFromProduct(removeTagFromProductInput: RemoveTagFromProductInput!): Boolean!
-  removeUser(id: Int!): User!
+  removeUser(id: Int!): Boolean!
   singIn(singInInput: SignInInput!): AuthResponse!
   updateAddress(updateAddressInput: UpdateAddressInput!): User!
   updateAttribute(updateProductAttributeInput: UpdateProductAttributeInput!): Product!

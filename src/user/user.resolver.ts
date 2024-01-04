@@ -50,7 +50,7 @@ export class UserResolver {
   }
 
   @Roles(UserType.ADMIN)
-  @Mutation(() => User)
+  @Mutation(() => Boolean)
   removeUser(@Args('id', { type: () => Int }) id: number) {
     try {
       return this.userService.remove(id);
@@ -60,7 +60,7 @@ export class UserResolver {
   }
 
   @Roles(UserType.ADMIN)
-  @Mutation(() => User)
+  @Mutation(() => Boolean)
   addCountry(@Args('countryInput') countryInput: CountryInput) {
     try {
       return this.userService.addCountry(countryInput);
@@ -99,7 +99,7 @@ export class UserResolver {
   }
 
   @Roles(UserType.USER)
-  @Mutation(() => User)
+  @Mutation(() => Boolean)
   deleteAddress(
     @Args('removeAddressInput') removeAddressInput: RemoveAddressInput,
     @Context() context: ContextType,
