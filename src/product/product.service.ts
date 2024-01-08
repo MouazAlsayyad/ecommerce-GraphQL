@@ -23,6 +23,7 @@ import { PrismaVariationRepository } from './repositories/variation-repository';
 import { PrismaProductItemRepository } from './repositories/item-repository';
 import { PrismaItemImageRepository } from './repositories/item-image-repository';
 import { PrismaProductImageRepository } from './repositories/product-image-repository';
+import { productWhereFilter } from 'src/unit/product-filter-map';
 
 @Injectable()
 export class ProductService {
@@ -40,30 +41,11 @@ export class ProductService {
   }
 
   findAll(filters: ProductFilterDTO) {
-    const price =
-      filters?.minPrice || filters?.maxPrice
-        ? {
-            ...(filters?.minPrice && {
-              gte: parseFloat(filters.minPrice.toString()),
-            }),
-            ...(filters?.maxPrice && {
-              lte: parseFloat(filters.maxPrice.toString()),
-            }),
-          }
-        : undefined;
-
-    delete filters?.minPrice;
-    delete filters?.maxPrice;
-
-    const filter = {
-      ...(filters?.name && { name: filters.name }),
-      ...(filters?.brand && { brand: { name: filters.brand } }),
-      ...(filters?.categoryId && {
-        product_category: { some: { categoryId: filters.categoryId } },
-      }),
-      ...(price && { productItem: { some: { price } } }),
-    };
-    return this.productRepository.getProducts(filter);
+    return this.productRepository.getProducts(
+      productWhereFilter(filters),
+      filters.skip,
+      filters.take,
+    );
   }
 
   findOne(id: number) {

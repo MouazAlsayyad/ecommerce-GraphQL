@@ -168,6 +168,7 @@ export async function createProductConfiguration(
     await prisma.productConfiguration.create({
       data: {
         variation: { connect: { id: variationId } },
+
         productItem: { connect: { id: productItemId } },
         variationOption: { connect: { id: variationOptionId } },
       },

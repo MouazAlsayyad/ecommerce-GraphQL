@@ -11,7 +11,7 @@ export class UploadImageService {
     const file = await image;
     const dirPath = join(
       __dirname.split('\\').slice(0, -2).join('\\'),
-      '/uploads',
+      '/uploads/images',
     );
     const filename = this.filename(file);
     const path = `${dirPath}\\${filename}`;
@@ -21,7 +21,7 @@ export class UploadImageService {
 
     if (!isImage)
       throw new BadRequestException(
-        'Invalid file type. Please upload an image.',
+        'Invalid file type. Please upload an image (.jpeg/.png) ',
       );
 
     return await this.prisma.$transaction(async (tx) => {

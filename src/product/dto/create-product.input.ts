@@ -8,6 +8,8 @@ import {
   ValidateNested,
   IsNumber,
   IsOptional,
+  Min,
+  Max,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -265,19 +267,52 @@ export class ProductCategoryInput {
 @InputType()
 export class ProductFilterDTO {
   @Field({ nullable: true })
+  @IsOptional()
   name?: string;
 
   @Field({ nullable: true })
+  @IsOptional()
+  variationOptions?: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
   maxPrice?: number;
 
   @Field({ nullable: true })
+  @IsOptional()
   minPrice?: number;
 
   @Field({ nullable: true })
+  @IsOptional()
+  @Min(0)
+  @Max(5)
+  averageRating?: number;
+
+  @Field(() => Int, { nullable: true })
+  @IsOptional()
   categoryId?: number;
 
   @Field({ nullable: true })
+  @IsOptional()
+  brandId?: number;
+
+  @Field(() => Int, { nullable: true })
+  @IsOptional()
   brand?: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  category?: string;
+
+  @Field(() => Int, { nullable: true })
+  @IsOptional()
+  @Min(0)
+  skip?: number;
+
+  @Field(() => Int, { nullable: true })
+  @IsOptional()
+  @Min(1)
+  take?: number;
 }
 
 @InputType()

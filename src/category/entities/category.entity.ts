@@ -24,6 +24,9 @@ export class Category {
   @IsNotEmpty()
   image: string;
 
+  @Field(() => Int, { nullable: true })
+  parentId?: number | null;
+
   @Field(() => [Product])
   product?: Product[];
 }

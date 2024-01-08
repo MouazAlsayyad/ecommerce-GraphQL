@@ -95,6 +95,7 @@ type Category {
   id: Int!
   image: String!
   name: String!
+  parentId: Int
   product: [Product!]!
 }
 
@@ -184,6 +185,14 @@ type FavoritesList {
 
 input FavoritesListInput {
   productId: Int!
+}
+
+type Filter {
+  brand: [Brand!]
+  category: [Category!]
+  maxPrice: Float
+  minPrice: Float
+  variationFilter: [VariationFilter!]
 }
 
 type Image {
@@ -280,11 +289,17 @@ input ProductCategoryInput {
 }
 
 input ProductFilterDTO {
-  brand: String
-  categoryId: Float
+  averageRating: Float
+  brand: Int
+  brandId: Float
+  category: String
+  categoryId: Int
   maxPrice: Float
   minPrice: Float
   name: String
+  skip: Int
+  take: Int
+  variationOptions: String
 }
 
 type ProductItem {
@@ -308,6 +323,7 @@ type Query {
   brands: [Brand!]!
   cart: [Cart!]!
   category(id: Int!): Category!
+  filter(productFilterDTO: ProductFilterDTO): Filter!
   product(id: Int!): Product!
   products(productFilterDTO: ProductFilterDTO): [Product!]!
   tag(id: Int!): Tag!
@@ -459,6 +475,11 @@ type Variation {
   variationOptions: [VariationOption!]
 }
 
+type VariationFilter {
+  name: String!
+  variationOptionFilter: [VariationOptionFilter!]!
+}
+
 type VariationItem {
   nameVariation: String!
   valueVariation: String!
@@ -466,6 +487,10 @@ type VariationItem {
 
 type VariationOption {
   id: Int!
+  value: String!
+}
+
+type VariationOptionFilter {
   value: String!
 }
 

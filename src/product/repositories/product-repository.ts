@@ -24,8 +24,17 @@ import { Prisma } from '@prisma/client';
 export class PrismaProductRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getProducts(where): Promise<Product[]> {
-    return this.prisma.product.findMany({ where });
+  async getProducts(
+    where: Prisma.ProductWhereInput,
+    cursor: number | null = null,
+    take: number = 10,
+  ): Promise<Product[]> {
+    return this.prisma.product.findMany({
+      where,
+      skip: cursor ? 1 : 0,
+      cursor: cursor ? { id: cursor } : undefined,
+      take,
+    });
   }
 
   getProductCategories(productId: number) {

@@ -58,15 +58,32 @@ export class ProductResolver {
 
   @Query(() => [Product], { name: 'products' })
   findAll(
-    @Args('productFilterDTO', { nullable: true })
+    @Args('productFilterDTO', { type: () => ProductFilterDTO, nullable: true })
     productFilterDTO: ProductFilterDTO,
   ) {
     try {
+      console.log(productFilterDTO);
       return this.productService.findAll(productFilterDTO);
     } catch (e) {
       this.logger.error(e);
     }
   }
+
+  // @Query(() => [Product], { name: 'secondQuery' })
+  // filter(
+  //   @Args('inputParameter', { type: () => [Product], nullable: true })
+  //   inputParameter: ProductFilterDTO[],
+  // ) {
+  //   try {
+  //     console.log('Executing second query with parameter:', inputParameter);
+  //     // You can use this.productService or any other service/method as needed
+  //     // Return the result of the second query
+  //     return []; // Replace with actual implementation
+  //   } catch (e) {
+  //     console.error(e);
+  //     throw new Error('Unable to fetch data for the second query');
+  //   }
+  // }
 
   @Query(() => Product, { name: 'product' })
   findOne(@Args('id', { type: () => Int }) id: number) {

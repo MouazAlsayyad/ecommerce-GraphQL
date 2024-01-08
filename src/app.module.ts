@@ -15,6 +15,7 @@ import { BrandModule } from './brand/brand.module';
 import { FavoritesListModule } from './favorites-list/favorites-list.module';
 import { UploadImageModule } from './upload-image/upload-image.module';
 import { TagModule } from './tag/tag.module';
+import { FilterModule } from './filter/filter.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { TagModule } from './tag/tag.module';
     FavoritesListModule,
     UploadImageModule,
     TagModule,
+    FilterModule,
   ],
   controllers: [],
   providers: [],

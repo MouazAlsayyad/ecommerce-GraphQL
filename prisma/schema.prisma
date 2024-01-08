@@ -113,25 +113,26 @@ model VariationOption {
 }
 
 model Product {
-  id               Int                @id @default(autoincrement())
-  name             String
-  description      String
-  coverImage       String
-  available        Boolean
-  brandId          Int?
-  brand            Brand?              @relation(fields: [brandId], references: [id])
-  favouritesList   FavoritesList[]
-  image            String[]
-  attributes       ProductAttribute[]
-  productImage     ProductImage[]
-  variation        Variation[]
-  productItem      ProductItem[]
-  userReview       UserReview[]
-  cartItems        CartItems[]
-  product_category Product_Category[]
-  product_tag      Product_Tag[]
-  averageRating    Float?             @default(0)
-  reviewCount      Int?               @default(0)
+  id                          Int                     @id @default(autoincrement())
+  name                        String
+  description                 String
+  coverImage                  String
+  available                   Boolean
+  brandId                     Int?
+  brand                       Brand?                  @relation(fields: [brandId], references: [id])
+  favouritesList              FavoritesList[]
+  image                       String[]
+  attributes                  ProductAttribute[]
+  productImage                ProductImage[]
+  variation                   Variation[]
+  productItem                 ProductItem[]
+  userReview                  UserReview[]
+  cartItems                   CartItems[]
+  product_category            Product_Category[]
+  product_tag                 Product_Tag[]
+  // productConfiguration        ProductConfiguration[]
+  averageRating               Float?                  @default(0)
+  reviewCount                 Int?                    @default(0)
 }
 
 model Tag{
@@ -178,10 +179,12 @@ model ItemImage{
 
 model ProductConfiguration {
   productItemId     Int
+  // productId         Int            
   variationId       Int
   variationOptionId Int
   variationOption   VariationOption @relation(fields: [variationOptionId], references: [id])
   productItem       ProductItem     @relation(fields: [productItemId], references: [id])
+  // product           Product         @relation(fields: [productId], references: [id])
   variation         Variation       @relation(fields: [variationId], references: [id])
 
   @@id([productItemId, variationId])
