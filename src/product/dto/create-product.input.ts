@@ -226,6 +226,58 @@ export class AddVariationOptionInput {
 }
 
 @InputType()
+export class RemoveItemInput {
+  @Field(() => Int)
+  @IsInt()
+  @IsNotEmpty()
+  productId: number;
+
+  @Field(() => Int)
+  @IsInt()
+  @IsNotEmpty()
+  itemId: number;
+}
+
+@InputType()
+export class RemoveAttributeInput {
+  @Field(() => Int)
+  @IsInt()
+  @IsNotEmpty()
+  productId: number;
+
+  @Field(() => Int)
+  @IsInt()
+  @IsNotEmpty()
+  attributeId: number;
+}
+
+@InputType()
+export class RemoveItemImageInput {
+  @Field(() => Int)
+  @IsInt()
+  @IsNotEmpty()
+  productId: number;
+
+  @Field(() => Int)
+  @IsInt()
+  @IsNotEmpty()
+  ItemImageId: number;
+}
+
+@InputType()
+export class RemoveProductImageInput {
+  @Field(() => Int)
+  @IsInt()
+  @IsNotEmpty()
+  productId: number;
+
+  @Field(() => Int)
+  @IsInt()
+  @IsNotEmpty()
+  productImageId: number;
+}
+
+@InputType()
 export class AddProductItemInput {
   @Field(() => Int)
   @IsInt()
@@ -264,53 +316,72 @@ export class ProductCategoryInput {
   @IsNotEmpty()
   productId: number;
 }
+
 @InputType()
-export class ProductFilterDTO {
+export class FilterDTO {
   @Field({ nullable: true })
   @IsOptional()
+  @IsString()
   name?: string;
 
   @Field({ nullable: true })
   @IsOptional()
+  @IsString()
   variationOptions?: string;
 
   @Field({ nullable: true })
   @IsOptional()
+  @IsNumber()
   maxPrice?: number;
 
   @Field({ nullable: true })
   @IsOptional()
+  @IsNumber()
   minPrice?: number;
 
   @Field({ nullable: true })
   @IsOptional()
+  @IsNumber()
   @Min(0)
   @Max(5)
   averageRating?: number;
 
   @Field(() => Int, { nullable: true })
   @IsOptional()
+  @IsInt()
   categoryId?: number;
 
   @Field({ nullable: true })
   @IsOptional()
+  @IsInt()
   brandId?: number;
 
   @Field(() => Int, { nullable: true })
   @IsOptional()
+  @IsString()
   brand?: string;
 
   @Field({ nullable: true })
   @IsOptional()
+  @IsString()
   category?: string;
+}
+@InputType()
+export class ProductFilterDTO {
+  @Field(() => FilterDTO, { nullable: true })
+  @IsOptional()
+  @Type(() => FilterDTO)
+  filter?: FilterDTO;
 
   @Field(() => Int, { nullable: true })
   @IsOptional()
+  @IsInt()
   @Min(0)
   skip?: number;
 
   @Field(() => Int, { nullable: true })
   @IsOptional()
+  @IsInt()
   @Min(1)
   take?: number;
 }

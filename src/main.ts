@@ -21,7 +21,6 @@ async function bootstrap() {
     graphqlUploadExpress({ maxFileSize: 100000000, maxFiles: 10 }),
   );
 
-
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -34,6 +33,6 @@ async function bootstrap() {
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
-  Logger.log(`🚀 Application is running on: http://localhost:${port}`);
+  Logger.log(`🚀 Application is running on: http://localhost:${port}/graphql`);
 }
 bootstrap();

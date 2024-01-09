@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 import {
-  checkProductItemMatch,
   createItem,
   createVariationsItem,
   getVariationByProductId,
@@ -42,7 +41,7 @@ export class PrismaProductItemRepository {
       const variation = await getVariationByProductId(prisma, data.productId);
 
       const item = await prisma.productItem.update({
-        where: { id: data.productItemId },
+        where: { id: data.productItemId, productId: data.productId },
         data: {
           price: data.price,
           qtyInStock: data.qtyInStock,
@@ -50,7 +49,7 @@ export class PrismaProductItemRepository {
         },
       });
 
-      checkProductItemMatch(data.productId, item.productId, data.productItemId);
+      // checkProductItemMatch(data.productId, item.productId, data.productItemId);
 
       if (data?.variationsItem) {
         checkVariationsItemLength(data.variationsItem.length, variation.length);
@@ -92,10 +91,10 @@ export class PrismaProductItemRepository {
     return result;
   }
 
-  deleteProductItem(id: number): Promise<boolean> {
+  deleteProductItem(id: number, productId: number): Promise<boolean> {
     return this.prisma.$transaction(async (prisma) => {
       const productItem = await prisma.productItem.findUnique({
-        where: { id },
+        where: { id, productId },
       });
 
       if (!productItem)

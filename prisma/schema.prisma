@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  // previewFeatures = ["orderByRelation"]
 }
 
 datasource db {
@@ -32,6 +33,7 @@ model User {
   created_at    DateTime        @default(now())
   updated_at    DateTime        @updatedAt
   cart          Cart?
+  product       Product[]
   favoritesList FavoritesList[]
   addresses     Address[]
   userReview    UserReview[]
@@ -119,6 +121,7 @@ model Product {
   coverImage                  String
   available                   Boolean
   brandId                     Int?
+  userId                      Int
   brand                       Brand?                  @relation(fields: [brandId], references: [id])
   favouritesList              FavoritesList[]
   image                       String[]
@@ -130,9 +133,11 @@ model Product {
   cartItems                   CartItems[]
   product_category            Product_Category[]
   product_tag                 Product_Tag[]
+  user       User     @relation(fields: [userId], references: [id])
   // productConfiguration        ProductConfiguration[]
   averageRating               Float?                  @default(0)
   reviewCount                 Int?                    @default(0)
+
 }
 
 model Tag{

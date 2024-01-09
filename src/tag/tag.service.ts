@@ -2,7 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTagInput } from './dto/create-tag.input';
 import { UpdateTagInput } from './dto/update-tag.input';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Tag } from '@prisma/client';
+import { Tag, UserType } from '@prisma/client';
+import { ForbiddenError } from '@nestjs/apollo';
 
 @Injectable()
 export class TagService {
@@ -24,7 +25,23 @@ export class TagService {
     });
   }
 
-  async addTagsToProduct(productTags: string[], productId: number) {
+  async addTagsToProduct(
+    productTags: string[],
+    productId: number,
+    userId: number,
+    user_type: UserType,
+  ) {
+    if (user_type === UserType.SELLER) {
+      const product = await this.prisma.product.findUnique({
+        where: { id: productId },
+      });
+      if (product.userId !== userId) {
+        throw new ForbiddenError(
+          `You do not have permission to access this resource.`,
+        );
+      }
+    }
+
     const allData = await Promise.all(
       productTags.map(async (value) => {
         const tagId = await this.findOrCreateTag(value.toLowerCase());
@@ -55,7 +72,22 @@ export class TagService {
     });
   }
 
-  async removeTagFromProduct(productId: number, tagId: number) {
+  async removeTagFromProduct(
+    productId: number,
+    tagId: number,
+    userId: number,
+    user_type: UserType,
+  ) {
+    if (user_type === UserType.SELLER) {
+      const product = await this.prisma.product.findUnique({
+        where: { id: productId },
+      });
+      if (product.userId !== userId) {
+        throw new ForbiddenError(
+          `You do not have permission to access this resource.`,
+        );
+      }
+    }
     await this.prisma.product_Tag.delete({
       where: { tagId_productId: { productId, tagId } },
     });

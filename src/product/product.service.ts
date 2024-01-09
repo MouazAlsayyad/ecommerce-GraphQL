@@ -4,10 +4,11 @@ import {
   AddProductAttributeInput,
   AddProductImagesInput,
   AddProductItemInput,
-  AddVariationOptionInput,
+  // AddVariationOptionInput,
   CreateProductInput,
   ProductCategoryInput,
   ProductFilterDTO,
+  RemoveProductImageInput,
 } from './dto/create-product.input';
 import {
   UpdateProductAttributeInput,
@@ -24,6 +25,7 @@ import { PrismaProductItemRepository } from './repositories/item-repository';
 import { PrismaItemImageRepository } from './repositories/item-image-repository';
 import { PrismaProductImageRepository } from './repositories/product-image-repository';
 import { productWhereFilter } from 'src/unit/product-filter-map';
+import { UserType } from '@prisma/client';
 
 @Injectable()
 export class ProductService {
@@ -36,15 +38,15 @@ export class ProductService {
     private productImageRepository: PrismaProductImageRepository,
   ) {}
 
-  create(createProductInput: CreateProductInput) {
-    return this.productRepository.insertProduct(createProductInput);
+  create(createProductInput: CreateProductInput, userId: number) {
+    return this.productRepository.insertProduct(createProductInput, userId);
   }
 
   findAll(filters: ProductFilterDTO) {
     return this.productRepository.getProducts(
-      productWhereFilter(filters),
-      filters.skip,
-      filters.take,
+      filters?.filter ? productWhereFilter(filters.filter) : {},
+      filters?.skip,
+      filters?.take,
     );
   }
 
@@ -56,11 +58,23 @@ export class ProductService {
     return this.productRepository.getProductCategories(id);
   }
 
-  update(updateProductInput: UpdateProductInput) {
+  async update(
+    updateProductInput: UpdateProductInput,
+    userId: number,
+    user_type: UserType,
+  ) {
+    if (user_type === UserType.SELLER)
+      await this.productRepository.identityVerification(
+        updateProductInput.id,
+        userId,
+      );
+
     return this.productRepository.updateProductById(updateProductInput);
   }
 
-  deleteProductById(id: number) {
+  async deleteProductById(id: number, userId: number, user_type: UserType) {
+    if (user_type === UserType.SELLER)
+      await this.productRepository.identityVerification(id, userId);
     return this.productRepository.deleteProductById(id);
   }
 
@@ -72,66 +86,129 @@ export class ProductService {
     return this.itemRepository.getProductItemsByProductId(id);
   }
 
-  async addProductItem(data: AddProductItemInput) {
+  async addProductItem(
+    data: AddProductItemInput,
+    userId: number,
+    user_type: UserType,
+  ) {
+    if (user_type === UserType.SELLER)
+      await this.productRepository.identityVerification(data.productId, userId);
     await this.itemRepository.addProductItem(data);
     return this.findOne(data.productId);
   }
 
-  async updateProductItem(data: UpdateProductItemInput) {
+  async updateProductItem(
+    data: UpdateProductItemInput,
+    userId: number,
+    user_type: UserType,
+  ) {
+    if (user_type === UserType.SELLER)
+      await this.productRepository.identityVerification(data.productId, userId);
     await this.itemRepository.updateProductItem(data);
     return this.findOne(data.productId);
   }
 
-  deleteProductItem(itemId: number) {
-    return this.itemRepository.deleteProductItem(itemId);
+  async deleteProductItem(
+    itemId: number,
+    productId: number,
+    userId: number,
+    user_type: UserType,
+  ) {
+    if (user_type === UserType.SELLER)
+      await this.productRepository.identityVerification(productId, userId);
+    return this.itemRepository.deleteProductItem(itemId, productId);
   }
 
   getAttributesByProductId(id: number) {
     return this.attributeRepository.getAttributesByProductId(id);
   }
 
-  async addAttribute(data: AddProductAttributeInput) {
+  async addAttribute(
+    data: AddProductAttributeInput,
+    userId: number,
+    user_type: UserType,
+  ) {
+    if (user_type === UserType.SELLER)
+      await this.productRepository.identityVerification(data.productId, userId);
     await this.attributeRepository.addAttribute(data);
     return this.findOne(data.productId);
   }
 
-  async updateAttribute(data: UpdateProductAttributeInput) {
+  async updateAttribute(
+    data: UpdateProductAttributeInput,
+    userId: number,
+    user_type: UserType,
+  ) {
+    if (user_type === UserType.SELLER)
+      await this.productRepository.identityVerification(data.productId, userId);
     await this.attributeRepository.updateAttribute(data);
     return this.findOne(data.productId);
   }
 
-  removeAttribute(attributeId: number) {
-    return this.attributeRepository.removeAttribute(attributeId);
+  async removeAttribute(
+    attributeId: number,
+    productId: number,
+    userId: number,
+    user_type: UserType,
+  ) {
+    if (user_type === UserType.SELLER)
+      await this.productRepository.identityVerification(productId, userId);
+    return this.attributeRepository.removeAttribute(attributeId, productId);
   }
 
   getVariationByProductId(id: number) {
     return this.variationRepository.getVariationByProductId(id);
   }
 
-  async addVariationOption(data: AddVariationOptionInput) {
-    await this.variationRepository.insertVariationOption(data);
-    return this.findOne(data.productId);
-  }
-
-  async updateVariationOption(data: UpdateVariationOptionInput) {
+  async updateVariationOption(
+    data: UpdateVariationOptionInput,
+    userId: number,
+    user_type: UserType,
+  ) {
+    if (user_type === UserType.SELLER)
+      await this.productRepository.identityVerification(data.productId, userId);
     await this.variationRepository.updateVariationOptionById(data);
     return this.findOne(data.productId);
   }
 
-  async updateVariation(data: UpdateVariationInput) {
+  async updateVariation(
+    data: UpdateVariationInput,
+    userId: number,
+    user_type: UserType,
+  ) {
+    if (user_type === UserType.SELLER)
+      await this.productRepository.identityVerification(data.productId, userId);
     await this.variationRepository.updateVariationNameById(data);
     return this.findOne(data.productId);
   }
 
-  async addCategoryToProduct(data: ProductCategoryInput) {
+  async addCategoryToProduct(
+    data: ProductCategoryInput,
+    userId: number,
+    user_type: UserType,
+  ) {
+    if (user_type === UserType.SELLER)
+      await this.productRepository.identityVerification(data.productId, userId);
     await this.productRepository.addCategoryToProduct(data);
     return this.findOne(data.productId);
   }
-  removeCategoryFromProduct(data: ProductCategoryInput) {
+  async removeCategoryFromProduct(
+    data: ProductCategoryInput,
+    userId: number,
+    user_type: UserType,
+  ) {
+    if (user_type === UserType.SELLER)
+      await this.productRepository.identityVerification(data.productId, userId);
     return this.productRepository.removeCategoryFromProduct(data);
   }
 
-  async addImagesToItem(data: AddItemImagesInput) {
+  async addImagesToItem(
+    data: AddItemImagesInput,
+    userId: number,
+    user_type: UserType,
+  ) {
+    if (user_type === UserType.SELLER)
+      await this.productRepository.identityVerification(data.productId, userId);
     await this.itemImageRepository.addImagesToItem(data);
     return this.findOne(data.productId);
   }
@@ -140,11 +217,24 @@ export class ProductService {
     return this.itemImageRepository.getImagesByItemId(itemId);
   }
 
-  removeImageFromItem(id: number) {
-    return this.itemImageRepository.removeImageFromItem(id);
+  async removeImageFromItem(
+    id: number,
+    productId: number,
+    userId: number,
+    user_type: UserType,
+  ) {
+    if (user_type === UserType.SELLER)
+      await this.productRepository.identityVerification(productId, userId);
+    return this.itemImageRepository.removeImageFromItem(id, productId);
   }
 
-  async addImagesToProduct(data: AddProductImagesInput) {
+  async addImagesToProduct(
+    data: AddProductImagesInput,
+    userId: number,
+    user_type: UserType,
+  ) {
+    if (user_type === UserType.SELLER)
+      await this.productRepository.identityVerification(data.productId, userId);
     await this.productImageRepository.addImagesToProduct(data);
     return this.findOne(data.productId);
   }
@@ -153,7 +243,15 @@ export class ProductService {
     return this.productImageRepository.getImagesByProductId(productId);
   }
 
-  removeImageFromProduct(id: number) {
-    return this.productImageRepository.removeImageFromProduct(id);
+  async removeImageFromProduct(
+    data: RemoveProductImageInput,
+    userId: number,
+    user_type: UserType,
+  ) {
+    if (user_type === UserType.SELLER)
+      await this.productRepository.identityVerification(data.productId, userId);
+    return this.productImageRepository.removeImageFromProduct(
+      data.productImageId,
+    );
   }
 }

@@ -105,6 +105,7 @@ CREATE TABLE "Product" (
     "coverImage" TEXT NOT NULL,
     "available" BOOLEAN NOT NULL,
     "brandId" INTEGER,
+    "userId" INTEGER NOT NULL,
     "image" TEXT[],
     "averageRating" DOUBLE PRECISION DEFAULT 0,
     "reviewCount" INTEGER DEFAULT 0,
@@ -160,7 +161,6 @@ CREATE TABLE "ItemImage" (
 -- CreateTable
 CREATE TABLE "ProductConfiguration" (
     "productItemId" INTEGER NOT NULL,
-    "productId" INTEGER NOT NULL,
     "variationId" INTEGER NOT NULL,
     "variationOptionId" INTEGER NOT NULL,
 
@@ -296,6 +296,9 @@ ALTER TABLE "VariationOption" ADD CONSTRAINT "VariationOption_variationId_fkey" 
 ALTER TABLE "Product" ADD CONSTRAINT "Product_brandId_fkey" FOREIGN KEY ("brandId") REFERENCES "Brand"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Product" ADD CONSTRAINT "Product_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Product_Tag" ADD CONSTRAINT "Product_Tag_tagId_fkey" FOREIGN KEY ("tagId") REFERENCES "Tag"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -315,9 +318,6 @@ ALTER TABLE "ProductConfiguration" ADD CONSTRAINT "ProductConfiguration_variatio
 
 -- AddForeignKey
 ALTER TABLE "ProductConfiguration" ADD CONSTRAINT "ProductConfiguration_productItemId_fkey" FOREIGN KEY ("productItemId") REFERENCES "ProductItem"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "ProductConfiguration" ADD CONSTRAINT "ProductConfiguration_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ProductConfiguration" ADD CONSTRAINT "ProductConfiguration_variationId_fkey" FOREIGN KEY ("variationId") REFERENCES "Variation"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { ProductFilterDTO } from 'src/product/dto/create-product.input';
+import { FilterDTO } from 'src/product/dto/create-product.input';
 import { productWhereFilter } from 'src/unit/product-filter-map';
 import { VariationFilter } from './entities/filter.entity';
 
 @Injectable()
 export class FilterService {
   constructor(private readonly prisma: PrismaService) {}
-  async findAll(filters: ProductFilterDTO) {
+  async findAll(filters: FilterDTO) {
     filters.name = 'sh';
     const product = productWhereFilter(filters);
 

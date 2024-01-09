@@ -6,6 +6,7 @@ import {
   Int,
   ResolveField,
   Parent,
+  Context,
 } from '@nestjs/graphql';
 import { ProductService } from './product.service';
 import { Product } from './entities/product.entity';
@@ -14,10 +15,13 @@ import {
   AddProductAttributeInput,
   AddProductImagesInput,
   AddProductItemInput,
-  AddVariationOptionInput,
   CreateProductInput,
   ProductCategoryInput,
   ProductFilterDTO,
+  RemoveAttributeInput,
+  RemoveItemImageInput,
+  RemoveItemInput,
+  RemoveProductImageInput,
 } from './dto/create-product.input';
 import {
   UpdateProductAttributeInput,
@@ -34,6 +38,7 @@ import { ProductItem } from './entities/item.entity';
 import { Variation } from './entities/variation.entity';
 import { TagService } from 'src/tag/tag.service';
 import { Tag } from 'src/tag/entities/tag.entity';
+import { ContextType } from 'src/unit/context-type';
 
 @Resolver(() => Product)
 export class ProductResolver {
@@ -44,13 +49,17 @@ export class ProductResolver {
   ) {}
   private readonly logger = new Logger(ProductResolver.name);
 
-  @Roles(UserType.ADMIN)
+  @Roles(UserType.ADMIN, UserType.SELLER)
   @Mutation(() => Product)
   createProduct(
     @Args('createProductInput') createProductInput: CreateProductInput,
+    @Context() context: ContextType,
   ) {
     try {
-      return this.productService.create(createProductInput);
+      return this.productService.create(
+        createProductInput,
+        context.req.user.id,
+      );
     } catch (e) {
       this.logger.error(e);
     }
@@ -62,28 +71,11 @@ export class ProductResolver {
     productFilterDTO: ProductFilterDTO,
   ) {
     try {
-      console.log(productFilterDTO);
       return this.productService.findAll(productFilterDTO);
     } catch (e) {
       this.logger.error(e);
     }
   }
-
-  // @Query(() => [Product], { name: 'secondQuery' })
-  // filter(
-  //   @Args('inputParameter', { type: () => [Product], nullable: true })
-  //   inputParameter: ProductFilterDTO[],
-  // ) {
-  //   try {
-  //     console.log('Executing second query with parameter:', inputParameter);
-  //     // You can use this.productService or any other service/method as needed
-  //     // Return the result of the second query
-  //     return []; // Replace with actual implementation
-  //   } catch (e) {
-  //     console.error(e);
-  //     throw new Error('Unable to fetch data for the second query');
-  //   }
-  // }
 
   @Query(() => Product, { name: 'product' })
   findOne(@Args('id', { type: () => Int }) id: number) {
@@ -94,212 +86,285 @@ export class ProductResolver {
     }
   }
 
-  @Roles(UserType.ADMIN)
+  @Roles(UserType.ADMIN, UserType.SELLER)
   @Mutation(() => Product)
   updateProduct(
     @Args('updateProductInput') updateProductInput: UpdateProductInput,
+    @Context() context: ContextType,
   ) {
     try {
-      return this.productService.update(updateProductInput);
+      return this.productService.update(
+        updateProductInput,
+        context.req.user.id,
+        context.req.user.user_type,
+      );
     } catch (e) {
       this.logger.error(e);
     }
   }
 
-  @Roles(UserType.ADMIN)
+  @Roles(UserType.ADMIN, UserType.SELLER)
   @Mutation(() => Boolean)
-  removeProduct(@Args('id', { type: () => Int }) id: number) {
+  removeProduct(
+    @Args('id', { type: () => Int }) id: number,
+    @Context() context: ContextType,
+  ) {
     try {
-      return this.productService.deleteProductById(id);
+      return this.productService.deleteProductById(
+        id,
+        context.req.user.id,
+        context.req.user.user_type,
+      );
     } catch (e) {
       this.logger.error(e);
     }
   }
 
-  @Roles(UserType.ADMIN)
+  @Roles(UserType.ADMIN, UserType.SELLER)
   @Mutation(() => Product)
   addProductItem(
     @Args('addProductItemInput') addProductItemInput: AddProductItemInput,
+    @Context() context: ContextType,
   ) {
     try {
-      return this.productService.addProductItem(addProductItemInput);
+      return this.productService.addProductItem(
+        addProductItemInput,
+        context.req.user.id,
+        context.req.user.user_type,
+      );
     } catch (e) {
       this.logger.error(e);
     }
   }
 
-  @Roles(UserType.ADMIN)
+  @Roles(UserType.ADMIN, UserType.SELLER)
   @Mutation(() => Product)
   updateProductItem(
     @Args('updateProductItemInput')
     updateProductItemInput: UpdateProductItemInput,
+    @Context() context: ContextType,
   ) {
     try {
-      return this.productService.updateProductItem(updateProductItemInput);
+      return this.productService.updateProductItem(
+        updateProductItemInput,
+        context.req.user.id,
+        context.req.user.user_type,
+      );
     } catch (e) {
       this.logger.error(e);
     }
   }
 
-  @Roles(UserType.ADMIN)
+  @Roles(UserType.ADMIN, UserType.SELLER)
   @Mutation(() => Boolean)
-  deleteProductItem(@Args('itemId', { type: () => Int }) itemId: number) {
+  deleteProductItem(
+    @Args('removeItemInput', { type: () => RemoveItemInput })
+    removeItemInput: RemoveItemInput,
+    @Context() context: ContextType,
+  ) {
     try {
-      return this.productService.deleteProductItem(itemId);
+      return this.productService.deleteProductItem(
+        removeItemInput.itemId,
+        removeItemInput.productId,
+        context.req.user.id,
+        context.req.user.user_type,
+      );
     } catch (e) {
       this.logger.error(e);
     }
   }
 
+  @Roles(UserType.ADMIN, UserType.SELLER)
   @Mutation(() => Product)
   addAttribute(
     @Args('addProductAttributeInput')
     addProductAttributeInput: AddProductAttributeInput,
+    @Context() context: ContextType,
   ) {
-    return this.productService.addAttribute(addProductAttributeInput);
+    return this.productService.addAttribute(
+      addProductAttributeInput,
+      context.req.user.id,
+      context.req.user.user_type,
+    );
   }
 
-  @Roles(UserType.ADMIN)
+  @Roles(UserType.ADMIN, UserType.SELLER)
   @Mutation(() => Product)
   updateAttribute(
     @Args('updateProductAttributeInput')
     updateProductAttributeInput: UpdateProductAttributeInput,
+    @Context() context: ContextType,
   ) {
     try {
-      return this.productService.updateAttribute(updateProductAttributeInput);
+      return this.productService.updateAttribute(
+        updateProductAttributeInput,
+        context.req.user.id,
+        context.req.user.user_type,
+      );
     } catch (e) {
       this.logger.error(e);
     }
   }
 
-  @Roles(UserType.ADMIN)
+  @Roles(UserType.ADMIN, UserType.SELLER)
   @Mutation(() => Boolean)
   removeAttribute(
-    @Args('attributeId', { type: () => Int }) attributeId: number,
+    @Args('removeAttributeInput', { type: () => RemoveAttributeInput })
+    removeAttributeInput: RemoveAttributeInput,
+    @Context() context: ContextType,
   ) {
     try {
-      return this.productService.removeAttribute(attributeId);
+      return this.productService.removeAttribute(
+        removeAttributeInput.attributeId,
+        removeAttributeInput.productId,
+        context.req.user.id,
+        context.req.user.user_type,
+      );
     } catch (e) {
       this.logger.error(e);
     }
   }
 
-  @Roles(UserType.ADMIN)
-  @Mutation(() => Product)
-  addVariationOption(
-    @Args('addVariationOptionInput')
-    addVariationOptionInput: AddVariationOptionInput,
-  ) {
-    try {
-      return this.productService.addVariationOption(addVariationOptionInput);
-    } catch (e) {
-      this.logger.error(e);
-    }
-  }
-
-  @Roles(UserType.ADMIN)
+  @Roles(UserType.ADMIN, UserType.SELLER)
   @Mutation(() => Product)
   updateVariationOption(
     @Args('updateVariationOptionInput')
     updateVariationOptionInput: UpdateVariationOptionInput,
+    @Context() context: ContextType,
   ) {
     try {
       return this.productService.updateVariationOption(
         updateVariationOptionInput,
+        context.req.user.id,
+        context.req.user.user_type,
       );
     } catch (e) {
       this.logger.error(e);
     }
   }
 
-  @Roles(UserType.ADMIN)
+  @Roles(UserType.ADMIN, UserType.SELLER)
   @Mutation(() => Product)
   updateVariation(
     @Args('updateVariationInput')
     updateVariationInput: UpdateVariationInput,
+    @Context() context: ContextType,
   ) {
     try {
-      return this.productService.updateVariation(updateVariationInput);
-    } catch (e) {
-      this.logger.error(e);
-    }
-  }
-
-  @Roles(UserType.ADMIN)
-  @Mutation(() => Product)
-  addCategoryToProduct(
-    @Args('productCategoryInput')
-    productCategoryInput: ProductCategoryInput,
-  ) {
-    try {
-      return this.productService.addCategoryToProduct(productCategoryInput);
-    } catch (e) {
-      this.logger.error(e);
-    }
-  }
-
-  @Roles(UserType.ADMIN)
-  @Mutation(() => Boolean)
-  removeCategoryFromProduct(
-    @Args('productCategoryInput')
-    productCategoryInput: ProductCategoryInput,
-  ) {
-    try {
-      return this.productService.removeCategoryFromProduct(
-        productCategoryInput,
+      return this.productService.updateVariation(
+        updateVariationInput,
+        context.req.user.id,
+        context.req.user.user_type,
       );
     } catch (e) {
       this.logger.error(e);
     }
   }
 
-  @Roles(UserType.ADMIN)
+  @Roles(UserType.ADMIN, UserType.SELLER)
+  @Mutation(() => Product)
+  addCategoryToProduct(
+    @Args('productCategoryInput')
+    productCategoryInput: ProductCategoryInput,
+    @Context() context: ContextType,
+  ) {
+    try {
+      return this.productService.addCategoryToProduct(
+        productCategoryInput,
+        context.req.user.id,
+        context.req.user.user_type,
+      );
+    } catch (e) {
+      this.logger.error(e);
+    }
+  }
+
+  @Roles(UserType.ADMIN, UserType.SELLER)
+  @Mutation(() => Boolean)
+  removeCategoryFromProduct(
+    @Args('productCategoryInput')
+    productCategoryInput: ProductCategoryInput,
+    @Context() context: ContextType,
+  ) {
+    try {
+      return this.productService.removeCategoryFromProduct(
+        productCategoryInput,
+        context.req.user.id,
+        context.req.user.user_type,
+      );
+    } catch (e) {
+      this.logger.error(e);
+    }
+  }
+
+  @Roles(UserType.ADMIN, UserType.SELLER)
   @Mutation(() => Product)
   addImagesToItem(
     @Args('addItemImagesInput')
     addItemImagesInput: AddItemImagesInput,
+    @Context() context: ContextType,
   ) {
     try {
-      return this.productService.addImagesToItem(addItemImagesInput);
+      return this.productService.addImagesToItem(
+        addItemImagesInput,
+        context.req.user.id,
+        context.req.user.user_type,
+      );
     } catch (e) {
       this.logger.error(e);
     }
   }
 
-  @Roles(UserType.ADMIN)
+  @Roles(UserType.ADMIN, UserType.SELLER)
   @Mutation(() => Boolean)
   removeImageFromItem(
-    @Args('ItemImageId')
-    ItemImageId: number,
+    @Args('removeItemImageInput')
+    removeItemImageInput: RemoveItemImageInput,
+    @Context() context: ContextType,
   ) {
     try {
-      return this.productService.removeImageFromItem(ItemImageId);
+      return this.productService.removeImageFromItem(
+        removeItemImageInput.ItemImageId,
+        removeItemImageInput.productId,
+        context.req.user.id,
+        context.req.user.user_type,
+      );
     } catch (e) {
       this.logger.error(e);
     }
   }
 
-  @Roles(UserType.ADMIN)
+  @Roles(UserType.ADMIN, UserType.SELLER)
   @Mutation(() => Product)
   addImagesToProduct(
     @Args('addProductImagesInput')
     addProductImagesInput: AddProductImagesInput,
+    @Context() context: ContextType,
   ) {
     try {
-      return this.productService.addImagesToProduct(addProductImagesInput);
+      return this.productService.addImagesToProduct(
+        addProductImagesInput,
+        context.req.user.id,
+        context.req.user.user_type,
+      );
     } catch (e) {
       this.logger.error(e);
     }
   }
 
-  @Roles(UserType.ADMIN)
+  @Roles(UserType.ADMIN, UserType.SELLER)
   @Mutation(() => Boolean)
   removeImageFromProduct(
-    @Args('productImageId')
-    productImageId: number,
+    @Args('removeProductImageInput')
+    removeProductImageInput: RemoveProductImageInput,
+    @Context() context: ContextType,
   ) {
     try {
-      return this.productService.removeImageFromProduct(productImageId);
+      return this.productService.removeImageFromProduct(
+        removeProductImageInput,
+        context.req.user.id,
+        context.req.user.user_type,
+      );
     } catch (e) {
       this.logger.error(e);
     }

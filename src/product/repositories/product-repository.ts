@@ -19,6 +19,7 @@ import {
 import { UpdateProductInput } from '../dto/update-product.input';
 import { checkImage } from 'src/unit/check-image';
 import { Prisma } from '@prisma/client';
+import { ForbiddenError } from '@nestjs/apollo';
 
 @Injectable()
 export class PrismaProductRepository {
@@ -27,7 +28,7 @@ export class PrismaProductRepository {
   async getProducts(
     where: Prisma.ProductWhereInput,
     cursor: number | null = null,
-    take: number = 10,
+    take: number | null = 10,
   ): Promise<Product[]> {
     return this.prisma.product.findMany({
       where,
@@ -47,7 +48,19 @@ export class PrismaProductRepository {
     return this.prisma.product.findUnique({ where: { id } });
   }
 
-  async insertProduct(data: CreateProductInput): Promise<Product> {
+  async identityVerification(userId: number, id: number) {
+    const product = await this.prisma.product.findUnique({ where: { id } });
+    if (product.userId !== userId) {
+      throw new ForbiddenError(
+        `You do not have permission to access this resource.`,
+      );
+    }
+  }
+
+  async insertProduct(
+    data: CreateProductInput,
+    userId: number,
+  ): Promise<Product> {
     const id = await this.prisma.$transaction(async (tx) => {
       const { name, description, available, coverImage, brandId } = data;
       await checkImage(coverImage, tx);
@@ -59,6 +72,7 @@ export class PrismaProductRepository {
           available,
           coverImage,
           brandId,
+          userId,
         },
       });
 

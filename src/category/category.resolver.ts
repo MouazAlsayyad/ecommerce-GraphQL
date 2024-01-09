@@ -13,6 +13,8 @@ import { CreateCategoryInput } from './dto/create-category.input';
 import { UpdateCategoryInput } from './dto/update-category.input';
 import { Logger } from '@nestjs/common';
 import { ProductService } from 'src/product/product.service';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { UserType } from '@prisma/client';
 
 @Resolver(() => Category)
 export class CategoryResolver {
@@ -22,6 +24,7 @@ export class CategoryResolver {
   ) {}
   private readonly logger = new Logger(CategoryResolver.name);
 
+  @Roles(UserType.ADMIN)
   @Mutation(() => Category)
   createCategory(
     @Args('createCategoryInput') createCategoryInput: CreateCategoryInput,
@@ -51,6 +54,7 @@ export class CategoryResolver {
     }
   }
 
+  @Roles(UserType.ADMIN)
   @Mutation(() => Category)
   updateCategory(
     @Args('updateCategoryInput') updateCategoryInput: UpdateCategoryInput,
@@ -62,6 +66,7 @@ export class CategoryResolver {
     }
   }
 
+  @Roles(UserType.ADMIN)
   @Mutation(() => Boolean)
   removeCategory(@Args('id', { type: () => Int }) id: number) {
     try {
@@ -74,6 +79,6 @@ export class CategoryResolver {
   @ResolveField()
   async product(@Parent() category: Category) {
     const { id } = category;
-    return this.productService.findAll({ categoryId: id });
+    return this.productService.findAll({ filter: { categoryId: id } });
   }
 }

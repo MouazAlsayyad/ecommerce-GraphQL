@@ -51,7 +51,10 @@ export class PrismaVariationRepository {
     return this.prisma.$transaction(async (tx) => {
       const { productId, name, variationId } = data;
       await checkVariationExist(productId, name, tx);
-      await tx.variation.update({ where: { id: variationId }, data: { name } });
+      await tx.variation.update({
+        where: { id: variationId, productId },
+        data: { name },
+      });
       return getVariationById(variationId, tx);
     });
   }

@@ -42,12 +42,6 @@ input AddTagsToProductInput {
   productTags: [String!]!
 }
 
-input AddVariationOptionInput {
-  productId: Int!
-  value: String!
-  variationId: Int!
-}
-
 type Address {
   address: String!
   city: String!
@@ -195,6 +189,18 @@ type Filter {
   variationFilter: [VariationFilter!]
 }
 
+input FilterDTO {
+  averageRating: Float
+  brand: Int
+  brandId: Float
+  category: String
+  categoryId: Int
+  maxPrice: Float
+  minPrice: Float
+  name: String
+  variationOptions: String
+}
+
 type Image {
   id: Int!
   imagePath: String!
@@ -224,7 +230,6 @@ type Mutation {
   addProductItem(addProductItemInput: AddProductItemInput!): Product!
   addProductToFavoritesList(favoritesListInput: FavoritesListInput!): [FavoritesList!]!
   addTagsToProduct(addTagsToProductInput: AddTagsToProductInput!): Boolean!
-  addVariationOption(addVariationOptionInput: AddVariationOptionInput!): Product!
   createBrand(createBrandInput: CreateBrandInput!): Brand!
   createCategory(createCategoryInput: CreateCategoryInput!): Category!
   createProduct(createProductInput: CreateProductInput!): Product!
@@ -232,16 +237,16 @@ type Mutation {
   createTag(createTagInput: CreateTagInput!): Tag!
   createUser(createUserInput: CreateUserInput!): User!
   deleteAddress(removeAddressInput: RemoveAddressInput!): Boolean!
-  deleteProductItem(itemId: Int!): Boolean!
+  deleteProductItem(removeItemInput: RemoveItemInput!): Boolean!
   emptyTheShoppingCart: [Cart!]!
   login(loginInput: LogInInput!): AuthResponse!
-  removeAttribute(attributeId: Int!): Boolean!
+  removeAttribute(removeAttributeInput: RemoveAttributeInput!): Boolean!
   removeBrand(id: Int!): Boolean!
   removeCategory(id: Int!): Boolean!
   removeCategoryFromBrand(removeCategoryFromBrandInput: RemoveCategoryFromBrandInput!): Boolean!
   removeCategoryFromProduct(productCategoryInput: ProductCategoryInput!): Boolean!
-  removeImageFromItem(ItemImageId: Float!): Boolean!
-  removeImageFromProduct(productImageId: Float!): Boolean!
+  removeImageFromItem(removeItemImageInput: RemoveItemImageInput!): Boolean!
+  removeImageFromProduct(removeProductImageInput: RemoveProductImageInput!): Boolean!
   removeItemFromCart(addItemCartInput: AddItemCartInput!): [Cart!]!
   removeProduct(id: Int!): Boolean!
   removeProductFromFavoritesList(favoritesListInput: FavoritesListInput!): [FavoritesList!]!
@@ -289,17 +294,9 @@ input ProductCategoryInput {
 }
 
 input ProductFilterDTO {
-  averageRating: Float
-  brand: Int
-  brandId: Float
-  category: String
-  categoryId: Int
-  maxPrice: Float
-  minPrice: Float
-  name: String
+  filter: FilterDTO
   skip: Int
   take: Int
-  variationOptions: String
 }
 
 type ProductItem {
@@ -323,7 +320,7 @@ type Query {
   brands: [Brand!]!
   cart: [Cart!]!
   category(id: Int!): Category!
-  filter(productFilterDTO: ProductFilterDTO): Filter!
+  filter(filterDTO: FilterDTO): Filter!
   product(id: Int!): Product!
   products(productFilterDTO: ProductFilterDTO): [Product!]!
   tag(id: Int!): Tag!
@@ -335,9 +332,29 @@ input RemoveAddressInput {
   addressId: Int!
 }
 
+input RemoveAttributeInput {
+  attributeId: Int!
+  productId: Int!
+}
+
 input RemoveCategoryFromBrandInput {
   brandId: Int!
   categoryId: Int!
+}
+
+input RemoveItemImageInput {
+  ItemImageId: Int!
+  productId: Int!
+}
+
+input RemoveItemInput {
+  itemId: Int!
+  productId: Int!
+}
+
+input RemoveProductImageInput {
+  productId: Int!
+  productImageId: Int!
 }
 
 input RemoveTagFromProductInput {

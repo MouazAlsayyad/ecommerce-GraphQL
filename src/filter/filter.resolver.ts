@@ -1,7 +1,7 @@
 import { Resolver, Query, Args } from '@nestjs/graphql';
 import { FilterService } from './filter.service';
 import { Filter } from './entities/filter.entity';
-import { ProductFilterDTO } from 'src/product/dto/create-product.input';
+import { FilterDTO } from 'src/product/dto/create-product.input';
 import { Logger } from '@nestjs/common';
 
 @Resolver(() => Filter)
@@ -11,11 +11,11 @@ export class FilterResolver {
 
   @Query(() => Filter, { name: 'filter' })
   findAll(
-    @Args('productFilterDTO', { type: () => ProductFilterDTO, nullable: true })
-    productFilterDTO: ProductFilterDTO,
+    @Args('filterDTO', { type: () => FilterDTO, nullable: true })
+    filterDTO: FilterDTO,
   ) {
     try {
-      return this.filterService.findAll(productFilterDTO);
+      return this.filterService.findAll(filterDTO);
     } catch (e) {
       this.logger.error(e);
     }

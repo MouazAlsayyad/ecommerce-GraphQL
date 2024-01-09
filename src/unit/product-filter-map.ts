@@ -1,8 +1,8 @@
 import { Prisma } from '@prisma/client';
-import { ProductFilterDTO } from 'src/product/dto/create-product.input';
+import { FilterDTO } from 'src/product/dto/create-product.input';
 
 export function productWhereFilter(
-  filters: ProductFilterDTO,
+  filters: FilterDTO,
 ): Prisma.ProductWhereInput {
   const price =
     filters?.minPrice || filters?.maxPrice
