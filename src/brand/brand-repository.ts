@@ -8,6 +8,7 @@ import {
 } from './dto/create-brand.input';
 import { UpdateBrandInput } from './dto/update-brand.input';
 import { checkImage } from 'src/unit/check-image';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class PrismaBrandRepository {
@@ -15,19 +16,38 @@ export class PrismaBrandRepository {
 
   async createBrand(data: CreateBrandInput): Promise<Brand> {
     const id = await this.prisma.$transaction(async (tx) => {
-      const { name, description = null, image = null } = data;
+      const { name, description = null, image = null, categories = [] } = data;
       if (image) await checkImage(image, tx);
 
       const { id } = await tx.brand.create({
         data: { name, description, image },
       });
+      if (categories) {
+        const data = await Promise.all(
+          categories.map(async (categoryId) => {
+            return { brandId: id, categoryId };
+          }),
+        );
+        await tx.brand_Category.createMany({ data });
+      }
       return id;
     });
     return this.getBrandById(id);
   }
 
-  async findAll(): Promise<Brand[]> {
-    return this.prisma.brand.findMany();
+  async findAll(
+    where: Prisma.BrandWhereInput = {},
+    orderBy: Prisma.BrandOrderByWithRelationInput = {},
+    cursor: number | null = null,
+    take: number | null = 10,
+  ): Promise<Brand[]> {
+    return this.prisma.brand.findMany({
+      where,
+      orderBy,
+      skip: cursor ? 1 : 0,
+      cursor: cursor ? { id: cursor } : undefined,
+      take,
+    });
   }
 
   async getBrandById(id: number): Promise<Brand> {

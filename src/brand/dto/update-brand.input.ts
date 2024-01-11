@@ -1,10 +1,11 @@
 import { InputType, Field, Int } from '@nestjs/graphql';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 @InputType()
 export class UpdateBrandInput {
   @Field(() => Int)
   @IsNotEmpty()
+  @IsInt()
   id: number;
 
   @Field({ nullable: true })

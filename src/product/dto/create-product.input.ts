@@ -1,4 +1,4 @@
-import { InputType, Field, Int } from '@nestjs/graphql';
+import { InputType, Field, Int, registerEnumType } from '@nestjs/graphql';
 import {
   IsString,
   IsBoolean,
@@ -366,12 +366,28 @@ export class FilterDTO {
   @IsString()
   category?: string;
 }
+
+export enum ProductOrderBy {
+  PriceLowToHigh = 'PriceLowToHigh',
+  PriceHighToLow = 'PriceHighToLow',
+  AvgCustomerReview = 'AvgCustomerReview',
+  NewProduct = 'NewProduct',
+}
+
+registerEnumType(ProductOrderBy, {
+  name: 'ProductOrderBy',
+});
+
 @InputType()
 export class ProductFilterDTO {
   @Field(() => FilterDTO, { nullable: true })
   @IsOptional()
   @Type(() => FilterDTO)
   filter?: FilterDTO;
+
+  @Field(() => ProductOrderBy, { nullable: true })
+  @IsOptional()
+  orderBy?: ProductOrderBy;
 
   @Field(() => Int, { nullable: true })
   @IsOptional()

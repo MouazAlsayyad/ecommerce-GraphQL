@@ -1,5 +1,13 @@
-import { InputType, Field } from '@nestjs/graphql';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { InputType, Field, Int } from '@nestjs/graphql';
+import {
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
+import { EnumOrderBy } from 'src/unit/enum-order-by';
 
 @InputType()
 export class CreateCategoryInput {
@@ -18,22 +26,40 @@ export class CreateCategoryInput {
   @IsString()
   image?: string | null;
 }
+
+@InputType()
+export class CategoryOrderBy {
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsEnum(EnumOrderBy)
+  name?: EnumOrderBy;
+}
+
 @InputType()
 export class CategoryFilterInput {
   @Field({ nullable: true })
+  @IsOptional()
+  @IsInt()
   brandId?: number;
 
   @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
   categoryName?: string;
-}
 
-export class CategoryFilterDTO {
-  name: {
-    contains: string;
-  };
-  brand_category: {
-    some: {
-      brandId: number;
-    };
-  };
+  @Field(() => CategoryOrderBy, { nullable: true })
+  @IsOptional()
+  orderBy?: CategoryOrderBy;
+
+  @Field(() => Int, { nullable: true })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  skip?: number;
+
+  @Field(() => Int, { nullable: true })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  take?: number;
 }

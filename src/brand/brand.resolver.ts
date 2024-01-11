@@ -11,6 +11,7 @@ import { BrandService } from './brand.service';
 import { Brand } from './entities/brand.entity';
 import {
   AddCategoriesToBrandInput,
+  BrandFilter,
   CreateBrandInput,
   RemoveCategoryFromBrandInput,
 } from './dto/create-brand.input';
@@ -39,9 +40,12 @@ export class BrandResolver {
   }
 
   @Query(() => [Brand], { name: 'brands' })
-  findAllBrand() {
+  findAllBrand(
+    @Args('brandFilter', { type: () => BrandFilter, nullable: true })
+    brandFilter: BrandFilter,
+  ) {
     try {
-      return this.brandService.findAll();
+      return this.brandService.findAll(brandFilter);
     } catch (e) {
       this.logger.error(e);
     }

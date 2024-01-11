@@ -1,10 +1,10 @@
 import { InputType, Int, Field } from '@nestjs/graphql';
-import { IsNotEmpty, IsNumber, Min } from 'class-validator';
+import { IsInt, IsNotEmpty, IsNumber, Min } from 'class-validator';
 
 @InputType()
 export class AddItemCartInput {
   @Field(() => Int)
-  @IsNumber()
+  @IsInt()
   @IsNotEmpty()
   itemId: number;
 
@@ -18,7 +18,7 @@ export class AddItemCartInput {
 @InputType()
 export class RemoveCartItemInput {
   @Field(() => Int)
-  @IsNumber()
+  @IsInt()
   @IsNotEmpty()
   itemId: number;
 }

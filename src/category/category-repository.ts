@@ -1,13 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Category } from './entities/category.entity';
-import {
-  CategoryFilterDTO,
-  CreateCategoryInput,
-} from './dto/create-category.input';
+import { CreateCategoryInput } from './dto/create-category.input';
 
 import { UpdateCategoryInput } from './dto/update-category.input';
 import { checkImage } from 'src/unit/check-image';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class PrismaCategoryRepository {
@@ -26,9 +24,18 @@ export class PrismaCategoryRepository {
     return this.findOne(id);
   }
 
-  findAll(categoryFilter: CategoryFilterDTO): Promise<Category[]> {
+  findAll(
+    categoryFilter: Prisma.CategoryWhereInput,
+    orderBy: Prisma.CategoryOrderByWithRelationInput,
+    cursor: number | null = null,
+    take: number | null = 10,
+  ): Promise<Category[]> {
     return this.prisma.category.findMany({
       where: categoryFilter,
+      orderBy,
+      skip: cursor ? 1 : 0,
+      cursor: cursor ? { id: cursor } : undefined,
+      take,
     });
   }
 

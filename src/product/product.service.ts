@@ -47,6 +47,7 @@ export class ProductService {
       filters?.filter ? productWhereFilter(filters.filter) : {},
       filters?.skip,
       filters?.take,
+      filters.orderBy,
     );
   }
 

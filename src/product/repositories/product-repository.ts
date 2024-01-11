@@ -15,6 +15,7 @@ import { Product } from '../entities/product.entity';
 import {
   CreateProductInput,
   ProductCategoryInput,
+  ProductOrderBy,
 } from '../dto/create-product.input';
 import { UpdateProductInput } from '../dto/update-product.input';
 import { checkImage } from 'src/unit/check-image';
@@ -29,14 +30,113 @@ export class PrismaProductRepository {
     where: Prisma.ProductWhereInput,
     cursor: number | null = null,
     take: number | null = 10,
+    orderBy: ProductOrderBy,
   ): Promise<Product[]> {
-    return this.prisma.product.findMany({
-      where,
-      skip: cursor ? 1 : 0,
-      cursor: cursor ? { id: cursor } : undefined,
-      take,
-    });
+    if (orderBy === 'PriceLowToHigh') {
+      const ids = await this.prisma.productItem.findMany({
+        where: { product: where },
+        select: { productId: true },
+        distinct: ['productId'],
+        skip: cursor ? 1 : 0,
+        cursor: cursor ? { id: cursor } : undefined,
+        take,
+        orderBy: {
+          price: 'asc',
+        },
+      });
+
+      const products = await this.prisma.product.findMany({
+        where: {
+          id: {
+            in: ids.map((id) => {
+              return id.productId;
+            }),
+          },
+        },
+        skip: cursor ? 1 : 0,
+        cursor: cursor ? { id: cursor } : undefined,
+        take,
+        include: {
+          productItem: true,
+        },
+      });
+
+      return this.sortByPriceAscending(products);
+    } else if (orderBy === 'PriceHighToLow') {
+      const ids = await this.prisma.productItem.findMany({
+        where: { product: where },
+        select: { productId: true },
+        distinct: ['productId'],
+        skip: cursor ? 1 : 0,
+        cursor: cursor ? { id: cursor } : undefined,
+        take,
+        orderBy: {
+          price: 'desc',
+        },
+      });
+
+      const products = await this.prisma.product.findMany({
+        where: {
+          id: {
+            in: ids.map((id) => {
+              return id.productId;
+            }),
+          },
+        },
+        skip: cursor ? 1 : 0,
+        cursor: cursor ? { id: cursor } : undefined,
+        take,
+        include: {
+          productItem: true,
+        },
+      });
+
+      return this.sortByPriceDescending(products);
+    } else if (orderBy === 'AvgCustomerReview') {
+      return this.prisma.product.findMany({
+        where,
+        skip: cursor ? 1 : 0,
+        cursor: cursor ? { id: cursor } : undefined,
+        take,
+        orderBy: {
+          averageRating: 'desc',
+        },
+      });
+    } else if (orderBy === 'NewProduct') {
+      return await this.prisma.product.findMany({
+        where,
+        skip: cursor ? 1 : 0,
+        cursor: cursor ? { id: cursor } : undefined,
+        take,
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+    } else {
+      return this.prisma.product.findMany({
+        where,
+        skip: cursor ? 1 : 0,
+        cursor: cursor ? { id: cursor } : undefined,
+        take,
+      });
+    }
   }
+
+  private sortByPriceAscending = (products: Product[]): Product[] => {
+    return products.sort((a, b) => {
+      const priceA = Math.min(...a.productItem.map((item) => item.price));
+      const priceB = Math.min(...b.productItem.map((item) => item.price));
+      return priceA - priceB;
+    });
+  };
+
+  private sortByPriceDescending = (products: Product[]): Product[] => {
+    return products.sort((a, b) => {
+      const priceA = Math.max(...a.productItem.map((item) => item.price));
+      const priceB = Math.max(...b.productItem.map((item) => item.price));
+      return priceB - priceA;
+    });
+  };
 
   getProductCategories(productId: number) {
     return this.prisma.category.findMany({

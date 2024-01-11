@@ -3,7 +3,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  // previewFeatures = ["orderByRelation"]
 }
 
 datasource db {
@@ -31,7 +30,7 @@ model User {
   isBlock       Boolean         @default(false)
   user_type     UserType
   created_at    DateTime        @default(now())
-  updated_at    DateTime        @updatedAt
+  updated_at    DateTime        @updatedAt @default(now()) 
   cart          Cart?
   product       Product[]
   favoritesList FavoritesList[]
@@ -47,7 +46,8 @@ model UserReview {
   productId  Int
   user       User     @relation(fields: [userId], references: [id])
   product    Product  @relation(fields: [productId], references: [id])
-  created_at DateTime @default(now())
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt @default(now())
 }
 
 model FavoritesList {
@@ -137,6 +137,8 @@ model Product {
   // productConfiguration        ProductConfiguration[]
   averageRating               Float?                  @default(0)
   reviewCount                 Int?                    @default(0)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt @default(now())
 
 }
 
@@ -144,6 +146,8 @@ model Tag{
   id        Int      @id @default(autoincrement())
   value   String
   product_tag   Product_Tag[]
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt @default(now())
 }
 
 model Product_Tag {
@@ -172,6 +176,7 @@ model ProductItem {
   productConfiguration ProductConfiguration[]
   cartItems            CartItems[]
   ItemImages           ItemImage[]
+  updatedAt        DateTime           @updatedAt @default(now())
 }
 
 
@@ -210,7 +215,8 @@ model Media {
   filename  String
   fileType  FileType
   path      String
-  createdAt DateTime @default(now())
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt @default(now())
 }
 
 model Category {
@@ -223,6 +229,8 @@ model Category {
   subcategories    Category[]         @relation("Subcategories")
   brand_category   Brand_Category[]
   product_category Product_Category[]
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt @default(now())
 }
 
 model Brand {
@@ -232,6 +240,8 @@ model Brand {
   image          String?
   brand_category Brand_Category[]
   product        Product[]
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt @default(now())
 }
 
 model Brand_Category {
@@ -251,6 +261,44 @@ model Product_Category {
 
   @@id([categoryId, productId])
 }
+
+// model OrderStatus {
+//   id           Int         @id @default(autoincrement())
+//   status       String
+// }
+
+
+// model ShopingMethod {
+//   id           Int         @id @default(autoincrement())
+//   name         String
+//   price        Float
+// }
+
+
+// model Fee {
+//   id           Int         @id @default(autoincrement())
+//   name         String
+//   rate         Float
+// }
+
+// model PaymentOptions{
+//   id                    Int         @id @default(autoincrement())
+//   name                  String
+// }
+
+// model Order{
+//   id                    Int         @id @default(autoincrement())
+//   name                  String
+//   shippingAddress       String 
+//   email                 String
+//   phone                 String
+//   subTotal              Float
+//   taxes                 Float
+//   shipping              Float
+//   total                 Float
+//   createdAt             DateTime    @default(now())
+//   updatedAt             DateTime    @updatedAt @default(now())
+// }
 
 model Image {
   id       Int        @id @default(autoincrement())

@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import {
   AddCategoriesToBrandInput,
+  BrandFilter,
   CreateBrandInput,
   RemoveCategoryFromBrandInput,
 } from './dto/create-brand.input';
 import { UpdateBrandInput } from './dto/update-brand.input';
 import { PrismaBrandRepository } from './brand-repository';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class BrandService {
@@ -15,8 +17,24 @@ export class BrandService {
     return this.brandRepository.createBrand(data);
   }
 
-  findAll() {
-    return this.brandRepository.findAll();
+  findAll(brandFilter: BrandFilter) {
+    const filter: Prisma.BrandWhereInput = {
+      ...(brandFilter?.name && {
+        name: { contains: brandFilter.name },
+      }),
+    };
+    const orderBy: Prisma.BrandOrderByWithRelationInput = {
+      ...(brandFilter?.orderBy && {
+        name: brandFilter.orderBy.name,
+      }),
+    };
+
+    return this.brandRepository.findAll(
+      filter,
+      orderBy,
+      brandFilter.skip,
+      brandFilter.take,
+    );
   }
 
   findOne(id: number) {

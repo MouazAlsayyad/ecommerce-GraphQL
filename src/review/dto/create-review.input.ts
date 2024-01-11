@@ -1,11 +1,12 @@
 import { InputType, Field } from '@nestjs/graphql';
-import { IsNumber, IsString, Max, Min } from 'class-validator';
+import { IsInt, IsNumber, IsString, Max, Min } from 'class-validator';
 
 @InputType()
 export class CreateReviewInput {
   @Field()
-  @IsNumber()
+  @IsInt()
   productId: number;
+
   @Field()
   @IsNumber()
   @Min(1)

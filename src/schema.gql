@@ -79,6 +79,17 @@ type Brand {
   name: String!
 }
 
+input BrandFilter {
+  name: String
+  orderBy: BrandOrderBy
+  skip: Int
+  take: Int
+}
+
+input BrandOrderBy {
+  name: String
+}
+
 type Cart {
   item: [ItemWithQty!]!
   product: ProductType!
@@ -98,6 +109,7 @@ input CountryInput {
 }
 
 input CreateBrandInput {
+  categories: [Int!]
   description: String
   image: String
   name: String!
@@ -295,6 +307,7 @@ input ProductCategoryInput {
 
 input ProductFilterDTO {
   filter: FilterDTO
+  orderBy: ProductOrderBy
   skip: Int
   take: Int
 }
@@ -308,6 +321,13 @@ type ProductItem {
   variationsItem: [VariationItem!]
 }
 
+enum ProductOrderBy {
+  AvgCustomerReview
+  NewProduct
+  PriceHighToLow
+  PriceLowToHigh
+}
+
 type ProductType {
   coverImage: String!
   id: Float!
@@ -317,7 +337,7 @@ type ProductType {
 type Query {
   FavoritesList: [FavoritesList!]!
   brand(id: Int!): Brand!
-  brands: [Brand!]!
+  brands(brandFilter: BrandFilter): [Brand!]!
   cart: [Cart!]!
   category(id: Int!): Category!
   filter(filterDTO: FilterDTO): Filter!
@@ -363,7 +383,6 @@ input RemoveTagFromProductInput {
 }
 
 type Review {
-  created_at: DateTime!
   id: Int!
   rating: Float!
   review: String!

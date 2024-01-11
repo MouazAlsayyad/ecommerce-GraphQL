@@ -5,6 +5,7 @@ import {
 } from './dto/create-category.input';
 import { UpdateCategoryInput } from './dto/update-category.input';
 import { PrismaCategoryRepository } from './category-repository';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class CategoryService {
@@ -15,7 +16,7 @@ export class CategoryService {
   }
 
   getAllCategories(categoryFilter: CategoryFilterInput) {
-    const filter = {
+    const filter: Prisma.CategoryWhereInput = {
       ...(categoryFilter?.brandId && {
         brand_category: { some: { brandId: categoryFilter.brandId } },
       }),
@@ -24,7 +25,18 @@ export class CategoryService {
       }),
     };
 
-    return this.categoryRepository.findAll(filter);
+    const orderBy: Prisma.CategoryOrderByWithRelationInput = {
+      ...(categoryFilter?.orderBy && {
+        name: categoryFilter.orderBy.name,
+      }),
+    };
+
+    return this.categoryRepository.findAll(
+      filter,
+      orderBy,
+      categoryFilter.skip,
+      categoryFilter.take,
+    );
   }
 
   findOne(id: number) {

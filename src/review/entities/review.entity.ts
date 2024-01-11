@@ -13,7 +13,4 @@ export class Review {
 
   @Field(() => Float)
   rating: number;
-
-  @Field(() => Date)
-  created_at: Date;
 }
