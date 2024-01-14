@@ -36,6 +36,7 @@ model User {
   favoritesList FavoritesList[]
   addresses     Address[]
   userReview    UserReview[]
+  order         Order[]
 }
 
 model UserReview {
@@ -133,12 +134,12 @@ model Product {
   cartItems                   CartItems[]
   product_category            Product_Category[]
   product_tag                 Product_Tag[]
-  user       User     @relation(fields: [userId], references: [id])
-  // productConfiguration        ProductConfiguration[]
+  user                        User                    @relation(fields: [userId], references: [id])
+  orderItem                   OrderItem[]
   averageRating               Float?                  @default(0)
   reviewCount                 Int?                    @default(0)
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt @default(now())
+  createdAt                   DateTime                @default(now())
+  updatedAt                   DateTime                @updatedAt @default(now())
 
 }
 
@@ -167,15 +168,16 @@ model ProductImage{
 }
 
 model ProductItem {
-  id                   Int                    @id @default(autoincrement())
-  SKU                  String
-  qtyInStock           Int
-  price                Float
-  productId            Int
-  product              Product                @relation(fields: [productId], references: [id])
-  productConfiguration ProductConfiguration[]
-  cartItems            CartItems[]
-  ItemImages           ItemImage[]
+  id                    Int                    @id @default(autoincrement())
+  SKU                   String
+  qtyInStock            Int
+  price                 Float
+  productId             Int
+  product               Product                @relation(fields: [productId], references: [id])
+  productConfiguration  ProductConfiguration[]
+  cartItems             CartItems[]
+  ItemImages            ItemImage[]
+  orderItems            OrderItem[]
   updatedAt        DateTime           @updatedAt @default(now())
 }
 
@@ -208,13 +210,18 @@ model ProductAttribute {
   product   Product @relation(fields: [productId], references: [id])
 }
 
-
+model Image {
+  id                      Int        @id @default(autoincrement())
+  filename                String     
+  path                    String     @unique
+  createdAt               DateTime  @default(now())
+}
 
 model Media {
-  id        Int      @id @default(autoincrement())
-  filename  String
-  fileType  FileType
-  path      String
+  id               Int      @id @default(autoincrement())
+  filename         String
+  fileType         FileType
+  path             String
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt @default(now())
 }
@@ -254,55 +261,79 @@ model Brand_Category {
 }
 
 model Product_Category {
-  categoryId   Int
-  productId Int
-  category  Category @relation(fields: [categoryId], references: [id])
-  product   Product  @relation(fields: [productId], references: [id])
+  categoryId         Int
+  productId          Int
+  category           Category @relation(fields: [categoryId], references: [id])
+  product            Product  @relation(fields: [productId], references: [id])
 
   @@id([categoryId, productId])
 }
 
-// model OrderStatus {
-//   id           Int         @id @default(autoincrement())
-//   status       String
-// }
+model OrderStatus {
+  id                    Int         @id @default(autoincrement())
+  status                String
+  order                 Order[]
+}
 
 
-// model ShopingMethod {
-//   id           Int         @id @default(autoincrement())
-//   name         String
-//   price        Float
-// }
+model ShoppingMethod {
+  id                    Int         @id @default(autoincrement())
+  name                  String
+  price                 Float
+  order                 Order[]
+}
 
 
-// model Fee {
-//   id           Int         @id @default(autoincrement())
-//   name         String
-//   rate         Float
-// }
+model Tax {
+  id                    Int         @id @default(autoincrement())
+  name                  String
+  taxRate               Float
+  orderTax              OrderTax[]
+}
 
-// model PaymentOptions{
-//   id                    Int         @id @default(autoincrement())
-//   name                  String
-// }
+model OrderTax{
+  taxId                   Int  
+  tax                     Tax             @relation(fields: [taxId], references: [id])
+  orderId                 Int  
+  order                   Order             @relation(fields: [orderId], references: [id])
+  @@id([taxId,orderId])
+}
 
-// model Order{
-//   id                    Int         @id @default(autoincrement())
-//   name                  String
-//   shippingAddress       String 
-//   email                 String
-//   phone                 String
-//   subTotal              Float
-//   taxes                 Float
-//   shipping              Float
-//   total                 Float
-//   createdAt             DateTime    @default(now())
-//   updatedAt             DateTime    @updatedAt @default(now())
-// }
+model PaymentOption{
+  id                      Int         @id @default(autoincrement())
+  name                    String
+  order                   Order[]
+}
 
-model Image {
-  id       Int        @id @default(autoincrement())
-  filename String     
-  path     String     @unique
-  createdAt DateTime  @default(now())
+model Order {
+  id                    Int             @id @default(autoincrement())
+  name                  String
+  shippingAddress       String 
+  email                 String
+  phone                 String
+  subTotal              Float
+  total                 Float
+  userId                Int   
+  user                  User             @relation(fields: [userId], references: [id])
+  paymentOptionId       Int              
+  paymentOption         PaymentOption    @relation(fields: [paymentOptionId], references: [id])
+  orderTax              OrderTax[]
+  statusId              Int          
+  status                OrderStatus      @relation(fields: [statusId], references: [id])
+  shoppingMethodId      Int   
+  shoppingMethod        ShoppingMethod   @relation(fields: [shoppingMethodId], references: [id])
+  orderItem             OrderItem[]         
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt @default(now())
+}
+
+model OrderItem {
+  productId Int
+  orderId               Int
+  productItemId         Int
+  qty                   Int
+  order                 Order            @relation(fields: [orderId], references: [id])
+  product               Product          @relation(fields: [productId], references: [id])
+  productItem           ProductItem      @relation(fields: [productItemId], references: [id])
+  @@id([orderId,productItemId])
 }
