@@ -1,12 +1,6 @@
 import { InputType, Field, Int } from '@nestjs/graphql';
 import { UserType } from '@prisma/client';
-import {
-  IsEmail,
-  IsEnum,
-  IsNotEmpty,
-  IsNumber,
-  IsString,
-} from 'class-validator';
+import { IsEmail, IsEnum, IsInt, IsNotEmpty, IsString } from 'class-validator';
 
 @InputType()
 export class CreateUserInput {
@@ -37,16 +31,26 @@ export class CreateUserInput {
 }
 
 @InputType()
-export class AddressInput {
+export class CreateAddressInput {
   @Field(() => Int)
-  @IsNumber()
+  @IsInt()
   @IsNotEmpty()
   countryId: number;
+
+  @Field(() => Int)
+  @IsInt()
+  @IsNotEmpty()
+  stateId: number;
+
+  @Field(() => Int)
+  @IsInt()
+  @IsNotEmpty()
+  cityId: number;
 
   @Field()
   @IsString()
   @IsNotEmpty()
-  street_number: string;
+  streetNumber: string;
 
   @Field()
   @IsString()
@@ -56,23 +60,5 @@ export class AddressInput {
   @Field()
   @IsString()
   @IsNotEmpty()
-  city: string;
-
-  @Field()
-  @IsString()
-  @IsNotEmpty()
-  region: string;
-
-  @Field()
-  @IsString()
-  @IsNotEmpty()
-  postal_code: string;
-}
-
-@InputType()
-export class CountryInput {
-  @Field()
-  @IsString()
-  @IsNotEmpty()
-  country_name: string;
+  postalCode: string;
 }

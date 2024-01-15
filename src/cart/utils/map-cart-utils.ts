@@ -1,6 +1,6 @@
-import { Cart } from '../entities/cart.entity';
+import { Cart, CartItem } from '../entities/cart.entity';
 
-export async function groupCartItems(cart): Promise<Cart[]> {
+export async function groupCartItems(cart): Promise<Cart> {
   const groupedProducts = new Map();
 
   cart.cartItems.forEach((item) => {
@@ -15,6 +15,7 @@ export async function groupCartItems(cart): Promise<Cart[]> {
           value: config.variationOption.value,
         })),
       });
+      groupedProducts.get(productId).price += item.qty * item.item.price;
     } else {
       groupedProducts.set(productId, {
         productId: item.productId,
@@ -30,15 +31,23 @@ export async function groupCartItems(cart): Promise<Cart[]> {
             })),
           },
         ],
+        price: item.qty * item.item.price,
       });
     }
   });
 
-  const result: Cart[] = [];
+  // groupedProducts.forEach((groupedProduct) => {
+  //   result.push(groupedProduct);
+  // });
 
-  groupedProducts.forEach((groupedProduct) => {
-    result.push(groupedProduct);
-  });
+  const cartItem: CartItem[] = Array.from(groupedProducts.values());
+
+  const subtotal = cartItem.reduce((sum, item) => sum + item.price, 0);
+
+  const result: Cart = {
+    cartItem,
+    subtotal,
+  };
 
   return result;
 }

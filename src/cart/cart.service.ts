@@ -17,7 +17,7 @@ export class CartService {
     return await this.cartRepository.addItemToCart(userId, { ...data });
   }
 
-  getCart(userId: number): Promise<Cart[]> {
+  getCart(userId: number): Promise<Cart> {
     return this.cartRepository.getCart(userId);
   }
 

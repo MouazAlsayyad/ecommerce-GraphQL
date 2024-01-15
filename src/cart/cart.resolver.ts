@@ -30,7 +30,7 @@ export class CartResolver {
   }
 
   @Roles(UserType.USER, UserType.ADMIN)
-  @Query(() => [Cart], { name: 'cart' })
+  @Query(() => Cart, { name: 'cart' })
   getCart(@Context() context: ContextType) {
     try {
       return this.cartService.getCart(context.req.user.id);
@@ -40,7 +40,7 @@ export class CartResolver {
   }
 
   @Roles(UserType.USER, UserType.ADMIN)
-  @Mutation(() => [Cart])
+  @Mutation(() => Cart)
   removeItemFromCart(
     @Args('addItemCartInput') addItemCartInput: AddItemCartInput,
     @Context() context: ContextType,
@@ -56,7 +56,7 @@ export class CartResolver {
   }
 
   @Roles(UserType.USER, UserType.ADMIN)
-  @Mutation(() => [Cart])
+  @Mutation(() => Cart)
   updateCart(
     @Args('updateItemCartInput') updateItemCartInput: UpdateItemCartInput,
     @Context() context: ContextType,
@@ -72,7 +72,7 @@ export class CartResolver {
   }
 
   @Roles(UserType.USER, UserType.ADMIN)
-  @Mutation(() => [Cart])
+  @Mutation(() => Cart)
   emptyTheShoppingCart(@Context() context: ContextType) {
     try {
       return this.cartService.emptyTheShoppingCart(context.req.user.id);

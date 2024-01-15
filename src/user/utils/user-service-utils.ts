@@ -59,22 +59,14 @@ export async function checkAddress(
 }
 
 export async function checkCountryByName(
-  country_name: string,
+  countryName: string,
   tx: Prisma.TransactionClient,
 ) {
   const country = await tx.country.findFirst({
-    where: { country_name },
+    where: { countryName },
   });
   if (country)
     throw new BadRequestException(
-      `country with name ${country_name} is already exists`,
+      `country with name ${countryName} is already exists`,
     );
-}
-
-export async function checkCountryById(
-  id: number,
-  tx: Prisma.TransactionClient,
-) {
-  const country = await tx.country.findUnique({ where: { id } });
-  if (!country) throw new NotFoundException(`country with ID ${id} not found`);
 }

@@ -1,11 +1,7 @@
 import { Resolver, Query, Mutation, Args, Int, Context } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
-import {
-  AddressInput,
-  CountryInput,
-  CreateUserInput,
-} from './dto/create-user.input';
+import { CreateAddressInput, CreateUserInput } from './dto/create-user.input';
 import {
   RemoveAddressInput,
   UpdateAddressInput,
@@ -59,20 +55,10 @@ export class UserResolver {
     }
   }
 
-  @Roles(UserType.ADMIN)
-  @Mutation(() => Boolean)
-  addCountry(@Args('countryInput') countryInput: CountryInput) {
-    try {
-      return this.userService.addCountry(countryInput);
-    } catch (e) {
-      this.logger.error(e);
-    }
-  }
-
   @Roles(UserType.USER)
   @Mutation(() => User)
   addAddress(
-    @Args('addressInput') addressInput: AddressInput,
+    @Args('addressInput') addressInput: CreateAddressInput,
     @Context() context: ContextType,
   ) {
     try {

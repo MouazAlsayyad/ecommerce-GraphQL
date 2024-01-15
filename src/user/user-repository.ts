@@ -1,49 +1,35 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import {
-  AddressInput,
-  CountryInput,
-  CreateUserInput,
-} from './dto/create-user.input';
-import { User } from './entities/user.entity';
+import { CreateAddressInput, CreateUserInput } from './dto/create-user.input';
+// import { User } from './entities/user.entity';
 import {
   checkAddress,
-  checkCountryById,
-  checkCountryByName,
   checkExistingUserFields,
 } from './utils/user-service-utils';
 
 import * as bcryptjs from 'bcryptjs';
-import { Address } from './entities/address.entity';
+// import { Address } from './entities/address.entity';
 import { UpdateAddressInput } from './dto/update-user.input';
 
 @Injectable()
 export class PrismaUserRepository {
   constructor(private readonly prisma: PrismaService) {}
-  create(data: CreateUserInput): Promise<User> {
+  create(data: CreateUserInput) {
     return this.prisma.$transaction(async (tx) => {
-      const { email, username, phone_number, password, user_type } = data;
+      const { email, username, phone_number } = data;
       await checkExistingUserFields(email, username, phone_number, tx);
+      data.password = await bcryptjs.hash(data.password, 12);
 
-      const { id } = await tx.user.create({
-        data: {
-          email,
-          username,
-          phone_number,
-          user_type,
-          password: await bcryptjs.hash(password, 12),
-          isBlock: false,
-        },
-      });
+      const { id } = await tx.user.create({ data });
       return this.findOne(id);
     });
   }
 
-  findAll(): Promise<User[]> {
+  findAll() {
     return this.prisma.user.findMany({ include: { addresses: true } });
   }
 
-  findOne(id: number): Promise<User> {
+  findOne(id: number) {
     return this.prisma.$transaction(async (tx) => {
       const user = await tx.user.findUnique({
         where: { id },
@@ -55,27 +41,18 @@ export class PrismaUserRepository {
     });
   }
 
-  addCountry(data: CountryInput): Promise<boolean> {
+  addAddress(userId: number, data: CreateAddressInput): Promise<boolean> {
     return this.prisma.$transaction(async (tx) => {
-      await checkCountryByName(data.country_name, tx);
-      await tx.country.create({ data: { country_name: data.country_name } });
-      return true;
-    });
-  }
-
-  addAddress(userId: number, data: AddressInput): Promise<boolean> {
-    return this.prisma.$transaction(async (tx) => {
-      await checkCountryById(data.countryId, tx);
-      const { address, city, postal_code, region, street_number, countryId } =
+      const { address, cityId, postalCode, streetNumber, countryId, stateId } =
         data;
       await tx.address.create({
         data: {
           userId,
           address,
-          city,
-          postal_code,
-          region,
-          street_number,
+          cityId,
+          postalCode,
+          stateId,
+          streetNumber,
           countryId,
         },
       });
@@ -83,19 +60,20 @@ export class PrismaUserRepository {
     });
   }
 
-  updateAddress(userId: number, data: UpdateAddressInput): Promise<Address> {
+  updateAddress(userId: number, data: UpdateAddressInput) {
     return this.prisma.$transaction(async (tx) => {
-      await checkCountryById(data.countryId, tx);
       await checkAddress(data.id, userId, tx);
 
       return tx.address.update({
         where: { id: data.id },
         data: {
           address: data.address,
-          city: data.city,
-          postal_code: data.postal_code,
-          region: data.region,
-          street_number: data.street_number,
+          // city: data.city,
+          cityId: 3,
+          postalCode: data.postal_code,
+          // region: data.region,
+
+          streetNumber: data.street_number,
           countryId: data.countryId,
         },
       });

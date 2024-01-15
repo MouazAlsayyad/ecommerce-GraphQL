@@ -70,7 +70,7 @@ export class PrismaCartRepository {
     });
   }
 
-  async getCart(userId: number): Promise<Cart[]> {
+  async getCart(userId: number): Promise<Cart> {
     const cart = await this.prisma.cart.findUnique({
       where: { userId },
       include: {
@@ -92,7 +92,7 @@ export class PrismaCartRepository {
     });
 
     if (!cart) {
-      return [];
+      return {};
     }
     return groupCartItems(cart);
   }

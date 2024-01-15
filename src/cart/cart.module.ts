@@ -21,5 +21,6 @@ import { PrismaCartRepository } from './cart-repository';
       useClass: AuthGuard,
     },
   ],
+  exports: [CartService],
 })
 export class CartModule {}

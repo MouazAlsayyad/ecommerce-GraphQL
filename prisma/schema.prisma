@@ -79,24 +79,6 @@ model CartItems {
   @@id([cartId, itemId])
 }
 
-model Country {
-  id           Int       @id @default(autoincrement())
-  country_name String
-  addresses    Address[]
-}
-
-model Address {
-  id            Int     @id @default(autoincrement())
-  userId        Int
-  countryId     Int
-  street_number String
-  address       String
-  city          String
-  region        String
-  postal_code   String
-  user          User    @relation(fields: [userId], references: [id])
-  country       Country @relation(fields: [countryId], references: [id])
-}
 
 model Variation {
   id                   Int                    @id @default(autoincrement())
@@ -278,60 +260,115 @@ model OrderStatus {
 
 model ShoppingMethod {
   id                    Int         @id @default(autoincrement())
-  name                  String
+  name                  String      @unique
   price                 Float
   order                 Order[]
+  active                Boolean     @default(true)
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt @default(now())
 }
 
+
+model Country {
+  id                      Int       @id @default(autoincrement())
+  countryName             String
+  countryCode             String    @unique
+  state                   State[]
+  addresses               Address[]
+  tax                     Tax[]
+}
+
+model State {
+  id                      Int         @id @default(autoincrement())
+  stateName               String
+  stateCode               String      @unique
+  countryId               Int
+  country                 Country     @relation(fields: [countryId], references: [id])
+  city                    City[]
+  addresses               Address[]
+  tax                     Tax[]
+}
+
+model City{
+  id                    Int       @id @default(autoincrement())
+  cityName              String    
+  stateId               Int
+  state                 State     @relation(fields: [stateId], references: [id])
+  addresses             Address[]
+}
+
+model Address {
+  id                      Int        @id @default(autoincrement())
+  address                 String
+  postalCode              String
+  streetNumber            String?
+  userId                  Int
+  countryId               Int
+  stateId                Int
+  cityId                  Int
+  user                    User        @relation(fields: [userId], references: [id])
+  country                 Country     @relation(fields: [countryId], references: [id])
+  state                   State       @relation(fields: [stateId], references: [id])
+  city                    City        @relation(fields: [cityId], references: [id])
+  order                   Order[]
+  createdAt               DateTime    @default(now())
+  updatedAt               DateTime    @updatedAt @default(now())
+}
 
 model Tax {
-  id                    Int         @id @default(autoincrement())
+  id                    Int           @id @default(autoincrement())
   name                  String
   taxRate               Float
-  orderTax              OrderTax[]
+  active                Boolean       @default(true)
+  orderTax              Order[]
+  countryId             Int
+  stateId               Int
+  country               Country       @relation(fields: [countryId], references: [id])
+  state                 State         @relation(fields: [stateId], references: [id])
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt @default(now())
+  @@unique([countryId,stateId])
 }
 
-model OrderTax{
-  taxId                   Int  
-  tax                     Tax             @relation(fields: [taxId], references: [id])
-  orderId                 Int  
-  order                   Order             @relation(fields: [orderId], references: [id])
-  @@id([taxId,orderId])
-}
 
 model PaymentOption{
   id                      Int         @id @default(autoincrement())
-  name                    String
+  name                    String      @unique
+  active               Boolean     @default(true)
   order                   Order[]
 }
 
 model Order {
   id                    Int             @id @default(autoincrement())
-  name                  String
-  shippingAddress       String 
+  name                  String 
   email                 String
   phone                 String
   subTotal              Float
+  taxes                 Float
   total                 Float
+  addressId             Int   
   userId                Int   
-  user                  User             @relation(fields: [userId], references: [id])
+  taxId                 Int  
   paymentOptionId       Int              
-  paymentOption         PaymentOption    @relation(fields: [paymentOptionId], references: [id])
-  orderTax              OrderTax[]
   statusId              Int          
-  status                OrderStatus      @relation(fields: [statusId], references: [id])
   shoppingMethodId      Int   
+  orderItem             OrderItem[]     
+  tax                   Tax              @relation(fields: [taxId], references: [id])    
+  user                  User             @relation(fields: [userId], references: [id])
+  address               Address          @relation(fields: [addressId], references: [id])
+  status                OrderStatus      @relation(fields: [statusId], references: [id])
+  paymentOption         PaymentOption    @relation(fields: [paymentOptionId], references: [id])
   shoppingMethod        ShoppingMethod   @relation(fields: [shoppingMethodId], references: [id])
-  orderItem             OrderItem[]         
   createdAt             DateTime         @default(now())
   updatedAt             DateTime         @updatedAt @default(now())
 }
 
 model OrderItem {
-  productId Int
+  productId             Int
   orderId               Int
   productItemId         Int
   qty                   Int
+  price                 Float
   order                 Order            @relation(fields: [orderId], references: [id])
   product               Product          @relation(fields: [productId], references: [id])
   productItem           ProductItem      @relation(fields: [productItemId], references: [id])

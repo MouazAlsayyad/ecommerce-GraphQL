@@ -29,10 +29,34 @@ class VariationsItem {
 }
 
 @ObjectType()
-export class Cart {
+export class CartItem {
   @Field()
   product: ProductType;
 
   @Field(() => [ItemWithQty])
   item: ItemWithQty[];
+
+  @Field()
+  price: number;
+}
+
+// @ObjectType()
+// export class Cart {
+//   @Field()
+//   product: ProductType;
+
+//   @Field(() => [ItemWithQty])
+//   item: ItemWithQty[];
+
+//   @Field()
+//   price: number;
+// }
+
+@ObjectType()
+export class Cart {
+  @Field(() => [CartItem], { nullable: true })
+  cartItem?: CartItem[];
+
+  @Field({ nullable: true })
+  subtotal?: number;
 }

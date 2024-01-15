@@ -16,6 +16,12 @@ import { FavoritesListModule } from './favorites-list/favorites-list.module';
 import { UploadImageModule } from './upload-image/upload-image.module';
 import { TagModule } from './tag/tag.module';
 import { FilterModule } from './filter/filter.module';
+import { ShoppingMethodModule } from './shopping-method/shopping-method.module';
+import { OrderModule } from './order/order.module';
+import { OrderStatusModule } from './order-status/order-status.module';
+import { TaxModule } from './tax/tax.module';
+import { PaymentModule } from './payment/payment.module';
+import { CountryModule } from './country/country.module';
 
 @Module({
   imports: [
@@ -40,6 +46,12 @@ import { FilterModule } from './filter/filter.module';
     UploadImageModule,
     TagModule,
     FilterModule,
+    ShoppingMethodModule,
+    OrderModule,
+    OrderStatusModule,
+    TaxModule,
+    PaymentModule,
+    CountryModule,
   ],
   controllers: [],
   providers: [],

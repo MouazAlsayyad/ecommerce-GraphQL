@@ -1,9 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {
-  AddressInput,
-  CountryInput,
-  CreateUserInput,
-} from './dto/create-user.input';
+import { CreateAddressInput, CreateUserInput } from './dto/create-user.input';
 
 import {
   RemoveAddressInput,
@@ -35,11 +31,7 @@ export class UserService {
     return this.userRepository.remove(id);
   }
 
-  addCountry(data: CountryInput) {
-    return this.userRepository.addCountry(data);
-  }
-
-  async addAddress(data: AddressInput, userId: number) {
+  async addAddress(data: CreateAddressInput, userId: number) {
     await this.userRepository.addAddress(userId, data);
     return this.findOne(userId);
   }

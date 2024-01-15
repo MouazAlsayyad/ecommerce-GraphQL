@@ -52,15 +52,6 @@ type Address {
   street_number: String!
 }
 
-input AddressInput {
-  address: String!
-  city: String!
-  countryId: Int!
-  postal_code: String!
-  region: String!
-  street_number: String!
-}
-
 type Attribute {
   id: Int!
   name: String!
@@ -91,7 +82,13 @@ input BrandOrderBy {
 }
 
 type Cart {
+  cartItem: [CartItem!]
+  subtotal: Float
+}
+
+type CartItem {
   item: [ItemWithQty!]!
+  price: Float!
   product: ProductType!
 }
 
@@ -104,8 +101,25 @@ type Category {
   product: [Product!]!
 }
 
-input CountryInput {
-  country_name: String!
+type City {
+  cityName: String!
+  id: Int!
+}
+
+type Country {
+  countryCode: String!
+  countryName: String!
+  id: Int!
+  state: [State!]
+}
+
+input CreateAddressInput {
+  address: String!
+  cityId: Int!
+  countryId: Int!
+  postalCode: String!
+  stateId: Int!
+  streetNumber: String!
 }
 
 input CreateBrandInput {
@@ -118,6 +132,33 @@ input CreateBrandInput {
 input CreateCategoryInput {
   description: String
   image: String
+  name: String!
+}
+
+input CreateCityInput {
+  cityName: String!
+}
+
+input CreateCountryInput {
+  countryCode: String!
+  countryName: String!
+  state: [CreateStateInput!]
+}
+
+input CreateOrderInput {
+  email: String!
+  name: String!
+  paymentOptionId: Int!
+  phone: String!
+  shippingAddress: String!
+  shoppingMethodId: Int!
+}
+
+input CreateOrderStatusInput {
+  status: String!
+}
+
+input CreatePaymentInput {
   name: String!
 }
 
@@ -153,8 +194,28 @@ input CreateReviewInput {
   review: String!
 }
 
+input CreateShoppingMethodInput {
+  active: Boolean! = true
+  name: String!
+  price: Float!
+}
+
+input CreateStateInput {
+  city: [CreateCityInput!]
+  stateCode: String!
+  stateName: String!
+}
+
 input CreateTagInput {
   value: String!
+}
+
+input CreateTaxInput {
+  active: Boolean! = true
+  countryCode: String!
+  name: String!
+  stateCode: String!
+  taxRate: Float!
 }
 
 input CreateUserInput {
@@ -231,11 +292,10 @@ input LogInInput {
 }
 
 type Mutation {
-  addAddress(addressInput: AddressInput!): User!
+  addAddress(addressInput: CreateAddressInput!): User!
   addAttribute(addProductAttributeInput: AddProductAttributeInput!): Product!
   addCategoriesToBrand(addCategoriesToBrandInput: AddCategoriesToBrandInput!): Brand!
   addCategoryToProduct(productCategoryInput: ProductCategoryInput!): Product!
-  addCountry(countryInput: CountryInput!): Boolean!
   addImagesToItem(addItemImagesInput: AddItemImagesInput!): Product!
   addImagesToProduct(addProductImagesInput: AddProductImagesInput!): Product!
   addItemToCart(addItemCartInput: AddItemCartInput!): Boolean!
@@ -244,41 +304,77 @@ type Mutation {
   addTagsToProduct(addTagsToProductInput: AddTagsToProductInput!): Boolean!
   createBrand(createBrandInput: CreateBrandInput!): Brand!
   createCategory(createCategoryInput: CreateCategoryInput!): Category!
+  createCountry(createCountryInput: CreateCountryInput!): Country!
+  createOrder(createOrderInput: CreateOrderInput!): Boolean!
+  createOrderStatus(createOrderStatusInput: CreateOrderStatusInput!): OrderStatus!
+  createPayment(createPaymentInput: CreatePaymentInput!): Payment!
   createProduct(createProductInput: CreateProductInput!): Product!
   createReview(createReviewInput: CreateReviewInput!): Review!
+  createShoppingMethod(createShoppingMethodInput: CreateShoppingMethodInput!): ShoppingMethod!
   createTag(createTagInput: CreateTagInput!): Tag!
+  createTax(createTaxInput: CreateTaxInput!): Tax!
   createUser(createUserInput: CreateUserInput!): User!
   deleteAddress(removeAddressInput: RemoveAddressInput!): Boolean!
   deleteProductItem(removeItemInput: RemoveItemInput!): Boolean!
-  emptyTheShoppingCart: [Cart!]!
+  emptyTheShoppingCart: Cart!
   login(loginInput: LogInInput!): AuthResponse!
   removeAttribute(removeAttributeInput: RemoveAttributeInput!): Boolean!
   removeBrand(id: Int!): Boolean!
   removeCategory(id: Int!): Boolean!
   removeCategoryFromBrand(removeCategoryFromBrandInput: RemoveCategoryFromBrandInput!): Boolean!
   removeCategoryFromProduct(productCategoryInput: ProductCategoryInput!): Boolean!
+  removeCity(id: Int!): Boolean!
+  removeCountry(id: Int!): Boolean!
   removeImageFromItem(removeItemImageInput: RemoveItemImageInput!): Boolean!
   removeImageFromProduct(removeProductImageInput: RemoveProductImageInput!): Boolean!
-  removeItemFromCart(addItemCartInput: AddItemCartInput!): [Cart!]!
+  removeItemFromCart(addItemCartInput: AddItemCartInput!): Cart!
+  removeOrder(id: Int!): Order!
+  removeOrderStatus(id: Int!): OrderStatus!
+  removePayment(id: Int!): Boolean!
   removeProduct(id: Int!): Boolean!
   removeProductFromFavoritesList(favoritesListInput: FavoritesListInput!): [FavoritesList!]!
   removeReview(productId: Int!): Boolean!
+  removeShoppingMethod(id: Int!): Boolean!
+  removeState(id: Int!): Boolean!
   removeTag(id: Int!): Boolean!
   removeTagFromProduct(removeTagFromProductInput: RemoveTagFromProductInput!): Boolean!
+  removeTax(id: Int!): Boolean!
   removeUser(id: Int!): Boolean!
   singIn(singInInput: SignInInput!): AuthResponse!
   updateAddress(updateAddressInput: UpdateAddressInput!): User!
   updateAttribute(updateProductAttributeInput: UpdateProductAttributeInput!): Product!
   updateBrand(updateBrandInput: UpdateBrandInput!): Brand!
-  updateCart(updateItemCartInput: UpdateItemCartInput!): [Cart!]!
+  updateCart(updateItemCartInput: UpdateItemCartInput!): Cart!
   updateCategory(updateCategoryInput: UpdateCategoryInput!): Category!
+  updateCity(updateCityInput: UpdateCityInput!): City!
+  updateCountry(updateCountryInput: UpdateCountryInput!): Country!
+  updateOrder(updateOrderInput: UpdateOrderInput!): Order!
+  updateOrderStatus(updateOrderStatusInput: UpdateOrderStatusInput!): OrderStatus!
+  updatePayment(updatePaymentInput: UpdatePaymentInput!): Payment!
   updateProduct(updateProductInput: UpdateProductInput!): Product!
   updateProductItem(updateProductItemInput: UpdateProductItemInput!): Product!
   updateReview(updateReviewInput: UpdateReviewInput!): Review!
+  updateShoppingMethod(updateShoppingMethodInput: UpdateShoppingMethodInput!): ShoppingMethod!
+  updateState(updateStateInput: UpdateStateInput!): State!
   updateTag(updateTagInput: UpdateTagInput!): Tag!
+  updateTax(updateTaxInput: UpdateTaxInput!): Tax!
   updateVariation(updateVariationInput: UpdateVariationInput!): Product!
   updateVariationOption(updateVariationOptionInput: UpdateVariationOptionInput!): Product!
   uploadImage(image: Upload!): UploadImage!
+}
+
+type Order {
+  id: Int!
+}
+
+type OrderStatus {
+  id: Int!
+  status: String!
+}
+
+type Payment {
+  id: Int!
+  name: String!
 }
 
 type Product {
@@ -338,12 +434,20 @@ type Query {
   FavoritesList: [FavoritesList!]!
   brand(id: Int!): Brand!
   brands(brandFilter: BrandFilter): [Brand!]!
-  cart: [Cart!]!
+  cart: Cart!
   category(id: Int!): Category!
+  country(id: Int!): Country!
   filter(filterDTO: FilterDTO): Filter!
+  order(id: Int!): Order!
+  orderStatus(id: Int!): OrderStatus!
+  orders: [Order!]!
+  payment(id: Int!): Payment!
+  payments: [Payment!]!
   product(id: Int!): Product!
   products(productFilterDTO: ProductFilterDTO): [Product!]!
+  shoppingMethod(id: Int!): ShoppingMethod!
   tag(id: Int!): Tag!
+  tax(id: Int!): Tax!
   user(id: Int!): User!
   users: [User!]!
 }
@@ -389,6 +493,12 @@ type Review {
   userId: Int!
 }
 
+type ShoppingMethod {
+  id: Int!
+  name: String!
+  price: Float!
+}
+
 input SignInInput {
   email: String!
   password: String!
@@ -396,9 +506,24 @@ input SignInInput {
   username: String!
 }
 
+type State {
+  city: [City!]
+  id: Int!
+  stateCode: String!
+  stateName: String!
+}
+
 type Tag {
   id: Int!
   value: String!
+}
+
+type Tax {
+  countryCode: String!
+  id: Int!
+  name: String!
+  stateCode: String!
+  taxRate: Float!
 }
 
 input UpdateAddressInput {
@@ -425,9 +550,40 @@ input UpdateCategoryInput {
   name: String
 }
 
+input UpdateCityInput {
+  cityName: String
+  id: Int!
+}
+
+input UpdateCountryInput {
+  countryCode: String
+  countryName: String
+  id: Int!
+}
+
 input UpdateItemCartInput {
   itemId: Int!
   qty: Int!
+}
+
+input UpdateOrderInput {
+  email: String
+  id: Int!
+  name: String
+  paymentOptionId: Int
+  phone: String
+  shippingAddress: String
+  shoppingMethodId: Int
+}
+
+input UpdateOrderStatusInput {
+  id: Int!
+  status: String
+}
+
+input UpdatePaymentInput {
+  id: Int!
+  name: String
 }
 
 input UpdateProductAttributeInput {
@@ -462,9 +618,31 @@ input UpdateReviewInput {
   review: String
 }
 
+input UpdateShoppingMethodInput {
+  active: Boolean
+  id: Int!
+  name: String
+  price: Float
+}
+
+input UpdateStateInput {
+  id: Int!
+  stateCode: String
+  stateName: String
+}
+
 input UpdateTagInput {
   id: Int!
   value: String!
+}
+
+input UpdateTaxInput {
+  active: Boolean
+  countryCode: String
+  id: Int!
+  name: String
+  stateCode: String
+  taxRate: Float
 }
 
 input UpdateVariationInput {
