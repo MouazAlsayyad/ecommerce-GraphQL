@@ -4,5 +4,6 @@ import { TaxResolver } from './tax.resolver';
 
 @Module({
   providers: [TaxResolver, TaxService],
+  exports: [TaxService],
 })
 export class TaxModule {}

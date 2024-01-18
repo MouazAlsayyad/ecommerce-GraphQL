@@ -18,7 +18,6 @@ import { TagModule } from './tag/tag.module';
 import { FilterModule } from './filter/filter.module';
 import { ShoppingMethodModule } from './shopping-method/shopping-method.module';
 import { OrderModule } from './order/order.module';
-import { OrderStatusModule } from './order-status/order-status.module';
 import { TaxModule } from './tax/tax.module';
 import { PaymentModule } from './payment/payment.module';
 import { CountryModule } from './country/country.module';
@@ -48,7 +47,6 @@ import { CountryModule } from './country/country.module';
     FilterModule,
     ShoppingMethodModule,
     OrderModule,
-    OrderStatusModule,
     TaxModule,
     PaymentModule,
     CountryModule,

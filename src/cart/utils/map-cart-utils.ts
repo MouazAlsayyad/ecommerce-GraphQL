@@ -11,6 +11,7 @@ export async function groupCartItems(cart): Promise<Cart> {
         id: item.item.id,
         qty: item.qty,
         price: item.item.price,
+        productId: item.productId,
         variationsItem: item.item.productConfiguration.map((config) => ({
           value: config.variationOption.value,
         })),
@@ -23,6 +24,7 @@ export async function groupCartItems(cart): Promise<Cart> {
         product: item.product,
         item: [
           {
+            productId: item.productId,
             id: item.item.id,
             qty: item.qty,
             price: item.item.price,

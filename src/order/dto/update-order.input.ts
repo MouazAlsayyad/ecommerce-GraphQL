@@ -1,8 +1,14 @@
-import { CreateOrderInput } from './create-order.input';
-import { InputType, Field, Int, PartialType } from '@nestjs/graphql';
+import { InputType, Field, Int } from '@nestjs/graphql';
+import { OrderStatus } from '@prisma/client';
+import { IsEnum, IsNotIn } from 'class-validator';
 
 @InputType()
-export class UpdateOrderInput extends PartialType(CreateOrderInput) {
+export class UpdateOrderInput {
   @Field(() => Int)
   id: number;
+
+  @Field()
+  @IsEnum(OrderStatus)
+  @IsNotIn(['CANCELED'], { message: 'Invalid order status' })
+  status: OrderStatus;
 }

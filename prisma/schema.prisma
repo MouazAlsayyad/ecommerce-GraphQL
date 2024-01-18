@@ -21,6 +21,16 @@ enum FileType {
   Video
 }
 
+enum OrderStatus{
+  PENDING 
+  PROCESSING
+  SHIPPED
+  BACKORDER
+  ON_HOLD
+  RECIPIENT
+  CANCELED
+}
+
 model User {
   id            Int             @id @default(autoincrement())
   username      String          @unique
@@ -34,7 +44,7 @@ model User {
   cart          Cart?
   product       Product[]
   favoritesList FavoritesList[]
-  addresses     Address[]
+  address       Address[]
   userReview    UserReview[]
   order         Order[]
 }
@@ -81,20 +91,20 @@ model CartItems {
 
 
 model Variation {
-  id                   Int                    @id @default(autoincrement())
-  name                 String
-  productId            Int
-  product              Product                @relation(fields: [productId], references: [id])
-  variationOptions     VariationOption[]
-  productConfiguration ProductConfiguration[]
+  id                          Int                    @id @default(autoincrement())
+  name                        String
+  productId                   Int
+  product                     Product                @relation(fields: [productId], references: [id])
+  variationOptions            VariationOption[]
+  productConfiguration        ProductConfiguration[]
 }
 
 model VariationOption {
-  id                   Int                    @id @default(autoincrement())
-  value                String
-  variationId          Int
-  variation            Variation              @relation(fields: [variationId], references: [id])
-  productConfiguration ProductConfiguration[]
+  id                          Int                    @id @default(autoincrement())
+  value                       String
+  variationId                 Int
+  variation                   Variation              @relation(fields: [variationId], references: [id])
+  productConfiguration        ProductConfiguration[]
 }
 
 model Product {
@@ -126,11 +136,11 @@ model Product {
 }
 
 model Tag{
-  id        Int      @id @default(autoincrement())
-  value   String
-  product_tag   Product_Tag[]
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt @default(now())
+  id                Int                @id @default(autoincrement())
+  value             String
+  product_tag       Product_Tag[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt @default(now())
 }
 
 model Product_Tag {
@@ -145,22 +155,22 @@ model Product_Tag {
 model ProductImage{
   id                   Int                    @id @default(autoincrement())
   imagePath            String
-  productId Int
-  product   Product @relation(fields: [productId], references: [id])
+  productId            Int
+  product              Product                @relation(fields: [productId], references: [id])
 }
 
 model ProductItem {
-  id                    Int                    @id @default(autoincrement())
-  SKU                   String
-  qtyInStock            Int
-  price                 Float
-  productId             Int
-  product               Product                @relation(fields: [productId], references: [id])
-  productConfiguration  ProductConfiguration[]
-  cartItems             CartItems[]
-  ItemImages            ItemImage[]
-  orderItems            OrderItem[]
-  updatedAt        DateTime           @updatedAt @default(now())
+  id                          Int                    @id @default(autoincrement())
+  SKU                         String
+  qtyInStock                  Int
+  price                       Float
+  productId                   Int
+  product                     Product                @relation(fields: [productId], references: [id])
+  productConfiguration        ProductConfiguration[]
+  cartItems                   CartItems[]
+  ItemImages                  ItemImage[]
+  orderItems                  OrderItem[]
+  updatedAt                   DateTime           @updatedAt @default(now())
 }
 
 
@@ -168,28 +178,25 @@ model ItemImage{
   id                   Int                    @id @default(autoincrement())
   imagePath            String
   productItemId        Int
-  productItem   ProductItem @relation(fields: [productItemId], references: [id])
+  productItem          ProductItem            @relation(fields: [productItemId], references: [id])
 }
 
 model ProductConfiguration {
-  productItemId     Int
-  // productId         Int            
-  variationId       Int
-  variationOptionId Int
-  variationOption   VariationOption @relation(fields: [variationOptionId], references: [id])
-  productItem       ProductItem     @relation(fields: [productItemId], references: [id])
-  // product           Product         @relation(fields: [productId], references: [id])
-  variation         Variation       @relation(fields: [variationId], references: [id])
-
+  productItemId         Int
+  variationId           Int
+  variationOptionId     Int
+  variationOption       VariationOption @relation(fields: [variationOptionId], references: [id])
+  productItem           ProductItem     @relation(fields: [productItemId], references: [id])
+  variation             Variation       @relation(fields: [variationId], references: [id])
   @@id([productItemId, variationId])
 }
 
 model ProductAttribute {
-  id        Int     @id @default(autoincrement())
-  productId Int
-  name      String
-  value     String
-  product   Product @relation(fields: [productId], references: [id])
+  id                      Int     @id @default(autoincrement())
+  productId               Int
+  name                    String
+  value                   String
+  product                 Product @relation(fields: [productId], references: [id])
 }
 
 model Image {
@@ -223,21 +230,21 @@ model Category {
 }
 
 model Brand {
-  id             Int              @id @default(autoincrement())
-  name           String           @unique
-  description    String?
-  image          String?
-  brand_category Brand_Category[]
-  product        Product[]
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt @default(now())
+  id                    Int                 @id @default(autoincrement())
+  name                  String              @unique
+  description           String?
+  image                 String?
+  brand_category        Brand_Category[]
+  product               Product[]
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt @default(now())
 }
 
 model Brand_Category {
-  brandId    Int
-  categoryId Int
-  brand      Brand    @relation(fields: [brandId], references: [id])
-  category   Category @relation(fields: [categoryId], references: [id])
+  brandId               Int
+  categoryId            Int
+  brand                 Brand             @relation(fields: [brandId], references: [id])
+  category              Category          @relation(fields: [categoryId], references: [id])
 
   @@id([brandId, categoryId])
 }
@@ -245,17 +252,12 @@ model Brand_Category {
 model Product_Category {
   categoryId         Int
   productId          Int
-  category           Category @relation(fields: [categoryId], references: [id])
-  product            Product  @relation(fields: [productId], references: [id])
+  category           Category           @relation(fields: [categoryId], references: [id])
+  product            Product            @relation(fields: [productId], references: [id])
 
   @@id([categoryId, productId])
 }
 
-model OrderStatus {
-  id                    Int         @id @default(autoincrement())
-  status                String
-  order                 Order[]
-}
 
 
 model ShoppingMethod {
@@ -334,7 +336,7 @@ model Tax {
 model PaymentOption{
   id                      Int         @id @default(autoincrement())
   name                    String      @unique
-  active               Boolean     @default(true)
+  active                  Boolean     @default(true)
   order                   Order[]
 }
 
@@ -348,16 +350,15 @@ model Order {
   total                 Float
   addressId             Int   
   userId                Int   
-  taxId                 Int  
-  paymentOptionId       Int              
-  statusId              Int          
+  taxId                 Int? 
+  paymentOptionId       Int?             
   shoppingMethodId      Int   
   orderItem             OrderItem[]     
-  tax                   Tax              @relation(fields: [taxId], references: [id])    
+  tax                   Tax?             @relation(fields: [taxId], references: [id])    
   user                  User             @relation(fields: [userId], references: [id])
   address               Address          @relation(fields: [addressId], references: [id])
-  status                OrderStatus      @relation(fields: [statusId], references: [id])
-  paymentOption         PaymentOption    @relation(fields: [paymentOptionId], references: [id])
+  status                OrderStatus      @default(PENDING)
+  paymentOption         PaymentOption?   @relation(fields: [paymentOptionId], references: [id])
   shoppingMethod        ShoppingMethod   @relation(fields: [shoppingMethodId], references: [id])
   createdAt             DateTime         @default(now())
   updatedAt             DateTime         @updatedAt @default(now())

@@ -6,7 +6,7 @@ import {
   UpdateStateInput,
 } from './dto/update-country.input';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Country } from './entities/country.entity';
+import { City, Country, State } from './entities/country.entity';
 
 @Injectable()
 export class CountryService {
@@ -92,8 +92,16 @@ export class CountryService {
     return this.prisma.city.findMany({ where: { stateId } });
   }
 
-  findOne(id: number): Promise<Country> {
+  findCountryById(id: number): Promise<Country> {
     return this.prisma.country.findUnique({ where: { id } });
+  }
+
+  findStateById(id: number): Promise<State> {
+    return this.prisma.state.findUnique({ where: { id } });
+  }
+
+  findCityById(id: number): Promise<City> {
+    return this.prisma.city.findUnique({ where: { id } });
   }
 
   update(id: number, data: UpdateCountryInput): Promise<Country> {

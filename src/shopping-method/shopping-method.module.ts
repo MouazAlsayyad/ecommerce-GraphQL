@@ -4,5 +4,6 @@ import { ShoppingMethodResolver } from './shopping-method.resolver';
 
 @Module({
   providers: [ShoppingMethodResolver, ShoppingMethodService],
+  exports: [ShoppingMethodService],
 })
 export class ShoppingMethodModule {}

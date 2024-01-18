@@ -37,7 +37,7 @@ export class CountryResolver {
 
   @Query(() => Country, { name: 'country' })
   findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.countryService.findOne(id);
+    return this.countryService.findCountryById(id);
   }
 
   @Roles(UserType.ADMIN)

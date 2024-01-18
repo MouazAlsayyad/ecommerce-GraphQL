@@ -1,53 +1,40 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsOptional } from 'class-validator';
+import { City, Country, State } from 'src/country/entities/country.entity';
 
 @ObjectType()
 export class Address {
   @Field(() => Int)
-  @IsNumber()
-  @IsNotEmpty()
   id: number;
 
-  @Field(() => Int)
-  @IsNumber()
-  @IsNotEmpty()
-  countryId: number;
-
   @Field()
-  @IsString()
-  @IsNotEmpty()
-  street_number: string;
-
-  @Field()
-  @IsString()
-  @IsNotEmpty()
   address: string;
 
   @Field()
-  @IsString()
-  @IsNotEmpty()
-  city: string;
+  postalCode: string;
 
-  @Field()
-  @IsString()
-  @IsNotEmpty()
-  region: string;
-
-  @Field()
-  @IsString()
-  @IsNotEmpty()
-  postal_code: string;
-}
-
-@ObjectType()
-export class Country {
   @Field(() => Int)
-  @IsNumber()
-  @IsNotEmpty()
-  id: number;
+  countryId: number;
 
-  @Field()
-  @IsString()
-  @IsNotEmpty()
-  country_name: string;
+  @Field(() => Int)
+  stateId: number;
+
+  @Field(() => Int)
+  cityId: number;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  streetNumber?: string;
+
+  @Field(() => Country, { nullable: true })
+  @IsOptional()
+  country?: Country;
+
+  @Field(() => State, { nullable: true })
+  @IsOptional()
+  state?: State;
+
+  @Field(() => City, { nullable: true })
+  @IsOptional()
+  city?: City;
 }

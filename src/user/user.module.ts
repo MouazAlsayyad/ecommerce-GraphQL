@@ -5,9 +5,11 @@ import { UserResolver } from './user.resolver';
 import { UserService } from './user.service';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { PrismaUserRepository } from './user-repository';
+import { CountryService } from 'src/country/country.service';
 
 @Module({
   providers: [
+    CountryService,
     UserResolver,
     UserService,
     PrismaUserRepository,

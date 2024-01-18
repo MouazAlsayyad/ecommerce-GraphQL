@@ -118,6 +118,11 @@ export class PrismaProductRepository {
         skip: cursor ? 1 : 0,
         cursor: cursor ? { id: cursor } : undefined,
         take,
+        // orderBy:{
+        //   orderItem:{
+        //     _count:"asc"
+        //   }
+        // }
       });
     }
   }

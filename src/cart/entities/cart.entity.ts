@@ -18,6 +18,8 @@ class ItemWithQty {
   qty: number;
   @Field()
   price: number;
+  @Field()
+  productId: number;
   @Field(() => [VariationsItem])
   variationsItem: VariationsItem[];
 }
@@ -39,18 +41,6 @@ export class CartItem {
   @Field()
   price: number;
 }
-
-// @ObjectType()
-// export class Cart {
-//   @Field()
-//   product: ProductType;
-
-//   @Field(() => [ItemWithQty])
-//   item: ItemWithQty[];
-
-//   @Field()
-//   price: number;
-// }
 
 @ObjectType()
 export class Cart {

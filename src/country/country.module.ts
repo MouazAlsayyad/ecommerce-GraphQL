@@ -4,5 +4,6 @@ import { CountryResolver } from './country.resolver';
 
 @Module({
   providers: [CountryResolver, CountryService],
+  exports: [CountryService],
 })
 export class CountryModule {}

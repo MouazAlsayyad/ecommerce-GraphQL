@@ -29,7 +29,7 @@ export class User {
   user_type: UserType;
 
   @Field(() => [Address], { nullable: true })
-  addresses?: Address[];
+  address?: Address[];
 
   @Field(() => Boolean)
   isBlock?: boolean;
