@@ -9,9 +9,10 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CartService } from 'src/cart/cart.service';
 import { Address } from 'src/user/entities/address.entity';
 import { Cart } from 'src/cart/entities/cart.entity';
-import { OrderStatus, UserType } from '@prisma/client';
+import { OrderStatus, Prisma, UserType } from '@prisma/client';
 import { Order, OrderItem } from './entities/order.entity';
 import { ForbiddenError } from '@nestjs/apollo';
+import { OrderFilterDTO, OrdersOrderBy } from './dto/filter-user.input';
 
 @Injectable()
 export class OrderService {
@@ -92,7 +93,45 @@ export class OrderService {
     });
   }
 
-  async findAll(userId: number, userType: UserType): Promise<Order[]> {
+  async findAll(
+    orderFilterDTO: OrderFilterDTO,
+    userId: number,
+    userType: UserType,
+  ): Promise<Order[]> {
+    const orderBy: Prisma.OrderOrderByWithRelationInput = {
+      ...(orderFilterDTO?.orderBy === OrdersOrderBy.HighestToLowest && {
+        total: 'desc',
+      }),
+      ...(orderFilterDTO?.orderBy === OrdersOrderBy.LowestToHighest && {
+        total: 'asc',
+      }),
+      ...(orderFilterDTO?.orderBy === OrdersOrderBy.NewOrder && {
+        createdAt: 'desc',
+      }),
+      ...(orderFilterDTO?.orderBy === OrdersOrderBy.OldOrder && {
+        createdAt: 'asc',
+      }),
+    };
+
+    const where: Prisma.OrderWhereInput = {
+      ...(orderFilterDTO?.filter?.email && {
+        email: { contains: orderFilterDTO.filter.email },
+      }),
+      ...(orderFilterDTO?.filter?.name && {
+        name: { contains: orderFilterDTO.filter.name },
+      }),
+      ...(orderFilterDTO?.filter?.phone_number && {
+        phone: { contains: orderFilterDTO.filter.phone_number },
+      }),
+      ...(orderFilterDTO?.filter?.status && {
+        status: orderFilterDTO.filter.status,
+      }),
+    };
+
+    // skip: cursor ? 1 : 0,
+    // cursor: cursor ? { id: cursor } : undefined,
+    // take,
+
     if (userType === UserType.SELLER) {
       const products = await this.prisma.product.findMany({
         where: { userId },
@@ -101,12 +140,25 @@ export class OrderService {
       const productsIds = products.map((product) => {
         return product.id;
       });
+      const whereOrder: Prisma.OrderWhereInput = {
+        ...where,
+        orderItem: { some: { productId: { in: productsIds } } },
+      };
       return this.prisma.order.findMany({
-        where: {
-          orderItem: { some: { productId: { in: productsIds } } },
-        },
+        where: whereOrder,
+        orderBy,
+        skip: orderFilterDTO?.skip ? orderFilterDTO.skip : 0,
+        cursor: orderFilterDTO.skip ? { id: orderFilterDTO.skip } : undefined,
+        take: orderFilterDTO?.take ? orderFilterDTO?.take : 10,
       });
-    } else return this.prisma.order.findMany();
+    } else
+      return this.prisma.order.findMany({
+        where,
+        orderBy,
+        skip: orderFilterDTO?.skip ? orderFilterDTO.skip : 0,
+        cursor: orderFilterDTO.skip ? { id: orderFilterDTO.skip } : undefined,
+        take: orderFilterDTO?.take ? orderFilterDTO?.take : 10,
+      });
   }
 
   getMyOrders(userId: number) {

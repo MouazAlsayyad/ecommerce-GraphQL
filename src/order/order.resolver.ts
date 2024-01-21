@@ -24,6 +24,7 @@ import { ShoppingMethod } from 'src/shopping-method/entities/shopping-method.ent
 import { UserService } from 'src/user/user.service';
 import { Address } from 'src/user/entities/address.entity';
 import { User } from 'src/user/entities/user.entity';
+import { OrderFilterDTO } from './dto/filter-user.input';
 
 @Resolver(() => Order)
 export class OrderResolver {
@@ -46,8 +47,12 @@ export class OrderResolver {
 
   @Roles(UserType.ADMIN, UserType.SELLER)
   @Query(() => [Order], { name: 'orders' })
-  findAll(@Context() context: ContextType) {
+  findAll(
+    @Args('orderFilterDTO') orderFilterDTO: OrderFilterDTO,
+    @Context() context: ContextType,
+  ) {
     return this.orderService.findAll(
+      orderFilterDTO,
       context.req.user.id,
       context.req.user.user_type,
     );
@@ -55,8 +60,12 @@ export class OrderResolver {
 
   @Roles(UserType.ADMIN, UserType.SELLER, UserType.USER)
   @Query(() => [Order], { name: 'orders' })
-  getMyOrders(@Context() context: ContextType) {
+  getMyOrders(
+    @Args('orderFilterDTO') orderFilterDTO: OrderFilterDTO,
+    @Context() context: ContextType,
+  ) {
     return this.orderService.findAll(
+      orderFilterDTO,
       context.req.user.id,
       context.req.user.user_type,
     );

@@ -390,6 +390,13 @@ type Order {
   userId: Int!
 }
 
+input OrderFilterDTO {
+  filter: WhereOrderFilterDTO
+  orderBy: OrdersOrderBy
+  skip: Int
+  take: Int
+}
+
 type OrderItem {
   orderId: Int!
   price: Float!
@@ -398,6 +405,13 @@ type OrderItem {
   productItem: ProductItem
   productItemId: Int!
   qty: Int!
+}
+
+enum OrdersOrderBy {
+  HighestToLowest
+  LowestToHighest
+  NewOrder
+  OldOrder
 }
 
 type Payment {
@@ -468,7 +482,7 @@ type Query {
   country(id: Int!): Country!
   filter(filterDTO: FilterDTO): Filter!
   order(id: Int!): Order!
-  orders: [Order!]!
+  orders(orderFilterDTO: OrderFilterDTO!): [Order!]!
   payment(id: Int!): Payment!
   payments: [Payment!]!
   product(id: Int!): Product!
@@ -756,6 +770,13 @@ type VariationOptionFilter {
 
 type VariationsItem {
   value: String!
+}
+
+input WhereOrderFilterDTO {
+  email: String
+  name: String
+  phone_number: String
+  status: String
 }
 
 input WhereUserFilterDTO {
